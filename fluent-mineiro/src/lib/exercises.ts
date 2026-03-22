@@ -82,7 +82,7 @@ export function scoreExercise(
 
   // Detect Spanish interference
   if (!isCorrect && tags) {
-    const parsedTags: string[] = JSON.parse(tags || '[]');
+    const parsedTags: string[] = JSON.parse(tags);
     if (parsedTags.includes('false_cognate') || parsedTags.includes('ser_estar') || parsedTags.includes('preposition')) {
       mistakeType = 'spanish_interference';
     }
