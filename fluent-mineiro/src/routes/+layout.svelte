@@ -19,6 +19,7 @@
     { href: '/review', label: 'Revisão', icon: '🔄' },
     { href: '/conversation', label: 'Conversa', icon: '💬' },
     { href: '/writing', label: 'Escrita', icon: '✍️' },
+    { href: '/reading', label: 'Leitura', icon: '📖' },
     { href: '/progress', label: 'Progresso', icon: '📊' },
     { href: '/settings', label: 'Config', icon: '⚙️' },
   ];

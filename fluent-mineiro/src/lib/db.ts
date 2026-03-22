@@ -169,6 +169,16 @@ export async function getTotalAttempts(): Promise<{ total: number; correct: numb
   };
 }
 
+export async function getStreakCalendar(days: number = 90): Promise<{ date: string; count: number }[]> {
+  const d = await getDb();
+  return await d.select(
+    `SELECT date(timestamp) as date, COUNT(*) as count FROM attempts
+     WHERE timestamp >= date('now', '-' || $1 || ' days')
+     GROUP BY date(timestamp) ORDER BY date ASC`,
+    [days]
+  );
+}
+
 export async function getTodayStats(): Promise<{ total: number; correct: number }> {
   const d = await getDb();
   const rows: any[] = await d.select(

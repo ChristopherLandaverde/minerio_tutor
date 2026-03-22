@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getProfile, getDueReviewCount, getTotalAttempts, getMistakePatterns, getSessionHistory } from '$lib/db';
+  import { getProfile, getDueReviewCount, getTotalAttempts, getMistakePatterns, getSessionHistory, getStreakCalendar } from '$lib/db';
   import { SEED_EXERCISES } from '$lib/content';
   import { computeAdaptiveState } from '$lib/adaptive';
 
@@ -16,6 +16,7 @@
   let recommendation = $state<string>('stay');
   let mistakes = $state<{ mistake_type: string; count: number }[]>([]);
   let sessions = $state<{ date: string; exercises: number; correct: number; xp: number }[]>([]);
+  let calendarData = $state<Map<string, number>>(new Map());
 
   const totalExercises = SEED_EXERCISES.length;
 
@@ -60,6 +61,8 @@
       exercisesSeen = stats.exerciseCount;
       mistakes = await getMistakePatterns();
       sessions = await getSessionHistory();
+      const cal = await getStreakCalendar(90);
+      calendarData = new Map(cal.map(d => [d.date, d.count]));
       const adaptive = await computeAdaptiveState();
       rollingAccuracy = Math.round(adaptive.rollingAccuracy * 100);
       recommendation = adaptive.recommendation;
@@ -105,6 +108,33 @@
     </div>
 
     <!-- CEFR Level & Adaptive -->
+    <!-- Streak Calendar -->
+    <div class="bg-white border border-border rounded-xl p-5 mb-6">
+      <h3 class="font-semibold text-sm mb-3">Calendário de Prática (90 dias)</h3>
+      <div class="grid grid-cols-13 gap-1">
+        {#each Array(91) as _, i}
+          {@const d = new Date()}
+          {@const _ = d.setDate(d.getDate() - (90 - i))}
+          {@const dateStr = d.toISOString().split('T')[0]}
+          {@const count = calendarData.get(dateStr) || 0}
+          {@const isToday = i === 90}
+          <div
+            class="w-full aspect-square rounded-sm {isToday ? 'ring-1 ring-terracotta' : ''} {count === 0 ? 'bg-pedra-subtle' : count < 5 ? 'bg-serra/30' : count < 15 ? 'bg-serra/60' : 'bg-serra'}"
+            title="{dateStr}: {count} exercícios"
+          ></div>
+        {/each}
+      </div>
+      <div class="flex items-center justify-end gap-2 mt-2 text-xs text-cafe-muted">
+        <span>Menos</span>
+        <div class="w-3 h-3 rounded-sm bg-pedra-subtle"></div>
+        <div class="w-3 h-3 rounded-sm bg-serra/30"></div>
+        <div class="w-3 h-3 rounded-sm bg-serra/60"></div>
+        <div class="w-3 h-3 rounded-sm bg-serra"></div>
+        <span>Mais</span>
+      </div>
+    </div>
+
+    <!-- CEFR Level -->
     <div class="bg-white border border-border rounded-xl p-5 mb-6">
       <div class="flex items-center justify-between mb-3">
         <h3 class="font-semibold text-sm">Nível CEFR</h3>

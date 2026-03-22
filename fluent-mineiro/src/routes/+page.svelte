@@ -9,6 +9,7 @@
   let dueReviews = $state(0);
   let todayTotal = $state(0);
   let todayCorrect = $state(0);
+  let dailyGoal = $state(15);
   let loaded = $state(false);
 
   onMount(async () => {
@@ -16,6 +17,7 @@
       streak = parseInt(await getProfile('streak') || '0');
       totalXp = parseInt(await getProfile('total_xp') || '0');
       currentLevel = await getProfile('current_level') || 'A2';
+      dailyGoal = parseInt(await getProfile('daily_goal') || '15');
       dueReviews = await getDueReviewCount();
       const stats = await getTodayStats();
       todayTotal = stats.total;
@@ -28,6 +30,8 @@
 
   const accuracy = $derived(todayTotal > 0 ? Math.round((todayCorrect / todayTotal) * 100) : 0);
   const xpProgress = $derived(Math.min(100, (totalXp % 1000) / 10));
+  const goalProgress = $derived(Math.min(100, (todayTotal / dailyGoal) * 100));
+  const goalMet = $derived(todayTotal >= dailyGoal);
 
   const topicMeta: Record<string, { label: string; icon: string; bg: string }> = {
     food: { label: 'Comida Mineira', icon: '🍽️', bg: 'bg-green-50' },
@@ -106,6 +110,17 @@
       </div>
       <div class="h-2 bg-pedra-subtle rounded-full overflow-hidden">
         <div class="h-full bg-serra rounded-full transition-all duration-500" style="width: {xpProgress}%"></div>
+      </div>
+    </div>
+
+    <!-- Daily Goal -->
+    <div class="mb-6 bg-white border border-border rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold">{goalMet ? '🎯 Meta cumprida!' : '📋 Meta diária'}</span>
+        <span class="text-xs text-cafe-muted">{todayTotal}/{dailyGoal} exercícios</span>
+      </div>
+      <div class="h-3 bg-pedra-subtle rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></div>
       </div>
     </div>
 
