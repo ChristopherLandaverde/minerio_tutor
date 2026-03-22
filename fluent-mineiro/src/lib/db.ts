@@ -93,6 +93,40 @@ export async function getDueReviewCount(): Promise<number> {
   return rows[0]?.count ?? 0;
 }
 
+export async function getDueReviewIds(): Promise<number[]> {
+  const d = await getDb();
+  const rows: { exercise_id: number }[] = await d.select(
+    "SELECT exercise_id FROM srs_state WHERE next_review <= date('now') ORDER BY next_review ASC"
+  );
+  return rows.map(r => r.exercise_id);
+}
+
+export async function updateStreak(): Promise<number> {
+  const d = await getDb();
+  // Check if there's already a session today
+  const todaySessions: { count: number }[] = await d.select(
+    "SELECT COUNT(*) as count FROM sessions WHERE date(start_time) = date('now') AND end_time IS NOT NULL"
+  );
+  if (todaySessions[0]?.count > 1) {
+    // Already practiced today — streak already counted
+    return parseInt(await getProfile('streak') || '0');
+  }
+  // Check if yesterday had a completed session
+  const yesterdaySessions: { count: number }[] = await d.select(
+    "SELECT COUNT(*) as count FROM sessions WHERE date(start_time) = date('now', '-1 day') AND end_time IS NOT NULL"
+  );
+  const currentStreak = parseInt(await getProfile('streak') || '0');
+  let newStreak: number;
+  if (yesterdaySessions[0]?.count > 0) {
+    newStreak = currentStreak + 1;
+  } else {
+    // Streak broken — restart at 1
+    newStreak = 1;
+  }
+  await setProfile('streak', String(newStreak));
+  return newStreak;
+}
+
 export async function getTodayStats(): Promise<{ total: number; correct: number }> {
   const d = await getDb();
   const rows: any[] = await d.select(

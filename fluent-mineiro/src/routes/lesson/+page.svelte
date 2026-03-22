@@ -2,6 +2,7 @@
   import { page } from '$app/state';
   import { SEED_EXERCISES } from '$lib/content';
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
+  import { startSession, endSession, updateStreak } from '$lib/db';
 
   const topicLabels: Record<string, string> = {
     food: 'Comida', mineiro: 'Mineiro', greetings: 'Cumprimentos',
@@ -23,6 +24,9 @@
   let sessionTotal = $state(0);
   let sessionDone = $state(false);
   let startTime = $state(0);
+  let sessionId = $state<number | null>(null);
+  let sessionXp = $state(0);
+  let sessionStreak = $state(0);
 
   // Vocab flashcard state
   let showAnswer = $state(false);
@@ -34,11 +38,15 @@
     currentIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
+    sessionXp = 0;
     sessionDone = false;
     showFeedback = false;
     showAnswer = false;
     userAnswer = '';
     startTime = Date.now();
+    sessionId = null;
+    // Start a new DB session
+    startSession().then(id => { sessionId = id; }).catch(() => {});
   });
 
   const current = $derived(exercises[currentIndex]);
@@ -53,7 +61,10 @@
     lastResult = result;
     showFeedback = true;
     sessionTotal++;
-    if (result.isCorrect) sessionCorrect++;
+    if (result.isCorrect) {
+      sessionCorrect++;
+      sessionXp += 10;
+    }
 
     try {
       await processAnswer(current, ans, result, responseTime);
@@ -69,16 +80,24 @@
     lastResult = result;
     showFeedback = true;
     sessionTotal++;
-    if (result.isCorrect) sessionCorrect++;
+    if (result.isCorrect) {
+      sessionCorrect++;
+      sessionXp += 10;
+    }
 
     try {
       await processAnswer(current, current.answer, result, responseTime);
     } catch {}
   }
 
-  function nextExercise() {
+  async function nextExercise() {
     if (currentIndex + 1 >= exercises.length) {
       sessionDone = true;
+      // End the session and update streak
+      try {
+        if (sessionId) await endSession(sessionId, sessionTotal, sessionCorrect, sessionXp);
+        sessionStreak = await updateStreak();
+      } catch {}
       return;
     }
     currentIndex++;
@@ -114,9 +133,20 @@
     <div class="text-center py-12">
       <div class="text-5xl mb-4">🎉</div>
       <h2 class="font-display text-2xl font-bold mb-2">Sessão completa!</h2>
-      <p class="text-cafe-secondary mb-6">
-        {sessionCorrect}/{sessionTotal} corretas ({sessionTotal > 0 ? Math.round(sessionCorrect/sessionTotal*100) : 0}%)
-      </p>
+      <div class="grid grid-cols-3 gap-4 max-w-sm mx-auto mb-6">
+        <div class="bg-white border border-border rounded-xl p-3 text-center">
+          <div class="font-display text-xl font-bold text-serra">{sessionCorrect}/{sessionTotal}</div>
+          <div class="text-xs text-cafe-muted">Corretas</div>
+        </div>
+        <div class="bg-white border border-border rounded-xl p-3 text-center">
+          <div class="font-display text-xl font-bold text-ouro">+{sessionXp}</div>
+          <div class="text-xs text-cafe-muted">XP</div>
+        </div>
+        <div class="bg-white border border-border rounded-xl p-3 text-center">
+          <div class="font-display text-xl font-bold text-terracotta">🔥 {sessionStreak}</div>
+          <div class="text-xs text-cafe-muted">Streak</div>
+        </div>
+      </div>
       <a href="/" class="inline-flex px-6 py-3 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors">
         Voltar ao Dashboard
       </a>
