@@ -8,7 +8,10 @@
       "WebSearch",
       "Bash(git commit:*)",
       "Bash(git remote:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(lsof -ti:1420)",
+      "Bash(xargs kill:*)",
+      "Bash(pkill -f fluent-mineiro)"
     ],
     "deny": [],
     "ask": []
