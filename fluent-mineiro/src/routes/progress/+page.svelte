@@ -112,9 +112,8 @@
     <div class="bg-white border border-border rounded-xl p-5 mb-6">
       <h3 class="font-semibold text-sm mb-3">Calendário de Prática (90 dias)</h3>
       <div class="grid grid-cols-13 gap-1">
-        {#each Array(91) as _, i}
-          {@const d = new Date()}
-          {@const _ = d.setDate(d.getDate() - (90 - i))}
+        {#each Array(91) as _item, i}
+          {@const d = new Date(Date.now() - (90 - i) * 86400000)}
           {@const dateStr = d.toISOString().split('T')[0]}
           {@const count = calendarData.get(dateStr) || 0}
           {@const isToday = i === 90}

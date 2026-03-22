@@ -70,7 +70,7 @@ export async function upsertSrsState(
 export async function startSession(): Promise<number> {
   const d = await getDb();
   const result = await d.execute("INSERT INTO sessions (start_time) VALUES (datetime('now'))");
-  return result.lastInsertId;
+  return result.lastInsertId ?? 0;
 }
 
 export async function endSession(sessionId: number, exercisesCompleted: number, correctCount: number, xpEarned: number): Promise<void> {
