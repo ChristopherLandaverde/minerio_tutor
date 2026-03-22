@@ -6,6 +6,12 @@
   "permissions": [
     "core:default",
     "opener:default",
-    "sql:default"
+    "sql:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        { "url": "https://api.anthropic.com/*" }
+      ]
+    }
   ]
 }
