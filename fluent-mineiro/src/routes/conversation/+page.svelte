@@ -35,16 +35,8 @@
   }
 
   async function startConversation() {
-    loading = true;
-    error = null;
-    try {
-      // Send empty conversation to get Claude's greeting
-      const greeting = await sendMessage([], apiKey!);
-      messages = [{ role: 'assistant', content: greeting }];
-    } catch (e: any) {
-      error = e.message || 'Erro ao conectar com Claude.';
-    }
-    loading = false;
+    // Show a local greeting — no API call needed to start
+    messages = [{ role: 'assistant', content: 'Oi, tudo bão? 😊 Sou seu parceiro de conversa mineiro! Pode mandar uma mensagem em português — ou em inglês se preferir, que eu te ajudo. Uai, vamos conversar!' }];
   }
 
   async function send() {
