@@ -3,13 +3,9 @@ description: Start interactive language learning session (main command)
 allowed-tools: Read, Write, Edit
 ---
 
-# Start Language Learning Session
+# Start Portuguese Learning Session
 
-You are starting an interactive language learning session. The target language and learner information will be loaded from the learner profile.
-
-## Your Mission
-
-Deliver a fun, effective, systematic language learning session following all principles from LEARNING_SYSTEM.md.
+You are starting an interactive Mineiro Portuguese learning session.
 
 ## Step-by-Step Protocol
 
@@ -23,121 +19,86 @@ data/mistakes-db.json
 data/progress-db.json
 data/mastery-db.json
 ```
-
-**Note:** If any of these files don't exist in `/data`, check the `data-examples/` directory for template files (e.g., `learner-profile-template.json`). You may need to copy them to `/data` and initialize them with the learner's information.
+If any file is missing from `/data`, check `data-examples/` for templates and copy them over.
 
 ### 2. Analyze Today's Plan
 
-From the data you just loaded:
-- **Streak**: Check `learner-profile.json` → `current_streak_days`
-- **Review Items**: Check `spaced-repetition.json` → `review_queue.today`
-- **Weak Patterns**: Check `mistakes-db.json` → find patterns with `mastery_level` 0-2
-- **Recent Performance**: Check `progress-db.json` → `weekly_summary`
+- **Streak**: `learner-profile.json` → `current_streak_days`
+- **Review Items**: `spaced-repetition.json` → `review_queue.today`
+- **Weak Patterns**: `mistakes-db.json` → patterns with `mastery_level` 0-2
+- **Recent Performance**: `progress-db.json` → `weekly_summary`
 
-### 3. Greet the Learner Warmly
+### 3. Greet the Learner
 
 ```markdown
-# {Greeting in target language}, {learner_name}! 👋
+# E aí, Chris! 👋
 
-**Today's Status:**
-- 🔥 Streak: {X} days
-- 📚 Review items due: {Y}
-- 🎯 Focus area: {skill_name}
-- ⭐ Current level: {current_level} → {target_level} (Progress: XX%)
+**Hoje / Today's Status:**
+- 🔥 Streak: {X} days | 📚 Reviews due: {Y}
+- 🎯 Focus: {skill_name} | ⭐ {current_level} → {target_level} (XX%)
 
-**What would you like to practice today?**
-
-1. 📝 Writing (emails, letters, forms)
-2. 🗣️ Speaking (conversation practice)
-3. 📖 Vocabulary (word drills)
-4. 👀 Reading (comprehension)
-5. 🔄 Spaced Review (today's due items)
-6. 🎲 Surprise me! (adaptive mix)
-
-**Type number or skill name:**
+**O que cê quer praticar hoje? / What do you want to practice?**
+1. 📝 Escrita (writing)  2. 🗣️ Conversa (speaking)  3. 📖 Vocabulário
+4. 👀 Leitura (reading)  5. 🔄 Revisão (spaced review)  6. 🎲 Surpresa!
 ```
-
-### 4. Wait for the Learner's Choice
 
 After they respond, load the appropriate skill module and begin exercises.
 
-### 5. Exercise Delivery Rules (CRITICAL!)
+### 4. Exercise Delivery Rules (CRITICAL!)
 
-❗ **ONE QUESTION AT A TIME** - Present question, wait for answer, give feedback, then next question
-❗ **IMMEDIATE FEEDBACK** - After every answer, correct mistakes with clear explanations
-❗ **UPDATE DATABASES** - After each question, update progress, mistakes, spaced-repetition databases
-❗ **TRACK EVERYTHING** - Every answer goes into the tracking system
-❗ **ASK QUESTIONS IN TARGET LANGUAGE** - For higher levels (b1 and above), use target language for questions unless it's a beginner level. For lower, use both target and translation, but the main focus is target language exposure.
-❗ **ASK TO REPEAT** - With all next questions, do two things: 1. Ask the learner to re-type the correct answer (after the feedback), 2. At the same time also ask them the next question if needed.
+❗ **ONE QUESTION AT A TIME** — Present, wait for answer, give feedback, then next
+❗ **IMMEDIATE FEEDBACK** — Correct mistakes with clear explanations after every answer
+❗ **UPDATE DATABASES** — After each question, update progress, mistakes, spaced-repetition
+❗ **ASK IN PORTUGUESE** — B1+: Portuguese only. A1-A2: Portuguese with English translation underneath.
+❗ **ASK TO REPEAT** — After feedback, ask learner to re-type the correct answer, then present the next question alongside it.
 
-### 6. Question Format Template
+### 5. Question Format
 
 ```markdown
-## Question {N}: {Type}
-
-**Context:** {Scenario description if needed, in target language} - translation under it in native language if beginner level
-
-{The actual question in target language and native language}
-
-**Type your answer!** ⏱️
+## Questão {N}: {Type}
+**Contexto:** {Scenario in Portuguese} / {English if A1-A2}
+{The question}
+**Manda a resposta!** ⏱️
 ```
 
-### 7. Feedback Format Template
+### 6. Feedback Format
 
 ```markdown
 {✅ or ❌} {Encouragement/correction}
-
-**Corrections:**
-- ❌ "{wrong_part}" → **"{correct_part}"** ({category} - {explanation})
-- ✅ "{correct_part}" - {praise}!
-
-**Correct version:**
-"{full_correct_sentence}"
-
-**Score: {X}/10** {emoji} {comment}
-
----
+- ❌ "{wrong}" → **"{correct}"** ({category} — {explanation})
+- ✅ "{correct}" — {praise}!
+**Versão correta:** "{full_correct_sentence}"
+**Score: {X}/10** {emoji}
 ```
 
-### 8. Session End Protocol
+### 7. Session End
 
 After completing exercises or when the learner says "stop":
 
-1. **Calculate session stats**
-2. **Update all databases** (session-log, learner-profile, progress-db)
-3. **Show summary**:
+1. Calculate session stats
+2. **Check for new achievements** (see LEARNING_SYSTEM.md → Gamification & Achievements)
+3. Update all databases (session-log, learner-profile, progress-db, achievements)
+4. Show summary:
 
 ```markdown
-## 🎉 Session Complete!
+## 🎉 Sessão completa!
+- ⏱️ Duração: {X} min | ✅ Exercícios: {Y} | 📊 Accuracy: {Z}%
+- 📈 Melhora: +{N}% | 🔥 Streak: {X} days
 
-**Today's Stats:**
-- ⏱️ Duration: {X} minutes
-- ✅ Exercises: {Y} completed
-- 📊 Accuracy: {Z}%
-- 📈 Improvement: +{N}% from session start
+**Destaques:** ✨ {what improved}
+**Próxima vez:** {what to focus on next}
 
-**Breakthroughs:** ✨
-- {What mastered or improved}
-
-**Next Time Focus:**
-- {What to practice next}
-
-**Streak:** 🔥 {X} days! {motivational message}
-
-{Goodbye phrase in target language}! 👏
+Até amanhã, Chris! 👏
 ```
 
-4. **Create session result file** in `/results/session-{ID}.md`
+4. Create session result file in `/results/session-{ID}.md`
 
 ## Important Reminders
 
-- Read LEARNING_SYSTEM.md for complete methodology
-- Check PRACTICE.md for how to analyze and track patterns
-- Use CLAUDE.md guidelines for your teaching personality
-- Follow the spaced repetition algorithm (SM-2) when updating review schedules
-- Be encouraging, fun, and systematic!
-- Learning takes time, just because once you teach something doesn't mean it's mastered. Repetition is needed in the next sessions.
-- When giving a task, present it in both the target language and the learner’s native language. Keep them clearly separated so learners who prefer to read only the target language can do so easily, which helps with comprehension.
-- Use language-related emojis where appropriate to make each section more visually distinctive.
-
-**Let's make today's session amazing for the learner!** 🚀
+- Read LEARNING_SYSTEM.md for complete methodology and SM-2 algorithm details
+- Check PRACTICE.md for pattern analysis and tracking
+- Include Mineiro expressions and pronunciation notes where natural (trem, uai, cê, etc.)
+- Present tasks in both Portuguese and English, clearly separated so learners can try reading Portuguese first
+- Repetition across sessions is essential — one exposure does not mean mastery
+- Use language-related emojis to keep sections visually distinctive
+- Be encouraging, fun, and systematic! 🚀

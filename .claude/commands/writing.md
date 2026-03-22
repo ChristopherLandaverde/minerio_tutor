@@ -3,9 +3,9 @@ description: Practice target language writing (emails, letters, forms)
 allowed-tools: Read, Write
 ---
 
-# target language Writing Practice
+# Brazilian Portuguese Writing Practice (Mineiro Flavor)
 
-Practice writing emails, letters, and forms at A2 level.
+Practice writing emails, letters, and forms at your current level.
 
 ## Protocol
 
@@ -17,22 +17,18 @@ data/mistakes-db.json
 data/mastery-db.json
 ```
 
-**Note:** If any of these files don't exist in `/data`, check the `data-examples/` directory for template files (e.g., `learner-profile-template.json`). You may need to copy them to `/data` and initialize them.
+**Note:** If any files don't exist in `/data`, check `data-examples/` for templates and copy them over.
 
-Check the learner's weak patterns related to writing:
-- Formal/informal distinction
-- Email structure
-- Common phrases
-- Word order issues
+Check weak patterns related to writing: formal/informal register, email structure, accent marks, ser vs estar, por vs para.
 
 ### 2. Select Scenario Type
 
 Based on `mastery-db.json` → `skills_mastery`:
-- **Formal email** (if mastery < 4)
-- **Informal email** (if mastery < 4)
-- **Form filling** (if mastery < 4)
-- **Newsletter/personal text** (if mastery < 3)
-- **Mixed scenarios** (if all mastery >= 4)
+- **Formal email** (mastery < 4)
+- **Informal email** (mastery < 4)
+- **Form filling** (mastery < 4)
+- **Personal message / WhatsApp** (mastery < 3)
+- **Mixed scenarios** (all mastery >= 4)
 
 ### 3. Present Writing Task
 
@@ -40,13 +36,11 @@ Based on `mastery-db.json` → `skills_mastery`:
 ## ✍️ Writing Exercise
 
 **Scenario:** {clear_description_in_English}
-
-**Task:** Write a {type_of_text} in target language.
-
+**Task:** Write a {type_of_text} in Portuguese.
 **Requirements:**
 - Length: {X-Y} words/sentences
 - Include: {must_include_elements}
-- Level: A2 (keep it simple!)
+- Level: {learner_level} (match complexity accordingly)
 
 **Example structure:** (optional, for difficult tasks)
 {show_template_if_needed}
@@ -54,19 +48,19 @@ Based on `mastery-db.json` → `skills_mastery`:
 **Write your {text_type} below:**
 ```
 
-### 4. Wait for the learner's Response
+### 4. Wait for Response
 
-Let him write the complete text before giving feedback.
+Let the learner write the complete text before giving feedback.
 
-### 5. Analyze Response (Systematic!)
+### 5. Analyze Response
 
 Check for these error categories:
-1. **Grammar errors** (word order, verb conjugation, articles)
-2. **Formal/Informal mixing** (u vs je confusion)
-3. **Vocabulary errors** (wrong words, English mixing)
-4. **Missing elements** (forgot greeting, closing, etc.)
-5. **Spelling** (mark as minor - allowed in A2 exam)
-6. **Structure issues** (organization, flow)
+1. **Grammar** (verb conjugation, ser/estar, por/para, subjunctive usage)
+2. **Register mixing** (senhor(a)/você confusion, formal + informal in same text)
+3. **Accent marks** (é vs ê, ó vs ô, missing tildes on ã/õ)
+4. **Spanish interference** (false cognates like "exquisito", "todavía", "desde luego")
+5. **Missing elements** (greeting, closing, required content)
+6. **Structure** (organization, paragraph flow)
 
 ### 6. Provide Detailed Feedback
 
@@ -76,108 +70,69 @@ Check for these error categories:
 ### ✅ What You Did Well
 - {strength1}
 - {strength2}
-- {strength3}
 
 ### ❌ Areas to Improve
 
 **Critical Issues:** 🔴
-- {issue1}: **Example:** "{wrong}" → **Should be:** "{correct}"
+- {issue}: "{wrong}" → "{correct}"
   - **Why:** {explanation}
 
 **Moderate Issues:** 🟡
-- {issue2}: {explanation}
+- {issue}: {explanation}
 
-**Minor Issues:** 🟢 (Low priority for exam)
-- {spelling_errors}
+**Minor Issues:** 🟢
+- {accent/spelling notes}
 
 ### 📝 Corrected Version
-
-```
-{Fully corrected text with all improvements}
-```
+{Fully corrected text}
 
 **Overall Score: {X}/10**
-
-**Breakdown:**
 - Grammar: {Y}/10
 - Vocabulary: {Z}/10
 - Structure: {W}/10
 - Communication: {V}/10
-
----
 ```
 
-### 7. Update Databases After Feedback
+### 7. Update Databases
 
-For each error found:
-- **mistakes-db.json**: Add/update error pattern
-  - Increment frequency
-  - Add example
-  - Recalculate mastery_level
-  - Schedule next review (spaced repetition)
+For each error found, update:
+- **mistakes-db.json**: increment `frequency`, add example (`your_answer`, `correct_answer`, `context`, `date`), recalculate `mastery_level`, update `difficulty_score`, set `next_review` via SM-2
+- **mastery-db.json**: update writing sub-skills (greeting, body, closing, grammar, register) and recalculate overall writing mastery
+- **progress-db.json**: increment `exercises_completed`, update `accuracy_trend[]`, recalculate accuracy metrics
 
-- **mastery-db.json**: Update writing skill mastery
-  - Update sub-skills (greeting, body, closing, etc.)
-  - Recalculate overall writing mastery
+### 8. Optional Rewrite
 
-- **progress-db.json**: Update writing stats
-  - Increment exercises_completed
-  - Update accuracy metrics
-  - Add to accuracy_trend array
-
-### 8. Optional: Rewrite Exercise
-
-If score < 7/10, offer:
-
-```markdown
-**Want to try again?** 💪
-
-You can rewrite the {text_type} now with the corrections in mind.
-This will help solidify the patterns!
-
-Type "rewrite" to try again, or "next" to continue.
-```
+If score < 7/10, offer a rewrite opportunity. "Quer tentar de novo? 💪"
 
 ### 9. Session Summary
 
 ```markdown
 ## 📊 Writing Session Summary
 
-**Text Type:** {formal_email/informal_email/form/etc}
-**Score:** {X}/10
-**Strong Points:** {Y}
-**Areas Improved:** {Z}
+**Text Type:** {type} | **Score:** {X}/10
+**Key Takeaways:** {learning_points}
+**Next Focus:** {specific_weakness}
 
-**Key Takeaways:**
-- {learning_point_1}
-- {learning_point_2}
-- {learning_point_3}
-
-**For Next Practice:**
-- Focus on: {specific_weakness}
-- Review: {relevant_flashcards_or_patterns}
-
-Goed gedaan! Keep practicing! ✍️
+Muito bem! / Bão demais! Keep writing! ✍️
 ```
 
-## Writing Tips for the learner
+## Writing Tips
 
-**Formal Emails:**
-- Always use "u" (not "je")
-- Start: "Beste meneer/mevrouw {NAME},"
-- Open: "Ik schrijf u omdat..."
-- Close: "Met vriendelijke groet," + name
+**Formal:**
+- Use "senhor(a)" or "o(a) senhor(a)" — avoid "você" in formal writing
+- Open: "Prezado(a) Senhor(a) {NAME},"
+- Body: "Venho por meio desta solicitar...", "Gostaria de informar que..."
+- Close: "Atenciosamente," or "Cordialmente," + full name
 
-**Informal Emails:**
-- Use "je" (not "u")
-- Start: "Hallo {NAME},"
-- More casual language OK
-- Close: "Groetjes," or "Tot snel,"
+**Informal:**
+- Use "você" or Mineiro "cê/ocê" (spoken only — write "você")
+- Open: "Oi {NAME}," or "E aí {NAME},"
+- Casual language, contractions OK
+- Close: "Beijos," "Abraços," or "Até mais,"
 
-**Common Mistakes to Avoid:**
-- ❌ Don't mix formal/informal in same text
-- ❌ Watch word order in "omdat" clauses
-- ❌ Remember: "om 10:00 uur" (at time), "op dinsdag" (on day)
-- ❌ Don't forget "u" after "Ik schrijf" in formal contexts
-
-Let's improve your writing! 🚀
+**Common Mistakes for English/Spanish Speakers:**
+- ❌ Accent marks matter: "avó" (grandmother) vs "avô" (grandfather), "é" (open) vs "ê" (closed)
+- ❌ ser vs estar: "Ele é bonito" (inherent) vs "Ele está bonito" (today)
+- ❌ por vs para: "por" (cause/through) vs "para" (purpose/destination)
+- ❌ Spanish false cognates: "esquisito" = weird (not exquisite), "polvo" = octopus (not powder), "largo" = wide (not long)
+- ❌ Don't mix registers — pick formal or informal and stay consistent

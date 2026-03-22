@@ -29,20 +29,16 @@ From `spaced-repetition.json` → `review_queue.today`:
 ### 3. Greet and Explain
 
 ```markdown
-# 🔄 Today's Spaced Repetition Review
+# 🔄 Revisão de Hoje
 
-Hallo the learner! Time to review items that your brain is about to forget. This keeps your knowledge fresh! 🧠
+E aí, {learner}! Hora de revisar o que seu cérebro está prestes a esquecer. Bora manter tudo fresquinho! 🧠
 
-**Items Due Today:** {count}
-**Estimated Time:** ~{minutes} minutes
-**Focus:** Reinforce what you've learned
+**Itens para Hoje:** {count}
+**Tempo Estimado:** ~{minutes} minutos
 
-**Why Review?**
-- Prevents forgetting (spaced repetition works!)
-- Moves items to long-term memory
-- Builds automaticity (instant recall)
+**Por que revisar?** Previne o esquecimento, move itens para memória de longo prazo, e constrói recall automático!
 
-**Ready? Let's start!** 💪
+**Bora lá!** 💪
 ```
 
 ### 4. For Each Review Item
@@ -69,10 +65,9 @@ Based on `item_type`:
 **If `item_type` = "error_pattern":**
 - Load the pattern from `mistakes-db.json`
 - Create targeted exercise testing that specific pattern
-- Example: If pattern = "formal_informal_confusion", create scenario requiring formal "u" usage
 
 **If `item_type` = "vocabulary":**
-- Show the word and ask for translation (target language → English or vice versa)
+- Show the word and ask for translation (Portuguese → English or vice versa)
 - Or: Fill-in-blank sentence using the word
 
 **If `item_type` = "grammar_rule":**
@@ -89,7 +84,7 @@ Based on `item_type`:
 
 {Generate appropriate exercise based on item type}
 
-**Type your answer!** ⏱️
+**Manda a resposta!** ⏱️
 ```
 
 ### 5. Evaluate Response and Update
@@ -104,15 +99,11 @@ After the learner answers:
 
 **Score: {X}/10**
 
-{If correct on first try: "Great! You remembered! 🎉"}
-{If struggled: "Good effort! Let's review this again soon."}
-
----
+{If correct on first try: "Boa! Lembrou certinho! 🎉"}
+{If struggled: "Valeu o esforço! Vamos revisar de novo em breve."}
 ```
 
-**Update Spaced Repetition:**
-
-Use SM-2 algorithm to calculate:
+**Update Spaced Repetition (SM-2):**
 - New `easiness_factor`
 - New `interval_days`
 - New `repetitions` count
@@ -128,106 +119,51 @@ Use SM-2 algorithm to calculate:
 Every 5 items, show quick progress:
 
 ```markdown
-## Progress Update
+**Revisados:** {N}/{total} | **Acertos:** {percentage}% | ~{minutes} min restantes
 
-**Reviewed:** {N}/{total}
-**Accuracy:** {percentage}%
-**Time Remaining:** ~{minutes} min
-
-Keep going! 💪
+Continua firme! 💪
 ```
 
 ### 7. Session Complete Summary
 
 ```markdown
-## 🎉 Review Session Complete!
+## 🎉 Revisão Completa!
 
-**Items Reviewed:** {count}
-**Overall Accuracy:** {percentage}%
-**Time Spent:** {minutes} minutes
+**Itens Revisados:** {count}
+**Acertos:** {percentage}%
+**Tempo:** {minutes} minutos
 
-### Results Breakdown
+### Resultado
 
-**Mastered (No mistakes):** {count}
-- These items won't come up again for a while! 🎉
+**Dominados:** {count} - Só voltam daqui a um tempão! 🎉
+**Bom:** {count} - Revisão em {X} dias
+**Precisa Praticar:** {count} - Voltam amanhã
 
-**Good (Minor mistakes):** {count}
-- Review scheduled for {X} days from now
+### Próximas Revisões
 
-**Need More Practice:** {count}
-- You'll see these again tomorrow
+- **Amanhã:** {count} itens
+- **Esta Semana:** {count} itens
+- **Semana que Vem:** {count} itens
 
-### Next Review Schedule
+**Streak:** 🔥 {X} dias! {motivational_message}
 
-- **Tomorrow:** {count} items
-- **This Week:** {count} items
-- **Next Week:** {count} items
-
-**Streak:** 🔥 {X} days! {motivational_message}
-
-### Tips for Better Retention
-
-- Review daily for best results (even just 10 minutes!)
-- If you forget something, don't worry - the algorithm will show it more often
-- The more you struggle now, the stronger the memory becomes
-- Try to recall BEFORE looking at the answer
-
-**Great work today, the learner!** Keep up the daily reviews! 🌟
+**Mandou bem, {learner}!** Continua com as revisões diárias! 🌟
 
 ---
 
-Want to practice something new? Try:
-- `/dutch` - Start new learning session
-- `/dutch-writing` - Practice writing
-- `/dutch-vocab` - Learn new vocabulary
+Quer praticar algo novo?
+- `/learn` - Nova sessão de aprendizado
+- `/writing` - Praticar escrita
+- `/vocab` - Aprender vocabulário novo
 ```
 
 ### 8. Update All Databases
 
 After review session:
 
-1. **spaced-repetition.json**
-   - Update all reviewed items with new SM-2 parameters
-   - Move items between queues (today/tomorrow/this_week/later)
-   - Recalculate mastery levels
+1. **spaced-repetition.json** - Update all reviewed items with new SM-2 parameters, move items between queues, recalculate mastery levels
+2. **progress-db.json** - Update review statistics, add session to history
+3. **session-log.json** - Add review session entry (items reviewed, accuracy, time, weak patterns)
+4. **mistakes-db.json** - Update error patterns reviewed, adjust mastery based on performance
 
-2. **progress-db.json**
-   - Update review statistics
-   - Add review session to history
-
-3. **session-log.json**
-   - Add review session entry with:
-     - Items reviewed
-     - Accuracy rate
-     - Time spent
-     - Patterns that need more work
-
-4. **mistakes-db.json**
-   - Update error patterns that were reviewed
-   - Increment/decrement mastery based on performance
-
-## Spaced Repetition Tips
-
-**For the learner:**
-
-### Why Spaced Repetition Works
-- Your brain naturally forgets things over time (Ebbinghaus forgetting curve)
-- Reviewing just before you forget = strongest memory formation
-- Each successful review makes the memory stronger and longer-lasting
-- Items you struggle with appear more often (adaptive!)
-
-### Best Practices
-- ✅ **Review every day** (consistency > intensity)
-- ✅ **Don't skip reviews** (breaks the spacing optimization)
-- ✅ **Be honest with yourself** (if you struggled, mark it as such)
-- ✅ **Review before learning new things** (consolidate first!)
-- ✅ **10-15 minutes daily** is enough for maintenance
-
-### What the Schedule Means
-- **1 day:** New or struggling items (needs reinforcement)
-- **2-3 days:** Learning items (building strength)
-- **1 week:** Getting comfortable (occasional review)
-- **2+ weeks:** Strong items (maintenance only)
-- **1+ month:** Mastered items (long-term memory!)
-
-**The algorithm adapts to YOU!** The more you practice, the smarter it gets. 🧠✨
+See LEARNING_SYSTEM.md for full SM-2 algorithm details and spaced repetition methodology.

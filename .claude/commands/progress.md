@@ -3,7 +3,7 @@ description: View your Language learning progress and statistics
 allowed-tools: Read
 ---
 
-# Your target language Learning Progress
+# Portuguese Learning Progress
 
 Show the learner comprehensive progress statistics with visualizations.
 
@@ -19,13 +19,12 @@ data/mistakes-db.json
 data/spaced-repetition.json
 data/session-log.json
 ```
-
-**Note:** If any of these files don't exist in `/data`, check the `data-examples/` directory for template files (e.g., `learner-profile-template.json`). You may need to copy them to `/data` and initialize them.
+**Note:** If any files are missing, check `data-examples/` for templates.
 
 ### 2. Generate Progress Report
 
 ```markdown
-# 📊 the learner's target language Learning Dashboard
+# 📊 Chris's Mineiro Portuguese Dashboard
 
 **Last Updated:** {current_date}
 
@@ -33,9 +32,9 @@ data/session-log.json
 
 ## 🎯 Overview
 
-**Current Level:** A2 (Elementary)
-**Target Level:** B2+ (Upper Intermediate)
-**Progress to B1:** ▓▓▓▓▓▓▓▓░░░░░░░░░░░░ {percentage}%
+**Current Level:** {current_level}
+**Target Level:** C1 (Advanced)
+**Progress to C1:** ▓▓▓▓▓▓▓▓░░░░░░░░░░░░ {percentage}%
 
 **Days Studying:** {total_days}
 **Current Streak:** 🔥 {streak_days} days {streak_message}
@@ -47,35 +46,21 @@ data/session-log.json
 ## 💪 Skills Mastery
 
 ### Writing ✍️
-**Level:** {mastery_level}/5 ⭐⭐⭐⭐☆
-**Accuracy:** {accuracy}%
-**Progress:** ▓▓▓▓▓▓▓▓▓░░░░░░
-**Last Practiced:** {date}
-
-**Sub-Skills:**
-- Formal emails: {level}/5 ⭐
-- Informal emails: {level}/5 ⭐
-- Forms: {level}/5 ⭐
-- Grammar: {level}/5 ⭐
+**Level:** {mastery_level}/5 | **Accuracy:** {accuracy}%
+**Progress:** ▓▓▓▓▓▓▓▓▓░░░░░░ | **Last Practiced:** {date}
+**Sub-skills:** Formal emails: {level}/5 | Informal emails: {level}/5 | Forms: {level}/5 | Grammar: {level}/5
 
 ### Speaking 🗣️
-**Level:** {mastery_level}/5 ⭐⭐☆☆☆
-**Accuracy:** {accuracy}%
-**Progress:** ▓▓▓▓░░░░░░░░░░░░
-**Last Practiced:** {date or "Not yet practiced"}
+**Level:** {mastery_level}/5 | **Accuracy:** {accuracy}%
+**Progress:** ▓▓▓▓░░░░░░░░░░░░ | **Last Practiced:** {date or "Not yet"}
 
 ### Vocabulary 📚
-**Level:** {mastery_level}/5 ⭐⭐⭐⭐☆
-**Words Known:** {words_known}
-**Words Mastered:** {words_mastered}
-**Progress:** ▓▓▓▓▓▓▓▓▓▓▓░░░░░
-**Last Practiced:** {date}
+**Level:** {mastery_level}/5 | **Words Known:** {words_known} | **Mastered:** {words_mastered}
+**Progress:** ▓▓▓▓▓▓▓▓▓▓▓░░░░░ | **Last Practiced:** {date}
 
 ### Reading 👀
-**Level:** {mastery_level}/5 ⭐⭐☆☆☆
-**Comprehension:** {percentage}%
-**Progress:** ▓▓▓▓▓░░░░░░░░░░░
-**Last Practiced:** {date or "Not yet practiced"}
+**Level:** {mastery_level}/5 | **Comprehension:** {percentage}%
+**Progress:** ▓▓▓▓▓░░░░░░░░░░░ | **Last Practiced:** {date or "Not yet"}
 
 ---
 
@@ -83,148 +68,78 @@ data/session-log.json
 
 ### Accuracy Over Time
 ```
-Week 1: ██████░░░░░░░░░░░░ 35%
-Week 2: ████████████░░░░░░ 60% (+25%)
-Week 3: ██████████████░░░░ 70% (+10%)
-Week 4: ████████████████░░ 80% (+10%)  ← Goal trend
+Week 1: ██████░░░░░░░░░░░░ {X}%
+Week 2: ████████████░░░░░░ {Y}% (+{diff}%)
+Week 3: ██████████████░░░░ {Z}% (+{diff}%)
 ```
 
-### This Week's Summary
-- **Sessions:** {count}
-- **Minutes:** {total}
-- **Exercises:** {count}
-- **Accuracy:** {percentage}%
-- **Skills Practiced:** {list}
+### This Week
+- **Sessions:** {count} | **Minutes:** {total} | **Exercises:** {count}
+- **Accuracy:** {percentage}% | **Skills Practiced:** {list}
 
 ---
 
 ## 🎯 Focus Areas
 
-### 🔴 Critical (Needs Urgent Attention)
-{List patterns from mistakes-db with mastery 0-1 and high frequency}
-
-### 🟡 Working On (Making Progress)
-{List patterns from mistakes-db with mastery 2-3}
-
-### 🟢 Strong (Almost Mastered)
-{List patterns from mistakes-db with mastery 4-5}
+- 🔴 **Critical (mastery 0-1):** {patterns from mistakes-db, high frequency}
+- 🟡 **Working On (mastery 2-3):** {patterns making progress}
+- 🟢 **Strong (mastery 4-5):** {patterns nearly mastered}
 
 ---
 
 ## 🔄 Spaced Repetition Status
 
-**Items Due Today:** {count}
-**Items Due This Week:** {count}
-**Items Mastered (No review needed):** {count}
-
-**Review Distribution:**
-- Today: {count} items
-- Tomorrow: {count} items
-- This week: {count} items
-- Later: {count} items
+- **Today:** {count} items | **Tomorrow:** {count} | **This Week:** {count} | **Later:** {count}
+- **Mastered (no review needed):** {count}
 
 ---
 
-## 🏆 Achievements Unlocked
+## 🏆 Achievements
 
-{List all achievements from learner-profile → achievements}
+{List from learner-profile → achievements}
 
-**Example:**
-- ✅ First Step - Completed first session (2025-11-16)
-- ✅ Quick Learner - Improved 25% in one session (2025-11-16)
-- 🔒 3-Day Streak - Maintain 3-day streak (Not yet)
-- 🔒 Vocabulary Master - Learn 200 words (150/200)
-
----
-
-## 📅 Session History
-
-**Recent Sessions:**
+## 📅 Recent Sessions
 
 | Date | Duration | Skill | Accuracy | Improvement |
 |------|----------|-------|----------|-------------|
-{Generate table from session-log}
+{Generate from session-log}
 
----
-
-## 🎯 Next Goals
+## 🎯 Goals
 
 **Short-term (This Week):**
-- [ ] Practice speaking for first time
-- [ ] Complete 5 writing exercises
-- [ ] Review all due spaced repetition items
-- [ ] Maintain 7-day streak
+- [ ] Review all due SR items daily
+- [ ] Maintain streak
+- [ ] Practice weakest skill: {skill}
 
 **Medium-term (This Month):**
-- [ ] Reach 80% writing accuracy
-- [ ] Master formal/informal distinction
-- [ ] Learn 50 new vocabulary words
-- [ ] Complete 20 total sessions
+- [ ] Reach {target_accuracy}% writing accuracy
+- [ ] Master {frequent_mistake_pattern}
+- [ ] Learn {N} new vocabulary words
 
-**Long-term (6 months):**
-- [ ] Reach B1 level
-- [ ] Pass B1 inburgering exam
-- [ ] Confidently write any A2/B1 text
-- [ ] Speak comfortably in everyday situations
-
----
+**Long-term:**
+- [ ] Reach C1
+- [ ] Speak comfortably in Mineiro contexts
+- [ ] Read native content fluently
 
 ## 💡 Recommendations
 
-Based on your progress, focus on:
-1. **{skill_name}** - You haven't practiced this recently
-2. **{pattern_name}** - Still making this mistake frequently
-3. **{review_items}** - Don't forget today's spaced repetition reviews!
+1. **{unpracticed_skill}** — hasn't been practiced recently
+2. **{frequent_mistake}** — still appearing frequently
+3. **Today's SR reviews** — {count} items due
 
 ---
 
-## 🎉 Motivation
+Cê tá mandando bem, Chris! 💪🔥
 
-"{Personalized_motivational_message_based_on_progress}"
-
-**Keep going, the learner! You're making excellent progress!** 💪🔥
-
----
-
-Want to practice now? Try:
-- `/dutch` - Start a learning session
-- `/dutch-review` - Review today's items
-- `/dutch-writing` - Practice writing
+`/learn` | `/review` | `/writing`
 ```
 
-### 3. Interpretation Notes for the learner
-
-Add a section explaining what the numbers mean:
+### 3. How to Read Your Stats
 
 ```markdown
-## 📖 How to Read Your Stats
-
-**Mastery Levels:**
-- ⭐☆☆☆☆ (1/5): Just started, needs lots of practice
-- ⭐⭐☆☆☆ (2/5): Learning, making progress
-- ⭐⭐⭐☆☆ (3/5): Good understanding, occasional mistakes
-- ⭐⭐⭐⭐☆ (4/5): Strong skill, rare mistakes
-- ⭐⭐⭐⭐⭐ (5/5): Mastered! Can use confidently
-
-**Accuracy:**
-- 0-40%: Needs intensive practice
-- 40-60%: Learning phase, keep practicing
-- 60-75%: Good progress, getting comfortable
-- 75-85%: Strong skill, minor refinement needed
-- 85%+: Excellent! Near mastery
-
-**Streaks:**
-- Maintain daily practice for best results
-- Spaced repetition works best with consistency
-- Even 15 minutes daily beats 2 hours weekly!
+**Mastery Levels:** ⭐ (1/5) Just started → ⭐⭐⭐ (3/5) Solid, occasional mistakes → ⭐⭐⭐⭐⭐ (5/5) Mastered
+**Accuracy:** <40% needs work | 40-70% learning phase | 70-85% strong | 85%+ near mastery
+**Streaks:** Even 15 minutes daily beats 2 hours weekly — consistency is everything.
 ```
 
-## Tips
-
-- Update this report after every session
-- Celebrate improvements, no matter how small!
-- Use trends to identify what's working
-- Adjust practice focus based on weak areas
-- Share progress to stay motivated!
-
-Je doet het geweldig! (You're doing great!) 🌟
+Cê tá mandando bem! (You're killing it!) 🌟

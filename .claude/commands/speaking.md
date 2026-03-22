@@ -3,35 +3,35 @@ description: Practice target language speaking through typed conversation
 allowed-tools: Read, Write
 ---
 
-# target language Speaking Practice (Typed Conversation)
+# Mineiro Portuguese Speaking Practice (Typed Conversation)
 
-Practice conversational target language by responding to questions and scenarios.
+Practice conversational Portuguese by responding to questions and scenarios.
 
 ## Protocol
 
 ### 1. Greet and Explain
 
 ```markdown
-# 🗣️ target language Speaking Practice
+# 🗣️ Mineiro Portuguese Speaking Practice
 
-Hallo the learner!
+E aí, {learner_name}!
 
-Today we're going to practice **speaking** target language through typed conversation. I'll ask you questions or give you scenarios, and you respond naturally in target language - just like a real conversation!
+Today we're going to practice **speaking** Portuguese through typed conversation. I'll ask you questions or give you scenarios, and you respond naturally - just like chatting with a mineiro friend!
 
-**Focus:** Natural expression, fluency, pronunciation (typed)
-**Level:** A2 (everyday conversations)
+**Focus:** Natural expression, fluency, Mineiro flavor
+**Level:** {current_level}
 **Duration:** 15-20 minutes
 
 **Tips:**
-- Think in target language, not English!
+- Think in Portuguese, not English!
 - Don't worry about perfect grammar - focus on communication
 - Use complete sentences
-- Try to be natural and conversational
+- Try Mineiro expressions when you can!
 
-**Ready? Let's chat!** 💬
+**Bora lá?** 💬
 ```
 
-### 2. Conversation Topics (A2 Level)
+### 2. Conversation Topics
 
 **Choose scenario based on mastery:**
 1. **Personal introductions** (name, where you live, family)
@@ -40,7 +40,7 @@ Today we're going to practice **speaking** target language through typed convers
 4. **Shopping** (buying things, asking prices)
 5. **Making appointments** (doctor, meeting friends)
 6. **Asking for directions**
-7. **Ordering food** (restaurant, café)
+7. **Ordering food** (restaurant, padaria, boteco)
 8. **Talking about weather**
 9. **Weekend plans**
 10. **Work/study** (what you do)
@@ -48,38 +48,38 @@ Today we're going to practice **speaking** target language through typed convers
 ### 3. Question Format (ONE AT A TIME!)
 
 ```markdown
-## Vraag {N}: {Topic}
+## Pergunta {N}: {Topic}
 
-{Question in target language}
+{Question in Portuguese}
 
-**Type your answer in target language:**
+**Type your answer in Portuguese:**
 ```
 
 **Example Questions:**
 
 **Personal:**
-- "Vertel me over jezelf. Waar kom je vandaan?"
-- "Wat doe je in je vrije tijd?"
-- "Heb je broers of zussen?"
+- "Me conta sobre você. De onde cê é?"
+- "O que cê faz no tempo livre?"
+- "Cê tem irmãos?"
 
 **Daily Life:**
-- "Wat doe je meestal op maandag?"
-- "Hoe laat sta je op?"
-- "Wat eet je graag voor ontbijt?"
+- "O que cê faz geralmente na segunda-feira?"
+- "Que horas cê levanta?"
+- "O que cê gosta de comer no café da manhã?"
 
 **Future/Plans:**
-- "Wat ga je dit weekend doen?"
-- "Waar wil je naartoe op vakantie?"
+- "O que cê vai fazer no fim de semana?"
+- "Pra onde cê quer viajar nas férias?"
 
 **Opinions:**
-- "Vind je het weer vandaag mooi?"
-- "Wat vind je van Nederlandse eten?"
+- "Cê tá gostando do tempo hoje?"
+- "O que cê acha da comida mineira?"
 
 ### 4. Evaluate Responses
 
 After each answer, check:
 
-**✅ Good communication (most important!):**
+**Communication (most important!):**
 - Message is clear and understandable
 - Responds appropriately to question
 - Natural conversational flow
@@ -87,14 +87,15 @@ After each answer, check:
 **Grammar notes** (secondary):
 - Verb conjugation
 - Word order
-- Article usage
+- Preposition usage
+
+**Pronunciation hints** (if typed awkwardly):
+- Suggest natural Portuguese phrasing/pronunciation
 
 **Vocabulary:**
 - Appropriate word choice
 - Any English mixing?
-
-**Pronunciation hints** (if typed awkwardly):
-- Suggest correct pronunciation
+- Use of Mineiro expressions?
 
 ### 5. Feedback Format
 
@@ -106,9 +107,9 @@ After each answer, check:
 
 **Communication:** {Clear/Mostly clear/Unclear} ✅
 
-**Grammar notes:** (Don't focus too much on this!)
+**Grammar notes:** (Don't stress too much!)
 - {If major error: correction}
-- {But praise natural expression!}
+- {Praise natural expression!}
 
 **Natural alternatives:**
 You could also say: "{alternative_natural_expression}"
@@ -128,40 +129,36 @@ You could also say: "{alternative_natural_expression}"
 After 3-4 questions on one topic, transition:
 
 ```markdown
-**Interessant!** (Interesting!)
+**Que interessante!**
 
 Let's talk about something else now...
 
 {Transition to new topic}
 ```
 
-### 7. Role-Play Scenarios
-
-For advanced A2, introduce role-plays:
+### 7. Role-Play Scenarios (for advanced A2+)
 
 ```markdown
 ## 🎭 Role-Play Time!
 
 **Scenario:** {Description in English}
-
 **Your role:** {What the learner should do}
-
 **I'll be:** {Who you're playing}
 
 **Ready? I'll start...**
 
 ---
 
-{First line in target language}
+{First line in Portuguese}
 
 **Your turn:**
 ```
 
 **Example Scenarios:**
-- **At the supermarket:** You need to find bread and ask for help
-- **Making an appointment:** Call the doctor's office
-- **Restaurant:** Order food and ask about vegetarian options
-- **Lost tourist:** Ask for directions to the train station
+- **Na padaria:** You need to buy pão de queijo and ask what's fresh
+- **No consultório:** Call and make a doctor's appointment
+- **No boteco:** Order food and ask about the prato feito
+- **Turista perdido:** Ask for directions to the rodoviária
 
 ### 8. Session Summary
 
@@ -173,7 +170,6 @@ For advanced A2, introduce role-plays:
 **Topics Covered:** {list}
 
 ### Communication Scores
-
 **Overall Communication:** {percentage}%
 - Clear messages: {count}
 - Natural expression: {rating}/5
@@ -190,15 +186,14 @@ For advanced A2, introduce role-plays:
 - Practice: {weak_area}
 - Topic idea: {suggestion}
 
-**Goed gedaan!** Your conversational target language is improving! 🌟
-
----
+**Mandou bem!** Your conversational Portuguese is improving! 🌟
 
 **Tips for Real Conversations:**
 - Don't worry about perfect grammar
-- It's okay to ask "Wat betekent dat?" (What does that mean?)
-- If you don't know a word, describe it: "Het ding dat je gebruikt om..." (The thing you use to...)
-- Practice makes perfect - try to speak target language whenever you can!
+- It's okay to ask "O que cê quis dizer?" (What did you mean?)
+- If you don't know a word, describe it: "Aquele trem que cê usa pra..." (That thing you use to...)
+- Listen to Brazilian podcasts: Café Brasil, Flow Podcast, Mimimidias
+- Watch Mineiro YouTubers and pay attention to the accent
 ```
 
 ### 9. Update Databases
@@ -208,28 +203,7 @@ For advanced A2, introduce role-plays:
 - **session-log.json**: Add speaking session
 - **mistakes-db.json**: Note any recurring speaking-specific errors
 
-## Speaking-Specific Tips
+## Key Mineiro Conversational Phrases
 
-### For the learner
-
-**Building Confidence:**
-- Start simple - even short answers are progress!
-- It's okay to make mistakes - that's how you learn
-- Focus on communication first, perfect grammar later
-- Imagine you're talking to a target language friend
-
-**Common Conversational Phrases:**
-- "Nou..." (Well.../So...)
-- "Eh..." (Uh.../Um...)
-- "Eigenlijk..." (Actually...)
-- "Dus..." (So.../Therefore...)
-- "Ja, dat klopt" (Yes, that's right)
-- "Ik snap het niet" (I don't understand)
-
-**Pro Tips:**
-- Listen to target language podcasts/videos for natural rhythm
-- Shadow native speakers (repeat after them)
-- Talk to yourself in target language (really!)
-- Don't translate from English - think in target language
-
-Keep practicing! Every conversation makes you better! 💬🚀
+Encourage Chris to use these naturally:
+- "Uai..." / "Tipo assim..." / "Na real..." / "Então..." / "É, isso mesmo" / "Num entendi não"
