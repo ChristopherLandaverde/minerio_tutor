@@ -76,9 +76,9 @@
     </div>
 
     <!-- Lesson Queue -->
-    <h3 class="text-xs text-cafe-muted uppercase tracking-wider font-semibold mb-3">Prática de hoje</h3>
+    <h3 class="text-sm text-cafe-muted uppercase tracking-wider font-semibold mb-3">Prática de hoje</h3>
     <div class="space-y-3">
-      <a href="/lesson?type=vocab" class="flex items-center justify-between p-4 bg-white border border-border rounded-xl hover:border-terracotta transition-colors">
+      <a href="/lesson?type=vocab" class="flex items-center justify-between p-4 bg-white border border-border rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-green-50 rounded-lg flex items-center justify-center text-lg">📚</div>
           <div>
@@ -89,7 +89,7 @@
         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-pedra-subtle text-serra">A2</span>
       </a>
 
-      <a href="/lesson?type=cloze" class="flex items-center justify-between p-4 bg-white border border-border rounded-xl hover:border-terracotta transition-colors">
+      <a href="/lesson?type=cloze" class="flex items-center justify-between p-4 bg-white border border-border rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-yellow-50 rounded-lg flex items-center justify-center text-lg">✏️</div>
           <div>
@@ -100,7 +100,7 @@
         <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-pedra-subtle text-terracotta">Revisão</span>
       </a>
 
-      <a href="/lesson?type=multiple_choice" class="flex items-center justify-between p-4 bg-white border border-border rounded-xl hover:border-terracotta transition-colors">
+      <a href="/lesson?type=multiple_choice" class="flex items-center justify-between p-4 bg-white border border-border rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-lg">🧠</div>
           <div>
