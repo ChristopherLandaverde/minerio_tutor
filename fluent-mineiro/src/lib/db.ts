@@ -127,6 +127,48 @@ export async function updateStreak(): Promise<number> {
   return newStreak;
 }
 
+// Progress stats
+export async function getTopicStats(): Promise<{ topic: string; total: number; correct: number }[]> {
+  const d = await getDb();
+  return await d.select(`
+    SELECT e_topic as topic, COUNT(*) as total, SUM(is_correct) as correct
+    FROM (
+      SELECT a.is_correct,
+        CASE
+          WHEN a.exercise_id <= 27 THEN 'food'
+          ELSE 'other'
+        END as e_topic
+      FROM attempts a
+    ) GROUP BY e_topic
+  `);
+}
+
+export async function getMistakePatterns(): Promise<{ mistake_type: string; count: number }[]> {
+  const d = await getDb();
+  return await d.select(
+    "SELECT mistake_type, COUNT(*) as count FROM attempts WHERE mistake_type IS NOT NULL AND is_correct = 0 GROUP BY mistake_type ORDER BY count DESC LIMIT 10"
+  );
+}
+
+export async function getSessionHistory(): Promise<{ date: string; exercises: number; correct: number; xp: number }[]> {
+  const d = await getDb();
+  return await d.select(
+    "SELECT date(start_time) as date, SUM(exercises_completed) as exercises, SUM(correct_count) as correct, SUM(xp_earned) as xp FROM sessions WHERE end_time IS NOT NULL GROUP BY date(start_time) ORDER BY date DESC LIMIT 14"
+  );
+}
+
+export async function getTotalAttempts(): Promise<{ total: number; correct: number; exerciseCount: number }> {
+  const d = await getDb();
+  const rows: any[] = await d.select(
+    "SELECT COUNT(*) as total, SUM(is_correct) as correct, COUNT(DISTINCT exercise_id) as exerciseCount FROM attempts"
+  );
+  return {
+    total: rows[0]?.total ?? 0,
+    correct: rows[0]?.correct ?? 0,
+    exerciseCount: rows[0]?.exerciseCount ?? 0,
+  };
+}
+
 export async function getTodayStats(): Promise<{ total: number; correct: number }> {
   const d = await getDb();
   const rows: any[] = await d.select(
