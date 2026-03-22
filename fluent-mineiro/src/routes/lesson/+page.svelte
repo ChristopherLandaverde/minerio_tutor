@@ -3,6 +3,7 @@
   import { SEED_EXERCISES } from '$lib/content';
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
   import { startSession, endSession, updateStreak } from '$lib/db';
+  import { applyAdaptation } from '$lib/adaptive';
 
   const topicLabels: Record<string, string> = {
     food: 'Comida', mineiro: 'Mineiro', greetings: 'Cumprimentos',
@@ -27,6 +28,7 @@
   let sessionId = $state<number | null>(null);
   let sessionXp = $state(0);
   let sessionStreak = $state(0);
+  let levelChange = $state<string | null>(null);
 
   // Vocab flashcard state
   let showAnswer = $state(false);
@@ -93,10 +95,13 @@
   async function nextExercise() {
     if (currentIndex + 1 >= exercises.length) {
       sessionDone = true;
-      // End the session and update streak
+      // End the session, update streak, and check adaptive difficulty
       try {
         if (sessionId) await endSession(sessionId, sessionTotal, sessionCorrect, sessionXp);
         sessionStreak = await updateStreak();
+        const prevLevel = exercises[0]?.cefr_level || 'A2';
+        const newLevel = await applyAdaptation();
+        if (newLevel !== prevLevel) levelChange = newLevel;
       } catch {}
       return;
     }
@@ -147,6 +152,12 @@
           <div class="text-xs text-cafe-muted">Streak</div>
         </div>
       </div>
+      {#if levelChange}
+        <div class="mb-6 px-4 py-3 bg-ouro/15 border border-ouro/30 rounded-xl text-center">
+          <span class="text-lg font-bold text-ouro">🎯 Nível atualizado para {levelChange}!</span>
+          <p class="text-xs text-cafe-secondary mt-1">Sua precisão mudou — o conteúdo vai se adaptar.</p>
+        </div>
+      {/if}
       <a href="/" class="inline-flex px-6 py-3 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors">
         Voltar ao Dashboard
       </a>
