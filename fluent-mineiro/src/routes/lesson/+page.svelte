@@ -13,6 +13,7 @@
     verbs_past: 'Passado', prepositions: 'Preposições',
     false_cognates: 'Falsos Cognatos', mineiro_vs_standard: 'Mineiro vs Padrão',
     cultural: 'Cultura', error_correction: 'Erros Comuns',
+    true_false: 'Verdadeiro/Falso', reorder: 'Reordene',
   };
 
   // Filter exercises by type from URL param
@@ -114,7 +115,7 @@
   }
 
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter' && !showFeedback && current?.type !== 'vocab' && current?.type !== 'multiple_choice') {
+    if (e.key === 'Enter' && !showFeedback && current?.type !== 'vocab' && current?.type !== 'multiple_choice' && current?.type !== 'true_false') {
       submitAnswer();
     }
     if (e.key === 'Enter' && showFeedback) {
@@ -172,7 +173,7 @@
     <div class="bg-white border border-border rounded-2xl overflow-hidden">
       <div class="p-8 text-center">
         <div class="text-xs uppercase tracking-wider text-cafe-muted font-semibold mb-4">
-          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
+          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : current.type === 'true_false' ? 'Verdadeiro ou Falso' : current.type === 'reorder' ? 'Reordene' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
         </div>
 
         {#if current.type === 'vocab'}
@@ -253,11 +254,46 @@
               autofocus
             />
           {/if}
+
+        {:else if current.type === 'true_false'}
+          <!-- True/False -->
+          <p class="font-display text-lg font-semibold mb-6">{current.prompt}</p>
+          {#if !showFeedback}
+            <div class="flex gap-3 justify-center">
+              <button
+                onclick={() => submitAnswer('true')}
+                class="px-8 py-3 border-2 border-serra/30 rounded-xl text-serra font-semibold hover:bg-serra/10 transition-colors"
+              >
+                ✅ Verdadeiro
+              </button>
+              <button
+                onclick={() => submitAnswer('false')}
+                class="px-8 py-3 border-2 border-error/30 rounded-xl text-error font-semibold hover:bg-error/10 transition-colors"
+              >
+                ❌ Falso
+              </button>
+            </div>
+          {/if}
+
+        {:else if current.type === 'reorder'}
+          <!-- Sentence Reordering -->
+          <p class="text-xs text-cafe-muted mb-2">Reordene as palavras para formar uma frase correta:</p>
+          <div class="font-mono text-lg bg-ouro/10 border border-ouro/20 p-4 rounded-xl mb-6 text-cafe">
+            {current.prompt}
+          </div>
+          {#if !showFeedback}
+            <input
+              bind:value={userAnswer}
+              placeholder="Escreva a frase na ordem correta..."
+              class="w-full max-w-md px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
+              autofocus
+            />
+          {/if}
         {/if}
       </div>
 
-      <!-- Submit button for cloze and error_correction -->
-      {#if !showFeedback && (current.type === 'cloze' || current.type === 'error_correction')}
+      <!-- Submit button for cloze, error_correction, and reorder -->
+      {#if !showFeedback && (current.type === 'cloze' || current.type === 'error_correction' || current.type === 'reorder')}
         <div class="p-4 border-t border-border flex justify-center">
           <button
             onclick={() => submitAnswer()}

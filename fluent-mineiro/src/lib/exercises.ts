@@ -74,6 +74,26 @@ export function scoreExercise(
       quality = isCorrect ? 4 : 1;
       break;
     }
+    case 'true_false': {
+      // User selects true or false — answer is "true" or "false"
+      isCorrect = normalizedUser === normalizedExpected;
+      quality = isCorrect ? 4 : 1;
+      break;
+    }
+    case 'reorder': {
+      // User types the reordered sentence
+      if (normalizedUser === normalizedExpected) {
+        quality = 5;
+        isCorrect = true;
+      } else if (isCloseMatch(normalizedUser, normalizedExpected)) {
+        quality = 3;
+        isCorrect = true;
+      } else {
+        quality = 1;
+        isCorrect = false;
+      }
+      break;
+    }
     case 'error_correction': {
       if (normalizedUser === normalizedExpected) {
         quality = 5;

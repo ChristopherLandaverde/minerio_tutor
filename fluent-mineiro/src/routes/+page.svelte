@@ -52,6 +52,9 @@
     mineiro_vs_standard: { label: 'Mineiro vs Padrão', icon: '🗣️', bg: 'bg-amber-50' },
     cultural: { label: 'Cultura Mineira', icon: '🎭', bg: 'bg-violet-50' },
     error_correction: { label: 'Correção de Erros', icon: '🔧', bg: 'bg-orange-50' },
+    true_false: { label: 'Verdadeiro ou Falso', icon: '✅', bg: 'bg-lime-50' },
+    reorder: { label: 'Reordene a Frase', icon: '🔀', bg: 'bg-fuchsia-50' },
+    dialogue: { label: 'Diálogos', icon: '💬', bg: 'bg-sky-50' },
   };
 
   const typeMeta: Record<string, { label: string; badge: string; badgeColor: string }> = {
@@ -59,6 +62,8 @@
     cloze: { label: 'Gramática', badge: 'exercícios', badgeColor: 'text-terracotta' },
     multiple_choice: { label: 'Quiz', badge: 'questões', badgeColor: 'text-info' },
     error_correction: { label: 'Correção', badge: 'exercícios', badgeColor: 'text-ouro' },
+    true_false: { label: 'Verdadeiro/Falso', badge: 'questões', badgeColor: 'text-serra' },
+    reorder: { label: 'Reordene', badge: 'exercícios', badgeColor: 'text-terracotta' },
   };
 
   interface LessonCard { type: string; topic: string; count: number; cefr: string }
@@ -74,7 +79,7 @@
     ).map(([, v]) => v)
   );
 
-  const typeOrder = ['vocab', 'cloze', 'multiple_choice', 'error_correction'];
+  const typeOrder = ['vocab', 'cloze', 'multiple_choice', 'error_correction', 'true_false', 'reorder'];
   const groupedByType = $derived(
     typeOrder.map(t => ({
       type: t,
