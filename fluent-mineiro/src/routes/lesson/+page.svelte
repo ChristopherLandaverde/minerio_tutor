@@ -19,7 +19,8 @@
 
   $effect(() => {
     const type = $page.url.searchParams.get('type') || 'vocab';
-    exercises = SEED_EXERCISES.filter(e => e.type === type).sort(() => Math.random() - 0.5);
+    const topic = $page.url.searchParams.get('topic');
+    exercises = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic)).sort(() => Math.random() - 0.5);
     currentIndex = 0;
     sessionCorrect = 0;
     sessionTotal = 0;
@@ -120,7 +121,7 @@
     <div class="bg-white border border-border rounded-2xl overflow-hidden">
       <div class="p-8 text-center">
         <div class="text-xs uppercase tracking-wider text-cafe-muted font-semibold mb-4">
-          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : 'Quiz'} · {current.topic}
+          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : 'Quiz'} · {current.topic}
         </div>
 
         {#if current.type === 'vocab'}
@@ -186,11 +187,26 @@
               {/each}
             </div>
           {/if}
+
+        {:else if current.type === 'error_correction'}
+          <!-- Error Correction -->
+          <p class="text-xs text-cafe-muted mb-2">Corrija a frase abaixo:</p>
+          <div class="font-mono text-lg bg-error/5 border border-error/20 p-4 rounded-xl mb-6 text-error">
+            {current.prompt}
+          </div>
+          {#if !showFeedback}
+            <input
+              bind:value={userAnswer}
+              placeholder="Frase corrigida..."
+              class="w-full max-w-md px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
+              autofocus
+            />
+          {/if}
         {/if}
       </div>
 
-      <!-- Submit button for cloze -->
-      {#if !showFeedback && current.type === 'cloze'}
+      <!-- Submit button for cloze and error_correction -->
+      {#if !showFeedback && (current.type === 'cloze' || current.type === 'error_correction')}
         <div class="p-4 border-t border-border flex justify-center">
           <button
             onclick={() => submitAnswer()}

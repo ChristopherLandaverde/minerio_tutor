@@ -74,6 +74,19 @@ export function scoreExercise(
       quality = isCorrect ? 4 : 1;
       break;
     }
+    case 'error_correction': {
+      if (normalizedUser === normalizedExpected) {
+        quality = 5;
+        isCorrect = true;
+      } else if (isCloseMatch(normalizedUser, normalizedExpected)) {
+        quality = 3;
+        isCorrect = true;
+      } else {
+        quality = 1;
+        isCorrect = false;
+      }
+      break;
+    }
     default: {
       isCorrect = normalizedUser === normalizedExpected;
       quality = isCorrect ? 4 : 1;
