@@ -4,16 +4,20 @@
   import { getApiKey, setApiKey } from '$lib/claude';
 
   let currentLevel = $state('A2');
-  let dailyGoal = $state('10');
+  let dailyGoal = $state(15);
   let hasApiKey = $state(false);
   let apiKeyInput = $state('');
   let keySaved = $state(false);
+  let settingsSaved = $state(false);
   let loaded = $state(false);
+
+  const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+  const goalOptions = [5, 10, 15, 20, 30];
 
   onMount(async () => {
     try {
       currentLevel = await getProfile('current_level') || 'A2';
-      dailyGoal = await getProfile('daily_goal') || '10';
+      dailyGoal = parseInt(await getProfile('daily_goal') || '15');
       const key = await getApiKey();
       hasApiKey = !!key;
     } catch {
@@ -21,6 +25,27 @@
     }
     loaded = true;
   });
+
+  async function saveLevel(level: string) {
+    currentLevel = level;
+    try {
+      await setProfile('current_level', level);
+      flashSaved();
+    } catch {}
+  }
+
+  async function saveGoal(goal: number) {
+    dailyGoal = goal;
+    try {
+      await setProfile('daily_goal', String(goal));
+      flashSaved();
+    } catch {}
+  }
+
+  function flashSaved() {
+    settingsSaved = true;
+    setTimeout(() => { settingsSaved = false; }, 2000);
+  }
 
   async function saveNewKey() {
     if (!apiKeyInput.trim()) return;
@@ -39,40 +64,77 @@
       hasApiKey = false;
     } catch {}
   }
+
+  async function resetProgress() {
+    try {
+      await setProfile('streak', '0');
+      await setProfile('total_xp', '0');
+      await setProfile('current_level', 'A2');
+      currentLevel = 'A2';
+      flashSaved();
+    } catch {}
+  }
 </script>
 
 <div class="max-w-3xl mx-auto p-6">
   <h2 class="font-display text-2xl font-bold mb-2">⚙️ Configurações</h2>
-  <p class="text-sm text-cafe-secondary mb-8">Personalize sua experiência de aprendizado</p>
+  <p class="text-sm text-cafe-secondary mb-6">Personalize sua experiência de aprendizado</p>
+
+  {#if settingsSaved}
+    <div class="mb-4 px-4 py-2 bg-serra/10 border border-serra/20 rounded-lg text-sm text-serra text-center">
+      Salvo!
+    </div>
+  {/if}
 
   {#if !loaded}
     <div class="space-y-4">
-      {#each [1, 2] as _}
+      {#each [1, 2, 3] as _}
         <div class="h-20 bg-pedra-subtle rounded-xl animate-pulse"></div>
       {/each}
     </div>
   {:else}
     <div class="space-y-4">
+      <!-- CEFR Level -->
       <div class="bg-white border border-border rounded-xl p-5">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="font-semibold text-sm">Nível atual</h3>
-            <p class="text-xs text-cafe-muted mt-1">Seu nível CEFR de português (adaptativo)</p>
-          </div>
-          <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-pedra-subtle text-serra">{currentLevel}</span>
+        <div class="mb-3">
+          <h3 class="font-semibold text-sm">Nível CEFR</h3>
+          <p class="text-xs text-cafe-muted mt-1">Seu nível atual de português. O sistema adapta automaticamente, mas você pode ajustar manualmente.</p>
+        </div>
+        <div class="flex gap-2">
+          {#each cefrLevels as level}
+            <button
+              onclick={() => saveLevel(level)}
+              class="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors {currentLevel === level
+                ? 'bg-serra text-white'
+                : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
+            >
+              {level}
+            </button>
+          {/each}
         </div>
       </div>
 
+      <!-- Daily Goal -->
       <div class="bg-white border border-border rounded-xl p-5">
-        <div class="flex items-center justify-between">
-          <div>
-            <h3 class="font-semibold text-sm">Meta diária</h3>
-            <p class="text-xs text-cafe-muted mt-1">Exercícios por dia</p>
-          </div>
-          <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-pedra-subtle text-terracotta">{dailyGoal} exercícios</span>
+        <div class="mb-3">
+          <h3 class="font-semibold text-sm">Meta diária</h3>
+          <p class="text-xs text-cafe-muted mt-1">Quantos exercícios por dia você quer praticar?</p>
+        </div>
+        <div class="flex gap-2">
+          {#each goalOptions as goal}
+            <button
+              onclick={() => saveGoal(goal)}
+              class="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors {dailyGoal === goal
+                ? 'bg-terracotta text-white'
+                : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
+            >
+              {goal}
+            </button>
+          {/each}
         </div>
       </div>
 
+      <!-- Dialect -->
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="flex items-center justify-between">
           <div>
@@ -99,12 +161,7 @@
         {#if hasApiKey}
           <div class="flex items-center gap-2">
             <span class="text-xs text-cafe-muted">sk-ant-•••••••••</span>
-            <button
-              onclick={removeKey}
-              class="text-xs text-error hover:underline"
-            >
-              Remover
-            </button>
+            <button onclick={removeKey} class="text-xs text-error hover:underline">Remover</button>
           </div>
         {:else}
           <div class="flex gap-2">
@@ -126,6 +183,27 @@
         {#if keySaved}
           <p class="text-xs text-serra mt-2">Chave salva com sucesso!</p>
         {/if}
+      </div>
+
+      <!-- Reset Progress -->
+      <div class="bg-white border border-border rounded-xl p-5">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="font-semibold text-sm">Resetar progresso</h3>
+            <p class="text-xs text-cafe-muted mt-1">Zera XP, streak e nível. Exercícios praticados são mantidos.</p>
+          </div>
+          <button
+            onclick={resetProgress}
+            class="px-4 py-2 border border-error/30 text-error text-sm font-semibold rounded-lg hover:bg-error/5 transition-colors"
+          >
+            Resetar
+          </button>
+        </div>
+      </div>
+
+      <!-- App Info -->
+      <div class="text-center text-xs text-cafe-muted pt-4">
+        Fluent Mineiro v0.2.0 · Tauri + SvelteKit · 193 exercícios
       </div>
     </div>
   {/if}
