@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { page } from '$app/stores';
+  import { page } from '$app/state';
   import { SEED_EXERCISES } from '$lib/content';
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
 
@@ -28,8 +28,8 @@
   let showAnswer = $state(false);
 
   $effect(() => {
-    const type = $page.url.searchParams.get('type') || 'vocab';
-    const topic = $page.url.searchParams.get('topic');
+    const type = page.url.searchParams.get('type') || 'vocab';
+    const topic = page.url.searchParams.get('topic');
     exercises = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic)).sort(() => Math.random() - 0.5);
     currentIndex = 0;
     sessionCorrect = 0;
