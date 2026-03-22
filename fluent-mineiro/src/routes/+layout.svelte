@@ -1,7 +1,9 @@
 <script lang="ts">
   import '../app.css';
+  import { page } from '$app/state';
 
   let { children } = $props();
+  let mobileMenuOpen = $state(false);
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
@@ -10,34 +12,71 @@
     { href: '/conversation', label: 'Conversa', icon: '💬' },
     { href: '/settings', label: 'Config', icon: '⚙️' },
   ];
+
+  function isActive(href: string): boolean {
+    if (href === '/') return page.url.pathname === '/';
+    return page.url.pathname.startsWith(href);
+  }
 </script>
 
 <div class="flex h-screen bg-pedra">
+  <!-- Mobile header -->
+  <div class="md:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
+    <h1 class="font-display text-lg font-bold text-terracotta">
+      Fluent <span class="text-serra">Mineiro</span>
+    </h1>
+    <button
+      onclick={() => mobileMenuOpen = !mobileMenuOpen}
+      class="p-2 text-cafe-secondary hover:text-cafe transition-colors"
+      aria-label="Menu"
+    >
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {#if mobileMenuOpen}
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        {:else}
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        {/if}
+      </svg>
+    </button>
+  </div>
+
+  <!-- Mobile overlay -->
+  {#if mobileMenuOpen}
+    <button
+      class="md:hidden fixed inset-0 bg-black/30 z-30"
+      onclick={() => mobileMenuOpen = false}
+      aria-label="Close menu"
+    ></button>
+  {/if}
+
   <!-- Sidebar -->
-  <nav role="navigation" class="w-56 border-r border-border bg-white flex flex-col shrink-0">
-    <div class="p-4 border-b border-border">
+  <nav class="fixed md:static z-40 h-full w-56 border-r border-border bg-white flex flex-col shrink-0 transition-transform duration-200 ease-out {mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}">
+    <div class="p-4 border-b border-border hidden md:block">
       <h1 class="font-display text-xl font-bold text-terracotta">
         Fluent <span class="text-serra">Mineiro</span>
       </h1>
     </div>
-    <div class="flex-1 py-2">
+    <div class="flex-1 py-2 mt-14 md:mt-0">
       {#each navItems as item}
         <a
           href={item.href}
-          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-cafe-secondary hover:bg-pedra-subtle hover:text-cafe transition-colors"
+          onclick={() => mobileMenuOpen = false}
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-medium transition-colors {isActive(item.href)
+            ? 'text-terracotta bg-pedra-subtle border-r-2 border-terracotta'
+            : 'text-cafe-secondary hover:bg-pedra-subtle hover:text-cafe'}"
         >
           <span class="text-base">{item.icon}</span>
           {item.label}
         </a>
       {/each}
     </div>
-    <div class="p-4 border-t border-border text-xs text-cafe-muted">
+    <div class="p-4 border-t border-border text-xs text-cafe-muted hidden md:block">
       Fluent Mineiro v0.1.0
     </div>
   </nav>
 
   <!-- Main content -->
-  <main role="main" class="flex-1 overflow-y-auto">
+  <main class="flex-1 overflow-y-auto mt-14 md:mt-0">
     {@render children()}
   </main>
 </div>
