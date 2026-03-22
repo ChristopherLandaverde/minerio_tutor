@@ -36,8 +36,140 @@ html, body {
   box-sizing: border-box;
 }
 
-/* Focus ring for a11y */
 :focus-visible {
   outline: 2px solid var(--color-terracotta);
   outline-offset: 2px;
+}
+
+/* ========================================
+   DARK MODE — Warm Mineiro dark theme
+   Activated by .dark class on <html> OR
+   system preference when no manual override
+   ======================================== */
+
+/* Dark mode color overrides — shared mixin via nesting */
+.dark,
+html:not(.light):not(.dark) {
+  /* Only apply via prefers-color-scheme for the system case */
+}
+
+/* Manual dark mode (.dark class on html) */
+html.dark {
+  color-scheme: dark;
+  --color-pedra: #1A1410;
+  --color-pedra-subtle: #352A20;
+  --color-cafe: #F0E8E0;
+  --color-cafe-secondary: #C8B8A8;
+  --color-cafe-muted: #8A7A6E;
+  --color-border: #3D3228;
+  --color-terracotta: #D4743F;
+  --color-terracotta-light: #E08A55;
+  --color-terracotta-dark: #B85E2D;
+  --color-serra: #3D8B6A;
+  --color-serra-light: #4DA87E;
+  --color-serra-dark: #2D6A4F;
+  --color-ouro: #E0BC5F;
+  --color-ouro-light: #EAD080;
+  --color-error: #D4573F;
+  --color-info: #5E9ABD;
+}
+
+/* System preference dark mode (no manual override) */
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not(.dark) {
+    color-scheme: dark;
+    --color-pedra: #1A1410;
+    --color-pedra-subtle: #352A20;
+    --color-cafe: #F0E8E0;
+    --color-cafe-secondary: #C8B8A8;
+    --color-cafe-muted: #8A7A6E;
+    --color-border: #3D3228;
+    --color-terracotta: #D4743F;
+    --color-terracotta-light: #E08A55;
+    --color-terracotta-dark: #B85E2D;
+    --color-serra: #3D8B6A;
+    --color-serra-light: #4DA87E;
+    --color-serra-dark: #2D6A4F;
+    --color-ouro: #E0BC5F;
+    --color-ouro-light: #EAD080;
+    --color-error: #D4573F;
+    --color-info: #5E9ABD;
+  }
+}
+
+/* Surface overrides for dark mode */
+html.dark .bg-white,
+html:not(.light):not(.dark) .bg-white {
+  background-color: #2A2118 !important;
+}
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not(.dark) .bg-white {
+    background-color: #2A2118 !important;
+  }
+}
+
+/* Shared dark surface rules (applied by both .dark and system preference) */
+html.dark input, html.dark textarea, html.dark select {
+  background-color: #1A1410 !important;
+  border-color: #3D3228 !important;
+  color: #F0E8E0 !important;
+}
+html.dark input::placeholder, html.dark textarea::placeholder {
+  color: #8A7A6E !important;
+}
+
+html.dark .bg-green-50, html.dark .bg-yellow-50, html.dark .bg-blue-50,
+html.dark .bg-pink-50, html.dark .bg-amber-50, html.dark .bg-sky-50,
+html.dark .bg-orange-50, html.dark .bg-red-50, html.dark .bg-purple-50,
+html.dark .bg-slate-50, html.dark .bg-indigo-50, html.dark .bg-emerald-50,
+html.dark .bg-teal-50, html.dark .bg-cyan-50, html.dark .bg-rose-50,
+html.dark .bg-violet-50 {
+  background-color: #352A20 !important;
+}
+
+html.dark .font-mono {
+  color: #E0BC5F;
+}
+
+html.dark .animate-pulse {
+  background-color: #352A20 !important;
+}
+
+/* System preference fallback surfaces */
+@media (prefers-color-scheme: dark) {
+  html:not(.light):not(.dark) input,
+  html:not(.light):not(.dark) textarea,
+  html:not(.light):not(.dark) select {
+    background-color: #1A1410 !important;
+    border-color: #3D3228 !important;
+    color: #F0E8E0 !important;
+  }
+  html:not(.light):not(.dark) input::placeholder,
+  html:not(.light):not(.dark) textarea::placeholder {
+    color: #8A7A6E !important;
+  }
+  html:not(.light):not(.dark) .bg-green-50,
+  html:not(.light):not(.dark) .bg-yellow-50,
+  html:not(.light):not(.dark) .bg-blue-50,
+  html:not(.light):not(.dark) .bg-pink-50,
+  html:not(.light):not(.dark) .bg-amber-50,
+  html:not(.light):not(.dark) .bg-sky-50,
+  html:not(.light):not(.dark) .bg-orange-50,
+  html:not(.light):not(.dark) .bg-red-50,
+  html:not(.light):not(.dark) .bg-purple-50,
+  html:not(.light):not(.dark) .bg-slate-50,
+  html:not(.light):not(.dark) .bg-indigo-50,
+  html:not(.light):not(.dark) .bg-emerald-50,
+  html:not(.light):not(.dark) .bg-teal-50,
+  html:not(.light):not(.dark) .bg-cyan-50,
+  html:not(.light):not(.dark) .bg-rose-50,
+  html:not(.light):not(.dark) .bg-violet-50 {
+    background-color: #352A20 !important;
+  }
+  html:not(.light):not(.dark) .font-mono {
+    color: #E0BC5F;
+  }
+  html:not(.light):not(.dark) .animate-pulse {
+    background-color: #352A20 !important;
+  }
 }

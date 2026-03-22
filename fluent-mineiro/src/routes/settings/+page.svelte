@@ -5,6 +5,7 @@
 
   let currentLevel = $state('A2');
   let dailyGoal = $state(15);
+  let darkMode = $state<'system' | 'light' | 'dark'>('system');
   let hasApiKey = $state(false);
   let apiKeyInput = $state('');
   let keySaved = $state(false);
@@ -18,10 +19,14 @@
     try {
       currentLevel = await getProfile('current_level') || 'A2';
       dailyGoal = parseInt(await getProfile('daily_goal') || '15');
+      darkMode = (await getProfile('dark_mode') as 'system' | 'light' | 'dark') || 'system';
+      applyTheme(darkMode);
       const key = await getApiKey();
       hasApiKey = !!key;
     } catch {
-      // DB not ready
+      // DB not ready — check localStorage fallback
+      darkMode = (localStorage.getItem('dark_mode') as 'system' | 'light' | 'dark') || 'system';
+      applyTheme(darkMode);
     }
     loaded = true;
   });
@@ -45,6 +50,27 @@
   function flashSaved() {
     settingsSaved = true;
     setTimeout(() => { settingsSaved = false; }, 2000);
+  }
+
+  function applyTheme(mode: 'system' | 'light' | 'dark') {
+    const root = document.documentElement;
+    root.classList.remove('dark', 'light');
+    if (mode === 'dark') {
+      root.classList.add('dark');
+    } else if (mode === 'light') {
+      root.classList.add('light');
+    }
+    // 'system' = no class, CSS @media handles it
+  }
+
+  async function setTheme(mode: 'system' | 'light' | 'dark') {
+    darkMode = mode;
+    applyTheme(mode);
+    localStorage.setItem('dark_mode', mode);
+    try {
+      await setProfile('dark_mode', mode);
+    } catch {}
+    flashSaved();
   }
 
   async function saveNewKey() {
@@ -142,6 +168,40 @@
             <p class="text-xs text-cafe-muted mt-1">Foco regional do aprendizado</p>
           </div>
           <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-pedra-subtle text-ouro">Mineiro 🏔️</span>
+        </div>
+      </div>
+
+      <!-- Theme -->
+      <div class="bg-white border border-border rounded-xl p-5">
+        <div class="mb-3">
+          <h3 class="font-semibold text-sm">Tema</h3>
+          <p class="text-xs text-cafe-muted mt-1">Escolha entre claro, escuro, ou automático (segue o sistema).</p>
+        </div>
+        <div class="flex gap-2">
+          <button
+            onclick={() => setTheme('light')}
+            class="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors {darkMode === 'light'
+              ? 'bg-ouro text-white'
+              : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
+          >
+            ☀️ Claro
+          </button>
+          <button
+            onclick={() => setTheme('dark')}
+            class="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors {darkMode === 'dark'
+              ? 'bg-ouro text-white'
+              : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
+          >
+            🌙 Escuro
+          </button>
+          <button
+            onclick={() => setTheme('system')}
+            class="flex-1 py-2 rounded-lg text-sm font-semibold transition-colors {darkMode === 'system'
+              ? 'bg-ouro text-white'
+              : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
+          >
+            💻 Sistema
+          </button>
         </div>
       </div>
 

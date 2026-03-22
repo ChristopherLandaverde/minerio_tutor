@@ -1,9 +1,17 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/state';
+  import { onMount } from 'svelte';
 
   let { children } = $props();
   let mobileMenuOpen = $state(false);
+
+  onMount(() => {
+    // Apply saved theme on app load
+    const saved = localStorage.getItem('dark_mode');
+    if (saved === 'dark') document.documentElement.classList.add('dark');
+    else if (saved === 'light') document.documentElement.classList.add('light');
+  });
 
   const navItems = [
     { href: '/', label: 'Dashboard', icon: '🏠' },
