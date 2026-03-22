@@ -3,6 +3,16 @@
   import { SEED_EXERCISES } from '$lib/content';
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
 
+  const topicLabels: Record<string, string> = {
+    food: 'Comida', mineiro: 'Mineiro', greetings: 'Cumprimentos',
+    travel: 'Viagem', family: 'Família', daily_routine: 'Rotina',
+    body_health: 'Saúde', emotions: 'Emoções', shopping: 'Compras',
+    work: 'Trabalho', ser_estar: 'Ser vs Estar', verbs_present: 'Presente',
+    verbs_past: 'Passado', prepositions: 'Preposições',
+    false_cognates: 'Falsos Cognatos', mineiro_vs_standard: 'Mineiro vs Padrão',
+    cultural: 'Cultura', error_correction: 'Erros Comuns',
+  };
+
   // Filter exercises by type from URL param
   let exercises: Exercise[] = $state([]);
   let currentIndex = $state(0);
@@ -121,7 +131,7 @@
     <div class="bg-white border border-border rounded-2xl overflow-hidden">
       <div class="p-8 text-center">
         <div class="text-xs uppercase tracking-wider text-cafe-muted font-semibold mb-4">
-          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : 'Quiz'} · {current.topic}
+          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
         </div>
 
         {#if current.type === 'vocab'}
