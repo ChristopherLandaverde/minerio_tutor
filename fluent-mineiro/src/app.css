@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@theme {
+  --color-terracotta: #C0582B;
+  --color-terracotta-light: #D4743F;
+  --color-terracotta-dark: #9A4520;
+  --color-serra: #2D6A4F;
+  --color-serra-light: #3D8B6A;
+  --color-serra-dark: #1B4332;
+  --color-ouro: #D4A843;
+  --color-ouro-light: #E0BC5F;
+  --color-pedra: #FBF7F0;
+  --color-pedra-subtle: #F5EFE5;
+  --color-cafe: #3D2B1F;
+  --color-cafe-secondary: #6B5B4F;
+  --color-cafe-muted: #9B8B7F;
+  --color-border: #E5DDD3;
+  --color-info: #4A7B9D;
+  --color-error: #B8432A;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background: var(--color-pedra);
+  color: var(--color-cafe);
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Focus ring for a11y */
+:focus-visible {
+  outline: 2px solid var(--color-terracotta);
+  outline-offset: 2px;
+}
