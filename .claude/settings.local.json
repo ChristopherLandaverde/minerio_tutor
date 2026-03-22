@@ -7,7 +7,8 @@
       "Bash(mkdir:*)",
       "WebSearch",
       "Bash(git commit:*)",
-      "Bash(git remote:*)"
+      "Bash(git remote:*)",
+      "Bash(npm install:*)"
     ],
     "deny": [],
     "ask": []
