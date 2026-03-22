@@ -98,6 +98,98 @@ O que ele mais gosta é a tranquilidade. "De manhã, eu tomo café olhando as mo
         { word: 'valeu a pena', meaning: 'was worth it' },
       ],
     },
+    {
+      title: 'Queijo Minas: Patrimônio Cultural',
+      level: 'A2',
+      text: `O queijo minas é um dos alimentos mais importantes de Minas Gerais. Existem muitos tipos: frescal, meia-cura, curado, e o famoso queijo canastra. Em 2008, o modo de fazer queijo artesanal de Minas foi reconhecido como patrimônio cultural do Brasil.
+
+O queijo é feito com leite cru de vaca, coalho e sal. Os produtores são pequenos fazendeiros que aprenderam a receita com seus avós. Cada região produz um queijo com sabor diferente por causa do clima e da alimentação das vacas.
+
+A combinação mais famosa é o "Romeu e Julieta": queijo minas com goiabada. Esse doce é servido em todas as padarias e restaurantes de Minas. Os mineiros dizem que quem não gosta de queijo com goiabada não pode ser mineiro de verdade!
+
+Todo ano, milhares de turistas visitam as regiões produtoras para experimentar queijos frescos diretamente das fazendas. A Rota do Queijo é um dos roteiros turísticos mais populares do estado.`,
+      questions: [
+        { question: 'Quando o queijo artesanal de Minas foi reconhecido como patrimônio cultural?', options: ['2000', '2005', '2008', '2015'], correct: 2, explanation: '"Em 2008, o modo de fazer queijo artesanal de Minas foi reconhecido como patrimônio cultural."' },
+        { question: 'Com que ingredientes o queijo é feito?', options: ['Leite pasteurizado e fermento', 'Leite cru, coalho e sal', 'Leite de cabra e ervas', 'Farinha e manteiga'], correct: 1, explanation: '"O queijo é feito com leite cru de vaca, coalho e sal."' },
+        { question: 'O que é "Romeu e Julieta"?', options: ['Uma peça de teatro', 'Queijo com goiabada', 'Um filme brasileiro', 'Uma dança mineira'], correct: 1, explanation: '"A combinação mais famosa é o Romeu e Julieta: queijo minas com goiabada."' },
+        { question: 'O que é a "Rota do Queijo"?', options: ['Uma estrada de terra', 'Um roteiro turístico', 'Uma receita de queijo', 'Uma marca de laticínios'], correct: 1, explanation: '"A Rota do Queijo é um dos roteiros turísticos mais populares do estado."' },
+      ],
+      vocab: [
+        { word: 'coalho', meaning: 'rennet (enzyme for cheese-making)' },
+        { word: 'fazendeiros', meaning: 'farmers, ranchers' },
+        { word: 'goiabada', meaning: 'guava paste (thick sweet)' },
+        { word: 'roteiro', meaning: 'route, itinerary' },
+      ],
+    },
+    {
+      title: 'O Carnaval de Belo Horizonte',
+      level: 'B1',
+      text: `Quando se fala em carnaval no Brasil, a maioria das pessoas pensa em Rio de Janeiro ou Salvador. Mas nos últimos anos, o carnaval de Belo Horizonte cresceu muito e se tornou um dos maiores do país. O segredo? Os blocos de rua.
+
+Diferente do Rio, onde os desfiles de escolas de samba são o ponto alto, em BH o carnaval acontece nas ruas. Centenas de blocos percorrem a cidade durante quatro dias, cada um com sua música e identidade. Tem bloco de samba, de axé, de funk, de rock, e até de música eletrônica.
+
+Um dos mais famosos é o "Então, Brilha!", que reúne mais de cem mil pessoas. Outro destaque é o bloco "Tchanzinho Zona Norte", que celebra a cultura da periferia com muito funk e alegria. O bloco "Havaianas Usadas" mistura MPB com humor.
+
+O que torna o carnaval de BH especial é que ele é gratuito e democrático. Não precisa de ingresso, não precisa de fantasia cara. Todo mundo participa: jovens, velhos, famílias, turistas. É o povo na rua, celebrando junto. Como dizem os mineiros: "Carnaval de BH é trem bão demais da conta!"`,
+      questions: [
+        { question: 'Qual é o segredo do crescimento do carnaval de BH?', options: ['Escolas de samba', 'Blocos de rua', 'Shows internacionais', 'Desfiles de moda'], correct: 1, explanation: '"O segredo? Os blocos de rua."' },
+        { question: 'Quantas pessoas o bloco "Então, Brilha!" reúne?', options: ['Dez mil', 'Cinquenta mil', 'Mais de cem mil', 'Um milhão'], correct: 2, explanation: '"Então, Brilha!, que reúne mais de cem mil pessoas."' },
+        { question: 'O que diferencia o carnaval de BH do Rio?', options: ['É mais caro', 'Acontece nas ruas com blocos gratuitos', 'Tem mais escolas de samba', 'Dura mais tempo'], correct: 1, explanation: '"É gratuito e democrático. Não precisa de ingresso, não precisa de fantasia cara."' },
+        { question: 'Que tipos de música tocam nos blocos?', options: ['Só samba', 'Só funk', 'Vários: samba, axé, funk, rock, eletrônica', 'Só música clássica'], correct: 2, explanation: '"Tem bloco de samba, de axé, de funk, de rock, e até de música eletrônica."' },
+      ],
+      vocab: [
+        { word: 'blocos', meaning: 'street carnival groups/bands' },
+        { word: 'percorrem', meaning: 'travel through, parade through' },
+        { word: 'periferia', meaning: 'outskirts, periphery' },
+        { word: 'fantasia', meaning: 'costume (carnival context)' },
+      ],
+    },
+    {
+      title: 'A Culinária Mineira',
+      level: 'A2',
+      text: `A cozinha mineira é considerada uma das melhores do Brasil. Ela nasceu da mistura de tradições indígenas, africanas e portuguesas. Os ingredientes principais são simples: milho, feijão, carne de porco, mandioca, e muito queijo.
+
+O prato mais famoso é o feijão tropeiro, feito com feijão cozido, farinha de mandioca, ovos, linguiça e couve. Outro clássico é o frango com quiabo, servido com angu (polenta de milho). Para sobremesa, doce de leite e goiabada são os favoritos.
+
+O café da manhã mineiro é especial. Uma mesa cheia de pão de queijo, biscoito de polvilho, bolo de fubá, requeijão, e claro, muito café. Os mineiros dizem que "café da manhã mineiro é comida, não é lanche!"
+
+Hoje, a culinária mineira atrai turistas do mundo inteiro. Em Belo Horizonte, existem restaurantes tradicionais chamados "comida mineira por quilo", onde você paga pelo peso da comida no prato. É barato, farto, e delicioso.`,
+      questions: [
+        { question: 'De quais tradições nasceu a culinária mineira?', options: ['Italiana e francesa', 'Indígena, africana e portuguesa', 'Japonesa e alemã', 'Espanhola e árabe'], correct: 1, explanation: '"Ela nasceu da mistura de tradições indígenas, africanas e portuguesas."' },
+        { question: 'O que é feijão tropeiro?', options: ['Sopa de feijão', 'Feijão com farinha, ovos, linguiça e couve', 'Salada de feijão', 'Feijão doce'], correct: 1, explanation: '"Feijão cozido, farinha de mandioca, ovos, linguiça e couve."' },
+        { question: 'O que os mineiros dizem sobre o café da manhã?', options: ['É rápido', 'É comida, não lanche', 'É igual ao almoço', 'É só café'], correct: 1, explanation: '"Café da manhã mineiro é comida, não é lanche!"' },
+        { question: 'O que é "comida por quilo"?', options: ['Comida cara', 'Restaurante onde paga pelo peso', 'Delivery de comida', 'Comida congelada'], correct: 1, explanation: '"Comida mineira por quilo, onde você paga pelo peso da comida no prato."' },
+      ],
+      vocab: [
+        { word: 'mandioca', meaning: 'cassava, manioc' },
+        { word: 'linguiça', meaning: 'sausage' },
+        { word: 'fubá', meaning: 'cornmeal (fine)' },
+        { word: 'farto', meaning: 'plentiful, generous portions' },
+      ],
+    },
+    {
+      title: 'Saudade: A Palavra Intraduzível',
+      level: 'B2',
+      text: `Se existe uma palavra que define a alma portuguesa e brasileira, essa palavra é "saudade". Linguistas do mundo inteiro a consideram uma das palavras mais difíceis de traduzir. Não é simplesmente "nostalgia" ou "longing" — é algo mais profundo e mais complexo.
+
+Saudade é sentir a presença de uma ausência. É lembrar com carinho de algo que já passou ou de alguém que está longe, sabendo que aquele momento não volta mais. Mas ao mesmo tempo, há uma doçura nessa tristeza — a alegria de ter vivido aquilo.
+
+Fernando Pessoa escreveu: "Saudade é o amor que fica." Os músicos brasileiros transformaram a saudade em arte. Tom Jobim, Vinicius de Moraes, Milton Nascimento — todos cantaram a saudade de maneiras diferentes. Na bossa nova, a saudade é suave. No sertanejo, é dramática. No Clube da Esquina, é cósmica.
+
+Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo das montanhas, acostumados com distâncias e partidas. "Saudade boa é saudade de quem ama", dizem os mais velhos. E quando um mineiro diz "tô com saudade", não é retórica — é um sentimento que dói no peito e aquece o coração ao mesmo tempo.`,
+      questions: [
+        { question: 'Por que "saudade" é considerada difícil de traduzir?', options: ['É muito longa', 'Não existe equivalente exato em outras línguas', 'É uma gíria moderna', 'Só existe no português europeu'], correct: 1, explanation: '"Linguistas a consideram uma das palavras mais difíceis de traduzir. Não é simplesmente nostalgia ou longing."' },
+        { question: 'Segundo o texto, o que Fernando Pessoa disse sobre saudade?', options: ['"Saudade é tristeza"', '"Saudade é o amor que fica"', '"Saudade não existe"', '"Saudade é fraqueza"'], correct: 1, explanation: 'Fernando Pessoa escreveu: "Saudade é o amor que fica."' },
+        { question: 'Como a saudade aparece na música brasileira segundo o texto?', options: ['De uma só forma', 'Não aparece na música', 'De maneiras diferentes dependendo do gênero', 'Só no sertanejo'], correct: 2, explanation: '"Na bossa nova, a saudade é suave. No sertanejo, é dramática. No Clube da Esquina, é cósmica."' },
+        { question: 'Por que os mineiros teriam uma relação especial com a saudade?', options: ['Porque moram na praia', 'Porque são um povo das montanhas, acostumados com distâncias', 'Porque viajam muito', 'Porque não gostam de mudanças'], correct: 1, explanation: '"Talvez por serem um povo das montanhas, acostumados com distâncias e partidas."' },
+      ],
+      vocab: [
+        { word: 'intraduzível', meaning: 'untranslatable' },
+        { word: 'doçura', meaning: 'sweetness' },
+        { word: 'partidas', meaning: 'departures' },
+        { word: 'retórica', meaning: 'rhetoric, empty words' },
+      ],
+    },
   ];
 
   let selectedPassage = $state<ReadingPassage | null>(null);
