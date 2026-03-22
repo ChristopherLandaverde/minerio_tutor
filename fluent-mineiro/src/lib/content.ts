@@ -450,4 +450,129 @@ export const SEED_EXERCISES: Exercise[] = [
   ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'to mess up / drop the ball (idiom)', answer: 'pisar na bola', distractors: null, explanation: '"Ele pisou na bola com a namorada." = He messed up with his girlfriend.', mineiro_note: null, tags: '["emotions","idiom","B2"]', difficulty: 2 }),
   ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'to manage / handle / cope (idiom)', answer: 'dar conta', distractors: null, explanation: '"Cê dá conta de fazer isso sozinho?" Different from "pagar a conta" (pay the bill).', mineiro_note: '"Nó, não tô dano conta de tanto trabalho, sô!"', tags: '["emotions","idiom","B2"]', difficulty: 2 }),
   ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'to be flexible / resourceful (idiom)', answer: 'ter jogo de cintura', distractors: null, explanation: 'Literally "to have waist game." Being adaptable in tricky situations.', mineiro_note: null, tags: '["emotions","idiom","B2"]', difficulty: 3 }),
+
+  // ============================================================
+  // BATCH 4 — TRANSPORT, FOOD/DRINKS, CLOTHING, PROFESSIONS,
+  //           SPORTS, FEELINGS, GRAMMAR DRILLS, B1/B2 EXPANSION
+  // ============================================================
+
+  // A2 VOCAB — Transport
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'bus', answer: 'ônibus', distractors: null, explanation: 'Ônibus = bus. Standard Brazilian Portuguese.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'subway / metro', answer: 'metrô', distractors: null, explanation: 'Metrô = subway. BH has a small metro line.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'taxi', answer: 'táxi', distractors: null, explanation: 'Táxi = taxi. Uber and 99 are now more common than taxis in Brazil.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'bicycle', answer: 'bicicleta', distractors: null, explanation: 'Bicicleta = bicycle.', mineiro_note: 'Mineiros sometimes say "magrela" informally for bicycle.', tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'car', answer: 'carro', distractors: null, explanation: 'Carro = car.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'airplane', answer: 'avião', distractors: null, explanation: 'Avião = airplane. Plural: aviões.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'boat', answer: 'barco', distractors: null, explanation: 'Barco = boat. A larger ship is "navio".', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'motorcycle', answer: 'moto', distractors: null, explanation: 'Moto = motorcycle. Short for "motocicleta".', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'passenger', answer: 'passageiro', distractors: null, explanation: 'Passageiro = passenger. Feminine: passageira.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'transport', prompt: 'pedestrian', answer: 'pedestre', distractors: null, explanation: 'Pedestre = pedestrian. "Faixa de pedestre" = crosswalk.', mineiro_note: null, tags: '["transport"]', difficulty: 1 }),
+
+  // A2 VOCAB — Food & Drinks (expanded)
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'juice', answer: 'suco', distractors: null, explanation: 'Suco = juice. In Portugal: "sumo". In Brazil: always "suco".', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'water', answer: 'água', distractors: null, explanation: 'Água = water. Feminine despite ending in -a: "a água".', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'beer', answer: 'cerveja', distractors: null, explanation: 'Cerveja = beer. "Cerveja gelada" = cold beer — essential in Brazil.', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'wine', answer: 'vinho', distractors: null, explanation: 'Vinho = wine. "Vinho tinto" = red wine, "vinho branco" = white wine.', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'ice cream', answer: 'sorvete', distractors: null, explanation: 'Sorvete = ice cream.', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'cake', answer: 'bolo', distractors: null, explanation: 'Bolo = cake. "Bolo de fubá" = cornmeal cake, a Mineiro classic!', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'meat', answer: 'carne', distractors: null, explanation: 'Carne = meat. "Carne de boi" = beef, "carne de porco" = pork.', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'fish', answer: 'peixe', distractors: null, explanation: 'Peixe = fish (food or animal).', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'vegetables', answer: 'legumes', distractors: null, explanation: 'Legumes = vegetables. "Verduras" = leafy greens specifically.', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'food', prompt: 'sugar', answer: 'açúcar', distractors: null, explanation: 'Açúcar = sugar. Brazil is one of the world\'s largest sugar producers.', mineiro_note: null, tags: '["food"]', difficulty: 1 }),
+
+  // A2 VOCAB — Clothing
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'shirt', answer: 'camisa', distractors: null, explanation: 'Camisa = shirt. "Camiseta" = t-shirt.', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'pants / trousers', answer: 'calça', distractors: null, explanation: 'Calça = pants. Note the cedilla (ç).', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'shoe', answer: 'sapato', distractors: null, explanation: 'Sapato = shoe. Plural: sapatos.', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'dress', answer: 'vestido', distractors: null, explanation: 'Vestido = dress. From "vestir" (to dress/wear).', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'hat', answer: 'chapéu', distractors: null, explanation: 'Chapéu = hat. Plural: chapéus.', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'socks', answer: 'meias', distractors: null, explanation: 'Meias = socks. "Meia" also means "half" and is used for 6 in phone numbers.', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'glasses (eyewear)', answer: 'óculos', distractors: null, explanation: 'Óculos = glasses. Always plural: "os óculos". "Óculos de sol" = sunglasses.', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'clothing', prompt: 'sneakers', answer: 'tênis', distractors: null, explanation: 'Tênis = sneakers. Also means the sport tennis.', mineiro_note: null, tags: '["clothing"]', difficulty: 1 }),
+
+  // A2 VOCAB — Sports & Leisure
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'soccer / football', answer: 'futebol', distractors: null, explanation: 'Futebol = soccer. The most popular sport in Brazil.', mineiro_note: 'Minas has Atlético Mineiro (Galo) and Cruzeiro (Raposa) — fierce rivals!', tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'to swim', answer: 'nadar', distractors: null, explanation: 'Nadar = to swim.', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'to run', answer: 'correr', distractors: null, explanation: 'Correr = to run.', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'to play (a game/sport)', answer: 'jogar', distractors: null, explanation: 'Jogar = to play (games/sports). For instruments, use "tocar".', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'to root for / cheer', answer: 'torcer', distractors: null, explanation: '"Cê torce pra quem?" = Who do you root for?', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'team', answer: 'time', distractors: null, explanation: 'Time = team. From English "team", pronounced "CHEE-mee".', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'goal (in sports)', answer: 'gol', distractors: null, explanation: 'Gol = goal. "Fazer um gol" = to score a goal.', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'sports_leisure', prompt: 'gym', answer: 'academia', distractors: null, explanation: 'Academia = gym. Can also mean academy.', mineiro_note: null, tags: '["sports_leisure"]', difficulty: 1 }),
+
+  // A2 VOCAB — Feelings/States with "com"
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'hungry', answer: 'com fome', distractors: null, explanation: '"Estou com fome" = I am hungry (literally "with hunger").', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'thirsty', answer: 'com sede', distractors: null, explanation: '"Estou com sede" = I am thirsty.', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'sleepy', answer: 'com sono', distractors: null, explanation: '"Estou com sono" = I am sleepy.', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'in a hurry', answer: 'com pressa', distractors: null, explanation: '"Estou com pressa" = I am in a hurry.', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'afraid / scared', answer: 'com medo', distractors: null, explanation: '"Estou com medo" = I am scared.', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'angry', answer: 'com raiva', distractors: null, explanation: '"Estou com raiva" = I am angry.', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+  ex({ type: 'vocab', cefr_level: 'A2', topic: 'emotions', prompt: 'lucky', answer: 'com sorte', distractors: null, explanation: '"Estou com sorte hoje" = I am lucky today.', mineiro_note: null, tags: '["emotions"]', difficulty: 1 }),
+
+  // A2 CLOZE — Regular -AR verb conjugation drills
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Ela ___ muito bem. (cantar)', answer: 'canta', distractors: null, explanation: 'Cantar: eu canto, ela canta, nós cantamos, eles cantam.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Nós ___ toda sexta-feira. (dançar)', answer: 'dançamos', distractors: null, explanation: 'Dançar: nós dançamos. Drop -ar, add -amos.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Eu ___ na piscina aos domingos. (nadar)', answer: 'nado', distractors: null, explanation: 'Nadar: eu nado. Drop -ar, add -o.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Vocês ___ muito durante as férias. (viajar)', answer: 'viajam', distractors: null, explanation: 'Viajar: eles/vocês viajam. Drop -ar, add -am.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Ela ___ a casa todo sábado. (limpar)', answer: 'limpa', distractors: null, explanation: 'Limpar: ela limpa. Regular -ar conjugation.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+
+  // A2 CLOZE — Irregular verbs present tense
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Eu ___ brasileiro. (ser)', answer: 'sou', distractors: null, explanation: 'Ser: eu sou. Used for permanent characteristics.', mineiro_note: null, tags: '["verbs","ser_estar"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Nós ___ dois filhos. (ter)', answer: 'temos', distractors: null, explanation: 'Ter: nós temos. Irregular verb.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Eles ___ ao mercado toda semana. (ir)', answer: 'vão', distractors: null, explanation: 'Ir: eles vão. Very irregular verb.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Você ___ aquela montanha? (ver)', answer: 'vê', distractors: null, explanation: 'Ver: você vê. Irregular.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: 'Eu ___ um livro por mês. (ler)', answer: 'leio', distractors: null, explanation: 'Ler: eu leio. Irregular.', mineiro_note: null, tags: '["verbs"]', difficulty: 2 }),
+
+  // A2 CLOZE — Imperative commands
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: '___ mais devagar, por favor. (falar — command)', answer: 'Fale', distractors: null, explanation: 'Imperative of falar (for você): "Fale". -AR verbs → -e.', mineiro_note: null, tags: '["verbs","imperative"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: '___ a porta, por favor. (abrir — command)', answer: 'Abra', distractors: null, explanation: 'Imperative of abrir (for você): "Abra". -IR verbs → -a.', mineiro_note: null, tags: '["verbs","imperative"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: '___ aqui, preciso de você! (vir — command)', answer: 'Venha', distractors: null, explanation: 'Imperative of vir: "Venha". Irregular form.', mineiro_note: null, tags: '["verbs","imperative"]', difficulty: 2 }),
+  ex({ type: 'cloze', cefr_level: 'A2', topic: 'verbs_present', prompt: '___ um momento, já volto. (esperar — command)', answer: 'Espere', distractors: null, explanation: 'Imperative of esperar: "Espere". -AR verbs → -e.', mineiro_note: null, tags: '["verbs","imperative"]', difficulty: 2 }),
+
+  // B1 VOCAB — Politics & Society
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'cultural', prompt: 'government', answer: 'governo', distractors: null, explanation: '"Governar" = to govern.', mineiro_note: null, tags: '["cultural","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'cultural', prompt: 'election', answer: 'eleição', distractors: null, explanation: 'Voting is mandatory in Brazil for ages 18-70.', mineiro_note: null, tags: '["cultural","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'cultural', prompt: 'law', answer: 'lei', distractors: null, explanation: 'Lei = law. Plural: "leis".', mineiro_note: null, tags: '["cultural","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'cultural', prompt: 'citizen', answer: 'cidadão', distractors: null, explanation: 'Feminine: "cidadã". Plural: "cidadãos".', mineiro_note: null, tags: '["cultural","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'cultural', prompt: 'tax', answer: 'imposto', distractors: null, explanation: 'Brazil is known for having high taxes ("carga tributária").', mineiro_note: null, tags: '["cultural","B1"]', difficulty: 3 }),
+
+  // B1 VOCAB — Environment
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'nature', prompt: 'environment', answer: 'meio ambiente', distractors: null, explanation: 'Literally "middle/surrounding environment".', mineiro_note: null, tags: '["nature","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'nature', prompt: 'pollution', answer: 'poluição', distractors: null, explanation: '"Poluir" = to pollute.', mineiro_note: null, tags: '["nature","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'nature', prompt: 'recycling', answer: 'reciclagem', distractors: null, explanation: '"Reciclar" = to recycle.', mineiro_note: null, tags: '["nature","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'nature', prompt: 'deforestation', answer: 'desmatamento', distractors: null, explanation: 'A major issue in the Amazon region.', mineiro_note: null, tags: '["nature","B1"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B1', topic: 'nature', prompt: 'sustainable', answer: 'sustentável', distractors: null, explanation: '"Desenvolvimento sustentável" = sustainable development.', mineiro_note: null, tags: '["nature","B1"]', difficulty: 3 }),
+
+  // B1 CLOZE — Pluperfect
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'Quando cheguei, ela já ___ ___ embora. (ir — pluperfect)', answer: 'tinha ido', distractors: null, explanation: 'Pluperfect: tinha + past participle. "Tinha ido" = had gone.', mineiro_note: null, tags: '["verbs","pluperfect","B1"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'Ele ___ ___ o trabalho antes do prazo. (fazer — pluperfect)', answer: 'tinha feito', distractors: null, explanation: '"Feito" = irregular past participle of "fazer".', mineiro_note: null, tags: '["verbs","pluperfect","B1"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'Eu nunca ___ ___ pão de queijo antes de ir a Minas. (comer — pluperfect)', answer: 'tinha comido', distractors: null, explanation: '"Tinha comido" = had eaten.', mineiro_note: null, tags: '["verbs","pluperfect","B1"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'Ela ___ ___ a carta antes de sair. (escrever — pluperfect)', answer: 'tinha escrito', distractors: null, explanation: '"Escrito" = irregular past participle of "escrever".', mineiro_note: null, tags: '["verbs","pluperfect","B1"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'Eu ___ ___ o filme duas vezes. (ver — pluperfect)', answer: 'tinha visto', distractors: null, explanation: '"Visto" = irregular past participle of "ver".', mineiro_note: null, tags: '["verbs","pluperfect","B1"]', difficulty: 3 }),
+
+  // B1 CLOZE — Passive voice
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'O livro ___ ___ por um autor famoso. (escrever — passive)', answer: 'foi escrito', distractors: null, explanation: 'Passive: ser + past participle. "Foi escrito" = was written.', mineiro_note: null, tags: '["verbs","passive","B1"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'A ponte ___ ___ no século passado. (construir — passive)', answer: 'foi construída', distractors: null, explanation: 'Participle agrees with subject: "a ponte" (f) → "construída".', mineiro_note: null, tags: '["verbs","passive","B1"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B1', topic: 'verbs_past', prompt: 'Os documentos ___ ___ ontem. (enviar — passive)', answer: 'foram enviados', distractors: null, explanation: 'Plural passive: "foram enviados" = were sent.', mineiro_note: null, tags: '["verbs","passive","B1"]', difficulty: 3 }),
+
+  // B2 VOCAB — Literary/Philosophical
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'soul', answer: 'alma', distractors: null, explanation: 'Common in Brazilian music and literature.', mineiro_note: null, tags: '["emotions","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'destiny / fate', answer: 'destino', distractors: null, explanation: 'Also means "destination" in travel contexts.', mineiro_note: null, tags: '["emotions","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'freedom', answer: 'liberdade', distractors: null, explanation: 'The Inconfidência Mineira was a freedom movement in Minas.', mineiro_note: null, tags: '["emotions","cultural","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'wisdom', answer: 'sabedoria', distractors: null, explanation: 'From "saber" (to know).', mineiro_note: null, tags: '["emotions","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'courage', answer: 'coragem', distractors: null, explanation: '"Coragem!" = Be brave! Used as encouragement.', mineiro_note: null, tags: '["emotions","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'gratitude', answer: 'gratidão', distractors: null, explanation: '"Grato/grata" = grateful.', mineiro_note: null, tags: '["emotions","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'emotions', prompt: 'resilience', answer: 'resiliência', distractors: null, explanation: 'Widely used in modern Brazilian Portuguese.', mineiro_note: null, tags: '["emotions","B2"]', difficulty: 3 }),
+
+  // B2 VOCAB — Business
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'work', prompt: 'investment', answer: 'investimento', distractors: null, explanation: '"Investir" = to invest.', mineiro_note: null, tags: '["work","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'work', prompt: 'profit', answer: 'lucro', distractors: null, explanation: '"Lucrativo" = profitable.', mineiro_note: null, tags: '["work","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'work', prompt: 'loss (financial)', answer: 'prejuízo', distractors: null, explanation: '"Dar prejuízo" = to cause a loss.', mineiro_note: null, tags: '["work","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'work', prompt: 'entrepreneur', answer: 'empreendedor', distractors: null, explanation: 'Brazil has a strong entrepreneurial culture.', mineiro_note: null, tags: '["work","B2"]', difficulty: 3 }),
+  ex({ type: 'vocab', cefr_level: 'B2', topic: 'work', prompt: 'innovation', answer: 'inovação', distractors: null, explanation: '"Inovar" = to innovate.', mineiro_note: null, tags: '["work","B2"]', difficulty: 3 }),
+
+  // B2 CLOZE — Future subjunctive
+  ex({ type: 'cloze', cefr_level: 'B2', topic: 'verbs_present', prompt: 'Quando eu ___, vou te ajudar. (poder — future subjunctive)', answer: 'puder', distractors: null, explanation: 'Future subjunctive of "poder". Used after "quando" for future conditions.', mineiro_note: null, tags: '["verbs","subjunctive","B2"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B2', topic: 'verbs_present', prompt: 'Se você ___, venha me visitar. (querer — future subjunctive)', answer: 'quiser', distractors: null, explanation: 'Future subjunctive of "querer". "Se você quiser" = If you want.', mineiro_note: null, tags: '["verbs","subjunctive","B2"]', difficulty: 3 }),
+  ex({ type: 'cloze', cefr_level: 'B2', topic: 'verbs_present', prompt: 'Onde você ___, eu vou também. (ir — future subjunctive)', answer: 'for', distractors: null, explanation: 'Future subjunctive of "ir" (and "ser"). "Onde você for" = Wherever you go.', mineiro_note: null, tags: '["verbs","subjunctive","B2"]', difficulty: 3 }),
 ];
