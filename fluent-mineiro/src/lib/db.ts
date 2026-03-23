@@ -128,19 +128,20 @@ export async function updateStreak(): Promise<number> {
 }
 
 // Progress stats
-export async function getTopicStats(): Promise<{ topic: string; total: number; correct: number }[]> {
+export async function getTopicStats(topicMap: Map<number, string>): Promise<{ topic: string; total: number; correct: number }[]> {
   const d = await getDb();
-  return await d.select(`
-    SELECT e_topic as topic, COUNT(*) as total, SUM(is_correct) as correct
-    FROM (
-      SELECT a.is_correct,
-        CASE
-          WHEN a.exercise_id <= 27 THEN 'food'
-          ELSE 'other'
-        END as e_topic
-      FROM attempts a
-    ) GROUP BY e_topic
-  `);
+  const rows: { exercise_id: number; is_correct: number }[] = await d.select(
+    'SELECT exercise_id, is_correct FROM attempts'
+  );
+  const stats = new Map<string, { total: number; correct: number }>();
+  for (const row of rows) {
+    const topic = topicMap.get(row.exercise_id) || 'other';
+    const entry = stats.get(topic) || { total: 0, correct: 0 };
+    entry.total++;
+    entry.correct += row.is_correct;
+    stats.set(topic, entry);
+  }
+  return Array.from(stats.entries()).map(([topic, s]) => ({ topic, total: s.total, correct: s.correct }));
 }
 
 export async function getMistakePatterns(): Promise<{ mistake_type: string; count: number }[]> {

@@ -6,6 +6,7 @@
 
 import { fetch } from '@tauri-apps/plugin-http';
 import { getProfile, setProfile } from './db';
+import { getRandomFallback } from './coaching-fallbacks';
 
 const API_URL = 'https://api.anthropic.com/v1/messages';
 const MODEL = 'claude-haiku-4-5-20251001'; // Fast + cheap for conversation practice
@@ -15,20 +16,27 @@ export interface ChatMessage {
   content: string;
 }
 
-const SYSTEM_PROMPT = `You are a friendly Mineiro Portuguese conversation partner for Chris, an English/Spanish speaker learning Brazilian Portuguese with a focus on the Minas Gerais dialect.
+const SYSTEM_PROMPT = `You are a Mineiro Portuguese conversation partner. Chris speaks English/Spanish and is learning Brazilian Portuguese (Minas Gerais dialect).
 
-RULES:
-- Speak primarily in Portuguese (Mineiro style), with English translations in parentheses when Chris might not understand
-- Use Mineiro features naturally: uai, trem, cê, bão, sô, nó!, dropped gerund d (falano instead of falando)
-- Keep responses short (2-4 sentences) — this is a conversation, not a lecture
-- When Chris makes a mistake, gently correct it inline: "Ah, cê quis dizer 'estou' né? (you meant 'estou' — temporary state uses ESTAR)"
-- Adapt to Chris's level — if he struggles, simplify. If he's doing well, challenge more
-- Suggest topics naturally: daily life, food, travel in Minas, culture, work
-- Be warm, encouraging, and patient — like a friend at a boteco in BH
-- If Chris writes in English, respond in Portuguese but simpler, and encourage him to try in Portuguese
-- Flag Spanish interference when you notice it: "Cuidado! Em português dizemos X, não Y como em espanhol"
+CRITICAL — CHAT STYLE:
+- Reply in 1-2 SHORT sentences max. This is texting, not an essay.
+- Ask only ONE question per message. Never multiple questions.
+- Never list things. Never use bullet points. Never lecture.
+- Match the energy of what Chris said. "Hi" gets a short "hi" back, not 5 questions.
 
-START the conversation if there are no messages yet. Greet Chris warmly in Mineiro style.`;
+LANGUAGE:
+- Speak in Portuguese (Mineiro style) with English in parentheses only when needed
+- Use Mineiro naturally: uai, trem, cê, bão, sô, nó!, dropped gerund d (falano not falando)
+- If Chris makes a mistake, correct it casually inline — one correction max per message
+- If Chris writes in English, reply in simple Portuguese and nudge him to try
+- Flag Spanish interference briefly when you notice it
+
+PERSONALITY:
+- Like a friend texting from a boteco in BH — casual, warm, brief
+- Adapt to Chris's level naturally
+- Use emojis freely! 😄🔥👏🇧🇷☕ Like real Brazilian texting — expressive and fun
+- React with emojis to show excitement, encouragement, or humor
+- Brazilian texting style: "kkk" for laughing, "rs" for haha, emojis after most messages`;
 
 export async function getApiKey(): Promise<string | null> {
   try {
@@ -72,4 +80,74 @@ export async function sendMessage(
 
   const data = await response.json();
   return data.content[0]?.text || 'Desculpa, não entendi. Pode repetir?';
+}
+
+/**
+ * Generate a personalized coaching note for today's session.
+ * Cache-first: checks profile for today's cached note before calling API.
+ * Falls back to predefined messages on failure or missing API key.
+ */
+export async function generateCoachingNote(context: {
+  mistakePatterns: string[];
+  currentLevel: string;
+  streak: number;
+  todayTopics: string[];
+}): Promise<string> {
+  // Check cache first
+  try {
+    const cached = await getProfile('coaching_note');
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      const today = new Date().toISOString().split('T')[0];
+      if (parsed.date === today && parsed.note) {
+        return parsed.note;
+      }
+    }
+  } catch {
+    // Cache miss or parse error — continue
+  }
+
+  // Try API
+  const apiKey = await getApiKey();
+  if (!apiKey) return getRandomFallback();
+
+  try {
+    const prompt = `Generate a 2-3 sentence coaching note for a Portuguese language learner. Write in Portuguese (Mineiro dialect) with English in parentheses for grammar terms.
+
+Context:
+- CEFR Level: ${context.currentLevel}
+- Streak: ${context.streak} days
+- Today's focus topics: ${context.todayTopics.join(', ') || 'mixed review'}
+- Recent mistake patterns: ${context.mistakePatterns.join(', ') || 'none yet'}
+
+Be warm, encouraging, and specific. Use Mineiro features (uai, cê, bão, sô). Reference the topics or mistakes specifically. Never guilt-trip about missed days.`;
+
+    const response = await fetch(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
+      body: JSON.stringify({
+        model: MODEL,
+        max_tokens: 150,
+        messages: [{ role: 'user', content: prompt }],
+      }),
+    });
+
+    if (!response.ok) throw new Error('API error');
+
+    const data = await response.json();
+    const note = data.content[0]?.text || getRandomFallback();
+
+    // Cache for today
+    const today = new Date().toISOString().split('T')[0];
+    await setProfile('coaching_note', JSON.stringify({ date: today, note }));
+
+    return note;
+  } catch {
+    return getRandomFallback();
+  }
 }
