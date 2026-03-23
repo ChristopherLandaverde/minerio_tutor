@@ -118,8 +118,9 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
 
 <div class="max-w-3xl mx-auto p-6">
   {#if !apiKey}
-    <h2 class="font-display text-2xl font-bold mb-2">✍️ Escrita</h2>
-    <p class="text-sm text-cafe-secondary mb-6">Pratique escrita em português com feedback de Claude.</p>
+    <h2 class="font-display text-2xl font-bold mb-1">✍️ Escrita</h2>
+    <p class="text-[10px] text-cafe-muted/50 mb-2">Writing</p>
+    <p class="text-sm text-cafe-secondary mb-6">Pratique escrita em português com feedback de Claude. <span class="text-[10px] text-cafe-muted/50">Practice writing with AI feedback</span></p>
     <div class="bg-white border border-border rounded-xl p-8 text-center">
       <div class="text-3xl mb-3">🔑</div>
       <p class="text-cafe-muted text-sm mb-4">Configure sua chave API nas Configurações para usar o modo escrita.</p>
@@ -156,7 +157,7 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
   {:else}
     <!-- Writing Area -->
     <div class="flex items-center gap-3 mb-6">
-      <button onclick={backToPrompts} class="text-cafe-muted hover:text-cafe transition-colors">
+      <button onclick={backToPrompts} class="text-cafe-muted hover:text-cafe transition-colors" aria-label="Voltar">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>

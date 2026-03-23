@@ -103,8 +103,9 @@
 </script>
 
 <div class="max-w-3xl mx-auto p-6">
-  <h2 class="font-display text-2xl font-bold mb-2">⚙️ Configurações</h2>
-  <p class="text-sm text-cafe-secondary mb-6">Personalize sua experiência de aprendizado</p>
+  <h2 class="font-display text-2xl font-bold mb-1">⚙️ Configurações</h2>
+  <p class="text-[10px] text-cafe-muted/50 mb-2">Settings</p>
+  <p class="text-sm text-cafe-secondary mb-6">Personalize sua experiência <span class="text-[10px] text-cafe-muted/50">Customize your experience</span></p>
 
   {#if settingsSaved}
     <div class="mb-4 px-4 py-2 bg-serra/10 border border-serra/20 rounded-lg text-sm text-serra text-center">
@@ -263,7 +264,7 @@
 
       <!-- App Info -->
       <div class="text-center text-xs text-cafe-muted pt-4">
-        Fluent Mineiro v0.2.0 · Tauri + SvelteKit · 193 exercícios
+        Sabiá v0.4.0 · Tauri + SvelteKit · 990 exercícios
       </div>
     </div>
   {/if}

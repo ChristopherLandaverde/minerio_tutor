@@ -77,8 +77,9 @@
 </script>
 
 <div class="max-w-3xl mx-auto p-6">
-  <h2 class="font-display text-2xl font-bold mb-2">📊 Progresso</h2>
-  <p class="text-sm text-cafe-secondary mb-6">Seu desempenho e estatísticas de aprendizado</p>
+  <h2 class="font-display text-2xl font-bold mb-1">📊 Progresso</h2>
+  <p class="text-[10px] text-cafe-muted/50 mb-2">Progress</p>
+  <p class="text-sm text-cafe-secondary mb-6">Seu desempenho e estatísticas <span class="text-[10px] text-cafe-muted/50">Your stats & performance</span></p>
 
   {#if !loaded}
     <div class="space-y-4">

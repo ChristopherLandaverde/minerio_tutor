@@ -237,8 +237,9 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
 <div class="max-w-3xl mx-auto p-6">
   {#if !selectedPassage}
     <!-- Passage Selection -->
-    <h2 class="font-display text-2xl font-bold mb-2">📖 Leitura</h2>
-    <p class="text-sm text-cafe-secondary mb-6">Leia textos em português e responda perguntas de compreensão</p>
+    <h2 class="font-display text-2xl font-bold mb-1">📖 Leitura</h2>
+    <p class="text-[10px] text-cafe-muted/50 mb-2">Reading</p>
+    <p class="text-sm text-cafe-secondary mb-6">Leia textos em português e responda perguntas de compreensão <span class="text-[10px] text-cafe-muted/50">Read texts & answer questions</span></p>
 
     <div class="space-y-3">
       {#each passages as passage, i}
@@ -260,7 +261,7 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
   {:else if !quizDone}
     <!-- Reading + Questions -->
     <div class="flex items-center gap-3 mb-4">
-      <button onclick={backToList} class="text-cafe-muted hover:text-cafe transition-colors">
+      <button onclick={backToList} class="text-cafe-muted hover:text-cafe transition-colors" aria-label="Voltar">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>

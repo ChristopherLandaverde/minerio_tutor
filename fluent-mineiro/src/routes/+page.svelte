@@ -1,7 +1,11 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getProfile, getDueReviewCount, getTodayStats } from '$lib/db';
+  import { getDb, getProfile, getDueReviewCount, getTodayStats } from '$lib/db';
   import { SEED_EXERCISES } from '$lib/content';
+  import { planSession, type SessionPlan } from '$lib/session-planner';
+  import { generateCoachingNote, getApiKey } from '$lib/claude';
+  import { getMistakePatterns } from '$lib/db';
+  import { getActiveChallenges, type Challenge } from '$lib/challenges';
 
   let streak = $state(0);
   let totalXp = $state(0);
@@ -11,6 +15,14 @@
   let todayCorrect = $state(0);
   let dailyGoal = $state(15);
   let loaded = $state(false);
+
+  // Session planner
+  let sessionPlan = $state<SessionPlan | null>(null);
+  let coachingNote = $state<string | null>(null);
+  let noteLoading = $state(true);
+
+  // Challenges
+  let challenges = $state<Challenge[]>([]);
 
   onMount(async () => {
     try {
@@ -22,17 +34,53 @@
       const stats = await getTodayStats();
       todayTotal = stats.total;
       todayCorrect = stats.correct;
-    } catch {
-      // DB not ready yet
-    }
+
+      // Plan today's session
+      const db = await getDb();
+      sessionPlan = await planSession(db);
+
+      // Load challenges
+      challenges = await getActiveChallenges();
+    } catch {}
     loaded = true;
+
+    // Load coaching note async (don't block dashboard)
+    loadCoachingNote();
   });
+
+  async function loadCoachingNote() {
+    try {
+      const mistakeRows = await getMistakePatterns();
+      const patterns = mistakeRows.map(m => m.mistake_type);
+      const topics = sessionPlan?.exercises.slice(0, 5).map(e => e.topic) || [];
+      const uniqueTopics = [...new Set(topics)];
+      coachingNote = await generateCoachingNote({
+        mistakePatterns: patterns,
+        currentLevel,
+        streak,
+        todayTopics: uniqueTopics,
+      });
+    } catch {
+      coachingNote = null;
+    }
+    noteLoading = false;
+  }
 
   const accuracy = $derived(todayTotal > 0 ? Math.round((todayCorrect / todayTotal) * 100) : 0);
   const xpProgress = $derived(Math.min(100, (totalXp % 1000) / 10));
   const goalProgress = $derived(Math.min(100, (todayTotal / dailyGoal) * 100));
   const goalMet = $derived(todayTotal >= dailyGoal);
 
+  // CEFR progress map data
+  const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
+  const cefrOrder = $derived(cefrLevels.map(level => ({
+    level,
+    isCurrent: level === currentLevel,
+    isPast: cefrLevels.indexOf(level) < cefrLevels.indexOf(currentLevel),
+    isFuture: cefrLevels.indexOf(level) > cefrLevels.indexOf(currentLevel),
+  })));
+
+  // Lesson cards (existing)
   const topicMeta: Record<string, { label: string; icon: string; bg: string }> = {
     food: { label: 'Comida Mineira', icon: '🍽️', bg: 'bg-green-50' },
     mineiro: { label: 'Expressões Mineiras', icon: '🏔️', bg: 'bg-amber-50' },
@@ -103,7 +151,10 @@
 <div class="max-w-3xl mx-auto p-6">
   <div class="flex items-center justify-between mb-6">
     <div>
-      <h2 class="font-display text-2xl font-bold">Bom dia!</h2>
+      <div>
+        <h2 class="font-display text-2xl font-bold">Bom dia!</h2>
+        <p class="text-[10px] text-cafe-muted/50">Good morning!</p>
+      </div>
       <p class="text-sm text-cafe-secondary">Nível {currentLevel} · Vamos praticar</p>
     </div>
     <div class="flex items-center gap-2 text-ouro font-bold">
@@ -118,30 +169,72 @@
       {/each}
     </div>
   {:else}
-    <!-- XP Bar -->
-    <div class="mb-6">
-      <div class="flex justify-between text-xs text-cafe-muted mb-1">
-        <span>Nível {currentLevel}</span>
-        <span>{totalXp % 1000} / 1000 XP</span>
-      </div>
-      <div class="h-2 bg-pedra-subtle rounded-full overflow-hidden">
-        <div class="h-full bg-serra rounded-full transition-all duration-500" style="width: {xpProgress}%"></div>
-      </div>
-    </div>
+    <!-- 1ST: Start Today's Session Card -->
+    {#if sessionPlan && sessionPlan.exercises.length > 0}
+      <div class="bg-white border border-terracotta/20 rounded-2xl p-6 shadow-sm mb-6">
+        <!-- Coaching Note -->
+        {#if noteLoading}
+          <div class="h-12 bg-pedra-subtle rounded-lg animate-pulse mb-4"></div>
+        {:else if coachingNote}
+          <p class="text-sm text-cafe-secondary italic font-display mb-4">{coachingNote}</p>
+        {/if}
 
-    <!-- Daily Goal -->
-    <div class="mb-6 bg-white border border-border rounded-xl p-4">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-sm font-semibold">{goalMet ? '🎯 Meta cumprida!' : '📋 Meta diária'}</span>
-        <span class="text-xs text-cafe-muted">{todayTotal}/{dailyGoal} exercícios</span>
-      </div>
-      <div class="h-3 bg-pedra-subtle rounded-full overflow-hidden">
-        <div class="h-full rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></div>
-      </div>
-    </div>
+        <!-- Session Summary Pills -->
+        <div class="flex flex-wrap gap-2 mb-4">
+          {#if sessionPlan.reviewCount > 0}
+            <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.reviewCount} revisões</span>
+          {/if}
+          {#if sessionPlan.weakTopicCount > 0}
+            <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.weakTopicCount} reforço</span>
+          {/if}
+          {#if sessionPlan.newCount > 0}
+            <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.newCount} novos</span>
+          {/if}
+          <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.exercises.length} total</span>
+        </div>
 
-    <!-- Stats -->
-    <div class="grid grid-cols-3 gap-4 mb-8">
+        <!-- Start Button -->
+        <a
+          href="/session"
+          class="block w-full py-3 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors text-center"
+          aria-label="Começar sessão de hoje — {sessionPlan.exercises.length} exercícios"
+        >
+          Começar <span class="text-white/60 text-xs font-normal">Start</span>
+        </a>
+      </div>
+    {:else}
+      <div class="bg-white border border-border rounded-2xl p-6 mb-6 text-center">
+        <div class="text-3xl mb-2">✅</div>
+        <p class="text-sm text-cafe-muted">Nenhum exercício pendente! Tente o modo conversa ou escrita, ou volte amanhã.</p>
+      </div>
+    {/if}
+
+    <!-- 2ND: Weekly Challenges -->
+    {#if challenges.length > 0}
+      <div class="flex gap-3 mb-6 overflow-x-auto">
+        {#each challenges as challenge}
+          <div class="min-w-[180px] flex-1 bg-white border border-border rounded-xl p-3">
+            <p class="text-xs text-cafe font-medium line-clamp-2">{challenge.label}</p>
+            <div class="mt-2 h-1.5 bg-pedra-subtle rounded-full overflow-hidden" role="progressbar" aria-valuenow={challenge.currentValue} aria-valuemax={challenge.targetValue} aria-label={challenge.label}>
+              <div class="h-full bg-ouro rounded-full transition-all duration-300" style="width: {Math.min(100, (challenge.currentValue / challenge.targetValue) * 100)}%"></div>
+            </div>
+            <div class="flex items-center justify-between mt-1">
+              <span class="text-[10px] text-cafe-muted">{challenge.currentValue}/{challenge.targetValue}</span>
+              {#if challenge.completed}
+                <span class="text-[10px] font-semibold text-serra">✓ Completo</span>
+              {:else}
+                <span class="text-[10px] text-ouro">+{challenge.xpReward} XP</span>
+              {/if}
+            </div>
+          </div>
+        {/each}
+      </div>
+    {:else}
+      <p class="text-xs text-cafe-muted italic mb-6">Desafios começam na segunda-feira!</p>
+    {/if}
+
+    <!-- 3RD: Stats Row -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
       <div class="bg-white border border-border rounded-xl p-4 text-center">
         <div class="font-display text-2xl font-bold text-terracotta">{streak}</div>
         <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Streak</div>
@@ -156,7 +249,47 @@
       </div>
     </div>
 
-    <!-- Lesson Queue -->
+    <!-- 4TH: Daily Goal -->
+    <div class="mb-6 bg-white border border-border rounded-xl p-4">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-sm font-semibold">{goalMet ? '🎯 Meta cumprida!' : '📋 Meta diária'} <span class="text-[10px] font-normal text-cafe-muted/50">{goalMet ? 'Goal met!' : 'Daily goal'}</span></span>
+        <span class="text-xs text-cafe-muted">{todayTotal}/{dailyGoal} exercícios</span>
+      </div>
+      <div class="h-3 bg-pedra-subtle rounded-full overflow-hidden">
+        <div class="h-full rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></div>
+      </div>
+    </div>
+
+    <!-- 5TH: CEFR Progress Map -->
+    <div class="mb-6 bg-white border border-border rounded-xl p-4">
+      <p class="text-xs text-cafe-muted uppercase tracking-wider font-semibold mb-3">Progresso CEFR <span class="font-normal opacity-50 normal-case">Progress</span></p>
+      <div class="flex items-center justify-between">
+        {#each cefrOrder as node, i}
+          <div class="flex items-center" role="listitem" aria-label="{node.level} — {node.isCurrent ? 'nível atual' : node.isPast ? 'completo' : 'futuro'}">
+            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
+              {node.isPast ? 'bg-serra text-white' : node.isCurrent ? 'bg-terracotta text-white ring-2 ring-terracotta/30 ring-offset-2' : 'bg-pedra-subtle text-cafe-muted'}">
+              {node.level}
+            </div>
+            {#if i < cefrOrder.length - 1}
+              <div class="w-8 sm:w-12 h-0.5 {node.isPast ? 'bg-serra' : 'bg-pedra-subtle'}"></div>
+            {/if}
+          </div>
+        {/each}
+      </div>
+    </div>
+
+    <!-- XP Bar -->
+    <div class="mb-8">
+      <div class="flex justify-between text-xs text-cafe-muted mb-1">
+        <span>Nível {currentLevel}</span>
+        <span>{totalXp % 1000} / 1000 XP</span>
+      </div>
+      <div class="h-2 bg-pedra-subtle rounded-full overflow-hidden">
+        <div class="h-full bg-serra rounded-full transition-all duration-500" style="width: {xpProgress}%"></div>
+      </div>
+    </div>
+
+    <!-- 6TH: Manual Lesson Cards -->
     {#each groupedByType as group}
       <h3 class="text-sm text-cafe-muted uppercase tracking-wider font-semibold mb-3 {group.type !== 'vocab' ? 'mt-6' : ''}">{group.meta.label}</h3>
       <div class="space-y-2">
