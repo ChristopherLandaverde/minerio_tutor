@@ -35,3 +35,7 @@ npm-debug.log*
 .tmp/
 temp/
 
+.gstack/
+
+# gstack tooling (keep symlinks, ignore the full toolkit)
+.claude/skills/gstack/
