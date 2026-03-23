@@ -11,7 +11,10 @@
       "Bash(npm install:*)",
       "Bash(lsof -ti:1420)",
       "Bash(xargs kill:*)",
-      "Bash(pkill -f fluent-mineiro)"
+      "Bash(pkill -f fluent-mineiro)",
+      "Bash(npx svelte-check:*)",
+      "Bash(source \"$HOME/.cargo/env\")",
+      "Bash(npm run:*)"
     ],
     "deny": [],
     "ask": []

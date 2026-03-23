@@ -1,6 +1,42 @@
 # Changelog
 
-All notable changes to Fluent Mineiro will be documented in this file.
+All notable changes to Sabiá (formerly Fluent Mineiro) will be documented in this file.
+
+## [0.4.0.0] - 2026-03-23
+
+### Added
+- Smart session planner: "Start Today's Session" button auto-assembles daily workouts (SRS reviews first, weak topics, new content, variety mixing)
+- AI coaching notes: Claude Haiku generates personalized daily coaching messages with Mineiro flavor, cached per day with 12 fallback messages
+- Achievement system: 16 badges across 6 categories (streak, exercises, accuracy, CEFR, mastery, special) with bronze/silver/gold tiers
+- Achievement celebration overlay with confetti animation and carousel for multiple unlocks
+- Weekly challenges: auto-generated 2-3 challenges per week based on performance, with progress tracking and XP rewards
+- CEFR progress map on dashboard showing journey from A1 → C1
+- WhatsApp-style conversation page (serra green header, message tails, read receipts, typing indicator)
+- Sticker picker with 4 Mineiro-themed packs (Mineiro, Comida, Reações, Estudo) — 24 stickers total
+- Emoji-only messages render large like WhatsApp stickers
+- Bilingual UI labels: Portuguese primary with English subtitles on all navigation, headings, and key buttons
+- Shared ExercisePlayer component (DRY refactor from lesson + review pages)
+- /session route for auto-generated sessions with achievement + challenge integration
+- /achievements route with badge grid, progress bars, and unlock dates
+- DB migration v2: achievement_unlocks and weekly_challenges tables
+- Unit tests: 29 tests across SM-2, exercise scoring, adaptive difficulty, and coaching fallbacks
+
+### Changed
+- Renamed from "Fluent Mineiro" to "Sabiá" (the Brazilian songbird) throughout app
+- Conversation prompt tuned for short, texting-style replies (1-2 sentences, one question max, emoji-heavy)
+- Dashboard redesigned with session card → challenges → stats → goal → CEFR map → lessons hierarchy
+- CLAUDE.md updated from stale JSON-file references to current SQLite architecture
+
+### Fixed
+- Review page missing true_false and reorder exercise types
+- Multiple-choice options reshuffling on every state change (now shuffles once per exercise)
+- Double-submission race condition (submitting guard added)
+- $effect → onMount in lesson page (prevents session re-init on reactive updates)
+- JSON.parse(distractors) unguarded in $effect (now wrapped in try-catch)
+- JSON.parse(tags) unguarded in scoreExercise
+- Stale version string in settings page
+- getTopicStats() hardcoded exercise ID logic
+- 6 accessibility warnings resolved (aria-labels, dialog focus, button wrappers)
 
 ## [0.3.0.0] - 2026-03-22
 
