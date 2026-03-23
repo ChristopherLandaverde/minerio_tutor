@@ -31,40 +31,50 @@ export interface SessionPlan {
   includesWriting: boolean;
 }
 
+// Build a map of exercise ID → topic from seed content (in-memory, no SQL)
+const exerciseTopicMap = new Map(SEED_EXERCISES.map(e => [e.id, e.topic]));
+
 /**
- * Query attempts to find topics with <60% accuracy in last 30 days,
- * ranked by weakness_score = (1 - accuracy) * recency_weight.
+ * Find topics with <60% accuracy in last 30 days.
+ * Does the topic lookup in JS instead of SQL to avoid massive VALUES clause.
  */
 async function getWeakTopics(db: any): Promise<WeakTopic[]> {
-  const rows: { topic: string; total: number; correct: number; recent_days: number }[] = await db.select(`
-    SELECT topic, COUNT(*) as total, SUM(is_correct) as correct,
-      CAST(julianday('now') - julianday(MAX(timestamp)) AS INTEGER) as recent_days
-    FROM (
-      SELECT a.is_correct, a.timestamp, e_topic as topic
-      FROM attempts a
-      JOIN (
-        SELECT exercise_id, topic as e_topic FROM (
-          VALUES ${SEED_EXERCISES.map(e => `(${e.id}, '${e.topic.replace(/'/g, "''")}')`).join(',')}
-        )
-      ) ex ON a.exercise_id = ex.exercise_id
-      WHERE a.timestamp >= date('now', '-30 days')
-    )
-    GROUP BY topic
-    HAVING COUNT(*) >= 3
-  `);
+  const rows: { exercise_id: number; is_correct: number; timestamp: string }[] = await db.select(
+    "SELECT exercise_id, is_correct, timestamp FROM attempts WHERE timestamp >= date('now', '-30 days')"
+  );
 
-  return rows
-    .map(r => {
-      const accuracy = r.total > 0 ? r.correct / r.total : 0;
-      const recencyWeight = r.recent_days <= 7 ? 1.0 : r.recent_days <= 14 ? 0.7 : 0.4;
-      return {
-        topic: r.topic,
-        accuracy,
-        recencyWeight,
-        weaknessScore: (1 - accuracy) * recencyWeight,
-      };
-    })
-    .filter(t => t.accuracy < 0.6)
+  // Group by topic using in-memory map
+  const topicStats = new Map<string, { correct: number; total: number; latestTimestamp: string }>();
+  for (const row of rows) {
+    const topic = exerciseTopicMap.get(row.exercise_id);
+    if (!topic) continue;
+    const entry = topicStats.get(topic) || { correct: 0, total: 0, latestTimestamp: '' };
+    entry.total++;
+    entry.correct += row.is_correct;
+    if (row.timestamp > entry.latestTimestamp) entry.latestTimestamp = row.timestamp;
+    topicStats.set(topic, entry);
+  }
+
+  const now = Date.now();
+  const results: WeakTopic[] = [];
+
+  for (const [topic, stats] of topicStats) {
+    if (stats.total < 3) continue;
+    const accuracy = stats.correct / stats.total;
+    if (accuracy >= 0.6) continue;
+
+    const daysSince = Math.max(0, Math.floor((now - new Date(stats.latestTimestamp).getTime()) / 86400000));
+    const recencyWeight = daysSince <= 7 ? 1.0 : daysSince <= 14 ? 0.7 : 0.4;
+
+    results.push({
+      topic,
+      accuracy,
+      recencyWeight,
+      weaknessScore: (1 - accuracy) * recencyWeight,
+    });
+  }
+
+  return results
     .sort((a, b) => b.weaknessScore - a.weaknessScore)
     .slice(0, 3);
 }
@@ -85,7 +95,7 @@ async function getSeenExerciseIds(db: any): Promise<Set<number>> {
 export async function planSession(db: any): Promise<SessionPlan> {
   const dailyGoal = parseInt(await getProfile('daily_goal') || '15');
   const currentLevel = await getProfile('current_level') || 'A2';
-  const target = Math.max(5, dailyGoal); // minimum session size
+  const target = Math.max(5, dailyGoal);
 
   const plan: Exercise[] = [];
   let reviewCount = 0;
@@ -121,7 +131,6 @@ export async function planSession(db: any): Promise<SessionPlan> {
         const topicExercises = SEED_EXERCISES.filter(
           e => e.topic === wt.topic && e.cefr_level === effectiveLevel
         );
-        // Add up to 3 exercises per weak topic
         const usedIds = new Set(plan.map(e => e.id));
         let added = 0;
         for (const ex of topicExercises) {
@@ -147,7 +156,6 @@ export async function planSession(db: any): Promise<SessionPlan> {
       const startIdx = CEFR_ORDER.indexOf(currentLevel);
       const usedIds = new Set(plan.map(e => e.id));
 
-      // Try current level first, then move up
       for (let i = startIdx; i < CEFR_ORDER.length && plan.length < target; i++) {
         const level = CEFR_ORDER[i];
         if (!available.includes(level)) continue;
@@ -177,7 +185,6 @@ export async function planSession(db: any): Promise<SessionPlan> {
     );
 
     for (let i = 0; i < swapCount && i < alternatives.length; i++) {
-      // Replace from the end of the plan
       const replaceIdx = plan.length - 1 - i;
       if (replaceIdx >= 0) {
         plan[replaceIdx] = alternatives[i];
@@ -185,10 +192,9 @@ export async function planSession(db: any): Promise<SessionPlan> {
     }
   }
 
-  // Step 5: Shuffle for interleaving (but keep SRS reviews loosely first)
+  // Step 5: Shuffle for interleaving (keep SRS reviews loosely first)
   const reviews = plan.slice(0, reviewCount);
   const rest = plan.slice(reviewCount);
-  // Shuffle rest
   for (let i = rest.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [rest[i], rest[j]] = [rest[j], rest[i]];

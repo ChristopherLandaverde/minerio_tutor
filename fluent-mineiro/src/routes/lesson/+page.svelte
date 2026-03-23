@@ -13,11 +13,23 @@
   let sessionStats = $state<SessionStats | null>(null);
   let sessionStreak = $state(0);
   let levelChange = $state<string | null>(null);
+  let loaded = $state(false);
 
-  onMount(() => {
+  // Track URL to detect navigation between lesson types
+  let lastUrl = $state('');
+
+  $effect(() => {
+    const url = page.url.toString();
+    if (url === lastUrl) return; // same URL, don't re-init
+    lastUrl = url;
+
     const type = page.url.searchParams.get('type') || 'vocab';
     const topic = page.url.searchParams.get('topic');
-    exercises = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic)).sort(() => Math.random() - 0.5);
+    const filtered = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic));
+    exercises = filtered.sort(() => Math.random() - 0.5);
+    sessionDone = false;
+    sessionStats = null;
+    loaded = true;
     startSession().then(id => { sessionId = id; }).catch(() => {});
   });
 
@@ -65,5 +77,19 @@
     </div>
   {:else if exercises.length > 0}
     <ExercisePlayer {exercises} onSessionEnd={handleSessionEnd} />
+  {:else if loaded}
+    <div class="bg-white border border-border rounded-xl p-8 text-center">
+      <div class="text-3xl mb-3">📚</div>
+      <p class="text-sm text-cafe-muted">Nenhum exercício encontrado para este tipo/tópico.</p>
+      <a href="/" class="inline-block mt-4 px-6 py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta-dark transition-colors">
+        Voltar ao Dashboard
+      </a>
+    </div>
+  {:else}
+    <div class="space-y-4">
+      {#each [1, 2, 3] as _}
+        <div class="h-20 bg-pedra-subtle rounded-xl animate-pulse"></div>
+      {/each}
+    </div>
   {/if}
 </div>
