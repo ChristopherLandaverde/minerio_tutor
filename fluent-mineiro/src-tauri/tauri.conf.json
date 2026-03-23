@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Fluent Mineiro",
-  "version": "0.1.0",
-  "identifier": "com.christopherlandaverde.fluent-mineiro",
+  "productName": "Sabiá",
+  "version": "0.4.0",
+  "identifier": "com.christopherlandaverde.sabia",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Fluent Mineiro",
+        "title": "Sabiá — Aprenda Português Mineiro",
         "width": 1100,
         "height": 700,
         "minWidth": 800,

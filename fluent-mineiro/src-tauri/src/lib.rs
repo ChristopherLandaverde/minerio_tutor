@@ -54,6 +54,31 @@ pub fn run() {
             ",
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 2,
+            description: "add_gamification_tables",
+            sql: "
+                CREATE TABLE IF NOT EXISTS achievement_unlocks (
+                    id TEXT PRIMARY KEY,
+                    unlocked_at TEXT NOT NULL DEFAULT (datetime('now'))
+                );
+
+                CREATE TABLE IF NOT EXISTS weekly_challenges (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    week_start TEXT NOT NULL,
+                    challenge_type TEXT NOT NULL,
+                    target_value INTEGER NOT NULL,
+                    target_topic TEXT,
+                    current_value INTEGER NOT NULL DEFAULT 0,
+                    completed INTEGER NOT NULL DEFAULT 0,
+                    xp_reward INTEGER NOT NULL DEFAULT 50
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_challenges_week ON weekly_challenges(week_start);
+                CREATE INDEX IF NOT EXISTS idx_attempts_exercise ON attempts(exercise_id);
+            ",
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()
