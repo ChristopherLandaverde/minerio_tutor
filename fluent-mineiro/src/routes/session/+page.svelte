@@ -22,6 +22,8 @@
   let showCelebration = $state(false);
   let celebrationIndex = $state(0);
 
+  let errorMsg = $state('');
+
   onMount(async () => {
     try {
       const db = await getDb();
@@ -30,8 +32,10 @@
       if (exercises.length > 0) {
         sessionId = await startSession();
       }
-    } catch {
+    } catch (e: any) {
       error = true;
+      errorMsg = e?.message || String(e);
+      console.error('Session planner error:', e);
     }
     loaded = true;
   });
@@ -87,7 +91,10 @@
     <div class="bg-white border border-error/20 rounded-xl p-8 text-center">
       <div class="text-3xl mb-3">😕</div>
       <h3 class="font-display text-lg font-bold mb-2">Erro ao carregar sessão</h3>
-      <p class="text-sm text-cafe-muted mb-4">Não foi possível montar sua sessão de hoje.</p>
+      <p class="text-sm text-cafe-muted mb-2">Não foi possível montar sua sessão de hoje.</p>
+      {#if errorMsg}
+        <p class="text-xs text-error font-mono bg-error/5 p-2 rounded mb-4 break-all">{errorMsg}</p>
+      {/if}
       <a href="/" class="inline-block px-6 py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta-dark transition-colors">
         Voltar ao Dashboard
       </a>
