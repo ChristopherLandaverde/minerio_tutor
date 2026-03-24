@@ -64,33 +64,35 @@
   let recording = $state(false);
   let analyzing = $state(false);
   let pronResult = $state<{ score: number; feedback: string; tips: string[] } | null>(null);
-  let recordingHandle = $state<{ stop: () => void; promise: Promise<Blob> } | null>(null);
+  let currentRecordingHandle: { stop: () => void; promise: Promise<Blob> } | null = null;
 
   $effect(() => {
     getApiKey().then(key => { claudeKey = key; }).catch(() => {});
   });
 
-  async function startPronRecording() {
+  function startPronRecording() {
     if (!elevenKey || !claudeKey || recording) return;
     recording = true;
     pronResult = null;
-    recordingHandle = startRecording();
+    currentRecordingHandle = startRecording();
   }
 
   async function stopPronRecording(expectedText: string) {
-    if (!recordingHandle || !elevenKey || !claudeKey) return;
+    if (!currentRecordingHandle || !elevenKey || !claudeKey) return;
+    const handle = currentRecordingHandle;
+    currentRecordingHandle = null;
     recording = false;
     analyzing = true;
     try {
-      recordingHandle.stop();
-      const audioBlob = await recordingHandle.promise;
+      handle.stop();
+      const audioBlob = await handle.promise;
       const transcribed = await speechToText(audioBlob, elevenKey);
       pronResult = await analyzePronunciation(expectedText, transcribed, claudeKey);
     } catch {
       pronResult = { score: 0, feedback: 'Não foi possível analisar. Tente novamente.', tips: [] };
     }
     analyzing = false;
-    recordingHandle = null;
+    currentRecordingHandle = null;
   }
 
   let currentIndex = $state(0);
