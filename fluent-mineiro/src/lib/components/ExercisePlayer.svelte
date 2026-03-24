@@ -367,6 +367,7 @@
           </div>
         </div>
       </div>
+
       <div class="p-4 border-t border-border flex justify-center">
         <button
           onclick={nextExercise}

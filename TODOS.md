@@ -1,13 +1,23 @@
 # TODOS
 
-## TTS/STT Voice Features (Phase 2+)
-**What:** Pronunciation feedback, shadowing mode, structured conversation scenarios, TTS audio caching.
-**Why:** Phase 1 voice (TTS on exercises, listening mode, settings) shipped in v0.4.1.0. Remaining: pronunciation scoring via Claude STT comparison, repeat-after-me shadowing, and guided Mineiro conversation scenarios.
-**Pros:** Transforms the app from exercises-with-audio into a complete spoken language tutor.
-**Cons:** Pronunciation scoring via STT comparison has inherent accuracy limits. ElevenLabs costs accumulate during shadowing. Need data models for pronunciation history and scenarios.
-**Context:** Full design doc at `~/.gstack/projects/ChristopherLandaverde-minerio_tutor/christopherlandaverde-feat-voice-improvements-design-*.md`. Phase 1 shipped. Phases 2-5 remain.
-**Depends on:** Nothing — Phase 1 foundation is in place.
-**Added:** 2026-03-22 via /plan-eng-review | **Updated:** 2026-03-24 via /ship (Phase 1 complete)
+## Native Audio Recording for Pronunciation Feedback
+**What:** Replace browser `getUserMedia` with native Rust audio recording via a Tauri command. Then wire up the pronunciation feedback UI (already built: Claude analysis, star rating, Mineiro tips).
+**Why:** WKWebView on macOS does not reliably support `getUserMedia` — fails with `OverconstrainedError` even with HTTPS scheme and entitlements. The pronunciation UI, Claude analysis function (`analyzePronunciation` in claude.ts), and ElevenLabs STT are all ready — only the recording capture is blocked.
+**Pros:** Native recording bypasses all WebView limitations. Works on macOS and Windows. Higher audio quality.
+**Cons:** Requires a Rust crate for audio capture (e.g., `cpal`) and a Tauri command to bridge to the frontend. ~100 lines of Rust.
+**Context:** Attempted browser-based recording on 2026-03-24. Tried: useHttpsScheme, Info.plist, Entitlements.plist, explicit constraints, mp4 mimeType — all failed on WKWebView. The `analyzePronunciation()` function in `claude.ts` is ready and tested. Design doc has full Phase 2-5 roadmap.
+**Depends on:** Nothing — can be done anytime.
+**Added:** 2026-03-24 via /ship
+
+---
+
+## Voice Features — Phases 3-5
+**What:** Shadowing mode (repeat-after-me), structured conversation scenarios, voice polish (preferences, heatmap, Web Speech API fallback).
+**Why:** Phase 1 (TTS everywhere + listening mode) and TTS cache shipped. Phase 2 (pronunciation) blocked on native audio recording (see above). Phases 3-5 build on that foundation.
+**Cons:** ElevenLabs costs accumulate during shadowing. Need data models for scenarios.
+**Context:** Full design doc at `~/.gstack/projects/ChristopherLandaverde-minerio_tutor/christopherlandaverde-feat-voice-improvements-design-*.md`.
+**Depends on:** Native audio recording TODO above.
+**Added:** 2026-03-24 via /ship
 
 ---
 
