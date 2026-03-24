@@ -2,6 +2,11 @@
   import { onMount } from 'svelte';
   import { getProfile, setProfile } from '$lib/db';
   import { getApiKey, setApiKey } from '$lib/claude';
+  import {
+    getElevenLabsKey, setElevenLabsKey,
+    getVoices, getSelectedVoice, setSelectedVoice,
+    textToSpeech, playAudio,
+  } from '$lib/elevenlabs';
 
   let currentLevel = $state('A2');
   let dailyGoal = $state(15);
@@ -11,6 +16,16 @@
   let keySaved = $state(false);
   let settingsSaved = $state(false);
   let loaded = $state(false);
+
+  // ElevenLabs voice state
+  let hasElevenKey = $state(false);
+  let elevenKeyInput = $state('');
+  let elevenKeySaved = $state(false);
+  let voices = $state<{ voice_id: string; name: string }[]>([]);
+  let selectedVoiceId = $state('');
+  let voicesLoading = $state(false);
+  let voiceTestPlaying = $state(false);
+  let voiceError = $state<string | null>(null);
 
   const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
   const goalOptions = [5, 10, 15, 20, 30];
@@ -23,6 +38,12 @@
       applyTheme(darkMode);
       const key = await getApiKey();
       hasApiKey = !!key;
+      const elKey = await getElevenLabsKey();
+      hasElevenKey = !!elKey;
+      if (elKey) {
+        selectedVoiceId = await getSelectedVoice();
+        loadVoices(elKey);
+      }
     } catch {
       // DB not ready — check localStorage fallback
       darkMode = (localStorage.getItem('dark_mode') as 'system' | 'light' | 'dark') || 'system';
@@ -99,6 +120,61 @@
       currentLevel = 'A2';
       flashSaved();
     } catch {}
+  }
+
+  async function loadVoices(key: string) {
+    voicesLoading = true;
+    voiceError = null;
+    try {
+      voices = await getVoices(key);
+    } catch {
+      voiceError = 'Não foi possível carregar as vozes. Verifique a chave.';
+    }
+    voicesLoading = false;
+  }
+
+  async function saveElevenKey() {
+    if (!elevenKeyInput.trim()) return;
+    try {
+      await setElevenLabsKey(elevenKeyInput.trim());
+      hasElevenKey = true;
+      const key = elevenKeyInput.trim();
+      elevenKeyInput = '';
+      elevenKeySaved = true;
+      setTimeout(() => { elevenKeySaved = false; }, 2000);
+      selectedVoiceId = await getSelectedVoice();
+      loadVoices(key);
+    } catch {}
+  }
+
+  async function removeElevenKey() {
+    try {
+      await setProfile('elevenlabs_key', '');
+      hasElevenKey = false;
+      voices = [];
+      selectedVoiceId = '';
+    } catch {}
+  }
+
+  async function changeVoice(voiceId: string) {
+    selectedVoiceId = voiceId;
+    try {
+      await setSelectedVoice(voiceId);
+      flashSaved();
+    } catch {}
+  }
+
+  async function testVoice() {
+    const key = await getElevenLabsKey();
+    if (!key || voiceTestPlaying) return;
+    voiceTestPlaying = true;
+    try {
+      const blob = await textToSpeech('Oi, tudo bom? Eu sou a voz do Sabiá!', key, selectedVoiceId || undefined);
+      await playAudio(blob);
+    } catch {
+      voiceError = 'Erro ao testar a voz. Verifique sua chave.';
+    }
+    voiceTestPlaying = false;
   }
 </script>
 
@@ -243,6 +319,81 @@
         {/if}
         {#if keySaved}
           <p class="text-xs text-serra mt-2">Chave salva com sucesso!</p>
+        {/if}
+      </div>
+
+      <!-- ElevenLabs Voice -->
+      <div class="bg-white border border-border rounded-xl p-5">
+        <div class="flex items-center justify-between mb-3">
+          <div>
+            <h3 class="font-semibold text-sm">Chave ElevenLabs</h3>
+            <p class="text-xs text-cafe-muted mt-1">Para voz nos exercícios e conversas</p>
+          </div>
+          {#if hasElevenKey}
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-serra/10 text-serra">Configurada</span>
+          {:else}
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-cafe-muted/10 text-cafe-muted">Não configurada</span>
+          {/if}
+        </div>
+        {#if hasElevenKey}
+          <div class="flex items-center gap-2 mb-3">
+            <span class="text-xs text-cafe-muted">sk_•••••••••</span>
+            <button onclick={removeElevenKey} class="text-xs text-error hover:underline">Remover</button>
+          </div>
+
+          <!-- Voice selector -->
+          {#if voicesLoading}
+            <div class="text-xs text-cafe-muted">Carregando vozes...</div>
+          {:else if voices.length > 0}
+            <div class="mb-3">
+              <label for="voice-select" class="text-xs text-cafe-muted block mb-1">Voz</label>
+              <select
+                id="voice-select"
+                value={selectedVoiceId}
+                onchange={(e) => changeVoice(e.currentTarget.value)}
+                class="w-full px-3 py-2 border border-border rounded-lg text-sm bg-pedra focus:border-terracotta outline-none appearance-none"
+              >
+                {#each voices as voice}
+                  <option value={voice.voice_id}>{voice.name}</option>
+                {/each}
+              </select>
+            </div>
+            <button
+              onclick={testVoice}
+              disabled={voiceTestPlaying}
+              class="inline-flex items-center gap-1.5 px-4 py-2 bg-terracotta text-white text-sm font-semibold rounded-lg hover:bg-terracotta-dark transition-colors disabled:opacity-40"
+            >
+              {#if voiceTestPlaying}
+                <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>
+                Falando...
+              {:else}
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M11 5L6 9H2v6h4l5 4V5z"/></svg>
+                Testar voz
+              {/if}
+            </button>
+          {/if}
+        {:else}
+          <div class="flex gap-2">
+            <input
+              bind:value={elevenKeyInput}
+              type="password"
+              placeholder="sk_..."
+              class="flex-1 px-3 py-2 border border-border rounded-lg text-sm bg-pedra focus:border-terracotta outline-none"
+            />
+            <button
+              onclick={saveElevenKey}
+              disabled={!elevenKeyInput.trim()}
+              class="px-4 py-2 bg-terracotta text-white text-sm font-semibold rounded-lg hover:bg-terracotta-dark transition-colors disabled:opacity-40"
+            >
+              Salvar
+            </button>
+          </div>
+        {/if}
+        {#if elevenKeySaved}
+          <p class="text-xs text-serra mt-2">Chave salva com sucesso!</p>
+        {/if}
+        {#if voiceError}
+          <p class="text-xs text-error mt-2">{voiceError}</p>
         {/if}
       </div>
 

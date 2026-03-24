@@ -6,6 +6,7 @@
   import { generateCoachingNote, getApiKey } from '$lib/claude';
   import { getMistakePatterns } from '$lib/db';
   import { getActiveChallenges, type Challenge } from '$lib/challenges';
+  import { getElevenLabsKey } from '$lib/elevenlabs';
 
   let streak = $state(0);
   let totalXp = $state(0);
@@ -24,6 +25,9 @@
   // Challenges
   let challenges = $state<Challenge[]>([]);
 
+  // Voice
+  let hasVoice = $state(false);
+
   onMount(async () => {
     try {
       streak = parseInt(await getProfile('streak') || '0');
@@ -41,6 +45,9 @@
 
       // Load challenges
       challenges = await getActiveChallenges();
+
+      // Check voice availability
+      hasVoice = !!(await getElevenLabsKey());
     } catch {}
     loaded = true;
 
@@ -157,8 +164,19 @@
       </div>
       <p class="text-sm text-cafe-secondary">Nível {currentLevel} · Vamos praticar</p>
     </div>
-    <div class="flex items-center gap-2 text-ouro font-bold">
-      🔥 {streak} {streak === 1 ? 'dia' : 'dias'}
+    <div class="flex items-center gap-3">
+      {#if hasVoice}
+        <span class="text-xs text-serra flex items-center gap-1" title="Voz ativada">
+          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M11 5L6 9H2v6h4l5 4V5z"/></svg>
+        </span>
+      {:else}
+        <a href="/settings" class="text-xs text-cafe-muted hover:text-terracotta transition-colors" title="Configurar voz">
+          <svg class="w-3.5 h-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5v14a1 1 0 01-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
+        </a>
+      {/if}
+      <div class="flex items-center gap-2 text-ouro font-bold">
+        🔥 {streak} {streak === 1 ? 'dia' : 'dias'}
+      </div>
     </div>
   </div>
 
@@ -288,6 +306,18 @@
         <div class="h-full bg-serra rounded-full transition-all duration-500" style="width: {xpProgress}%"></div>
       </div>
     </div>
+
+    <!-- Listening Practice (voice only) -->
+    {#if hasVoice}
+      <a href="/lesson?type=vocab&mode=listening"
+         class="flex items-center gap-3 p-4 bg-white border border-serra/20 rounded-xl hover:border-serra hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 mb-6">
+        <div class="w-10 h-10 bg-serra/10 rounded-lg flex items-center justify-center text-lg">🎧</div>
+        <div>
+          <div class="font-semibold text-sm">Prática de escuta</div>
+          <div class="text-xs text-cafe-muted">Ouça e escreva — treine seu ouvido</div>
+        </div>
+      </a>
+    {/if}
 
     <!-- 6TH: Manual Lesson Cards -->
     {#each groupedByType as group}

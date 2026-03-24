@@ -1,5 +1,6 @@
 <script lang="ts">
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
+  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio } from '$lib/elevenlabs';
 
   export interface SessionStats {
     correct: number;
@@ -25,9 +26,37 @@
   interface Props {
     exercises: Exercise[];
     onSessionEnd: (stats: SessionStats) => void;
+    listeningMode?: boolean;
   }
 
-  let { exercises, onSessionEnd }: Props = $props();
+  let { exercises, onSessionEnd, listeningMode = false }: Props = $props();
+
+  // Voice state
+  let voiceAvailable = $state(false);
+  let elevenKey = $state<string | null>(null);
+  let speaking = $state(false);
+
+  $effect(() => {
+    getElevenLabsKey().then(key => {
+      elevenKey = key;
+      voiceAvailable = !!key;
+    }).catch(() => {});
+  });
+
+  function getTextToSpeak(exercise: Exercise): string {
+    return exercise.type === 'vocab' ? exercise.answer : exercise.prompt;
+  }
+
+  async function speakText(text: string) {
+    if (!elevenKey || speaking) return;
+    speaking = true;
+    try {
+      const blob = await textToSpeech(text, elevenKey);
+      await playAudio(blob);
+    } catch {} finally {
+      speaking = false;
+    }
+  }
 
   let currentIndex = $state(0);
   let userAnswer = $state('');
@@ -106,8 +135,17 @@
     startTime = Date.now();
   }
 
+  // Listening mode: auto-play audio when exercise changes
+  let listeningPlayed = $state(false);
+  $effect(() => {
+    if (listeningMode && voiceAvailable && current && !showFeedback) {
+      listeningPlayed = false;
+      speakText(getTextToSpeak(current)).then(() => { listeningPlayed = true; });
+    }
+  });
+
   function handleKeydown(e: KeyboardEvent) {
-    if (e.key === 'Enter' && !showFeedback && current?.type !== 'vocab' && current?.type !== 'multiple_choice' && current?.type !== 'true_false') {
+    if (e.key === 'Enter' && !showFeedback && (listeningMode || (current?.type !== 'vocab' && current?.type !== 'multiple_choice' && current?.type !== 'true_false'))) {
       submitAnswer();
     }
     if (e.key === 'Enter' && showFeedback) {
@@ -133,11 +171,45 @@
   <!-- Exercise Card -->
   <div class="bg-white border border-border rounded-2xl overflow-hidden">
     <div class="p-8 text-center">
-      <div class="text-xs uppercase tracking-wider text-cafe-muted font-semibold mb-4">
-        {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : current.type === 'true_false' ? 'Verdadeiro ou Falso' : current.type === 'reorder' ? 'Reordene' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
+      <div class="flex items-center justify-center gap-2 mb-4">
+        <span class="text-xs uppercase tracking-wider text-cafe-muted font-semibold">
+          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : current.type === 'true_false' ? 'Verdadeiro ou Falso' : current.type === 'reorder' ? 'Reordene' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
+        </span>
+        {#if voiceAvailable && !listeningMode}
+          <button
+            onclick={() => speakText(getTextToSpeak(current))}
+            disabled={speaking}
+            class="inline-flex items-center justify-center w-7 h-7 rounded-full border border-border hover:border-terracotta hover:bg-terracotta/5 transition-colors disabled:opacity-40"
+            aria-label="Ouvir pronúncia"
+            title="Ouvir pronúncia"
+          >
+            <svg class="w-3.5 h-3.5 text-cafe-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M11 5L6 9H2v6h4l5 4V5z"/></svg>
+          </button>
+        {/if}
       </div>
 
-      {#if current.type === 'vocab'}
+      {#if listeningMode && !showFeedback}
+        <!-- Listening mode: audio-first prompt -->
+        <div class="flex flex-col items-center gap-4 py-4">
+          <div class="w-16 h-16 rounded-full bg-serra/10 flex items-center justify-center {speaking ? 'animate-pulse' : ''}">
+            <svg class="w-8 h-8 text-serra" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-3.14a.75.75 0 011.28.53v12.72a.75.75 0 01-1.28.53l-4.72-3.14H3.75A.75.75 0 013 15v-6a.75.75 0 01.75-.75h3z"/></svg>
+          </div>
+          <p class="text-sm text-cafe-muted">Ouça e escreva o que você ouvir</p>
+          <button
+            onclick={() => speakText(getTextToSpeak(current))}
+            disabled={speaking}
+            class="px-4 py-2 border border-serra/30 text-serra text-sm font-semibold rounded-lg hover:bg-serra/5 transition-colors disabled:opacity-40"
+          >
+            {speaking ? 'Ouvindo...' : '🔊 Repetir'}
+          </button>
+        </div>
+        <input
+          bind:value={userAnswer}
+          placeholder="Escreva o que ouviu..."
+          class="w-64 px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
+        />
+
+      {:else if current.type === 'vocab'}
         <p class="font-display text-xl font-semibold mb-6">{current.prompt}</p>
         {#if !showAnswer && !showFeedback}
           <button
@@ -245,7 +317,7 @@
     </div>
 
     <!-- Submit button for text input types -->
-    {#if !showFeedback && (current.type === 'cloze' || current.type === 'error_correction' || current.type === 'reorder')}
+    {#if !showFeedback && (listeningMode || current.type === 'cloze' || current.type === 'error_correction' || current.type === 'reorder')}
       <div class="p-4 border-t border-border flex justify-center">
         <button
           onclick={() => submitAnswer()}
@@ -265,7 +337,19 @@
           <div>
             <div class="font-bold text-sm">{lastResult.isCorrect ? 'Correto!' : 'Incorreto'}</div>
             {#if !lastResult.isCorrect}
-              <div class="text-sm text-cafe-secondary mt-1">Resposta: <strong class="text-serra">{current.answer}</strong></div>
+              <div class="text-sm text-cafe-secondary mt-1 flex items-center gap-1.5 flex-wrap">
+                Resposta: <strong class="text-serra">{current.answer}</strong>
+                {#if voiceAvailable}
+                  <button
+                    onclick={() => speakText(current.answer)}
+                    disabled={speaking}
+                    class="inline-flex items-center gap-1 text-xs text-serra hover:underline disabled:opacity-40"
+                  >
+                    <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M11 5L6 9H2v6h4l5 4V5z"/></svg>
+                    Ouvir
+                  </button>
+                {/if}
+              </div>
             {/if}
             <div class="text-sm text-cafe-secondary mt-1">{current.explanation}</div>
             {#if lastResult.mistakeType === 'spanish_interference'}
