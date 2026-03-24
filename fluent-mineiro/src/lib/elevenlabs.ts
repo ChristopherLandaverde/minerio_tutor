@@ -5,16 +5,12 @@
  */
 
 import { fetch } from '@tauri-apps/plugin-http';
-import { invoke } from '@tauri-apps/api/core';
 import { getProfile, setProfile } from './db';
 
 const TTS_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
-const STT_URL = 'https://api.elevenlabs.io/v1/speech-to-text';
 const VOICES_URL = 'https://api.elevenlabs.io/v1/voices';
 
-// Default to a good multilingual model
 const TTS_MODEL = 'eleven_multilingual_v2';
-const STT_MODEL = 'scribe_v2';
 
 // In-memory TTS cache: avoids re-synthesizing the same text within a session.
 // Key = "voiceId:text", Value = audio Blob.
@@ -148,38 +144,6 @@ export async function textToSpeech(
   return blob;
 }
 
-/**
- * Speech-to-Text: Transcribe audio to text.
- * Accepts a Blob of audio data.
- * Returns the transcribed text.
- */
-export async function speechToText(
-  audioBlob: Blob,
-  apiKey: string
-): Promise<string> {
-  const formData = new FormData();
-  const ext = audioBlob.type.includes('wav') ? 'wav' : audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
-  formData.append('file', audioBlob, `recording.${ext}`);
-  formData.append('model_id', STT_MODEL);
-  formData.append('language_code', 'por'); // Portuguese
-
-  const response = await fetch(`${STT_URL}`, {
-    method: 'POST',
-    headers: {
-      'xi-api-key': apiKey,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const err = await response.text();
-    throw new Error(`STT error ${response.status}: ${err}`);
-  }
-
-  const data = await response.json();
-  return data.text || '';
-}
-
 /** Play audio blob through the browser */
 export function playAudio(blob: Blob): Promise<void> {
   return new Promise((resolve, reject) => {
@@ -197,69 +161,3 @@ export function playAudio(blob: Blob): Promise<void> {
   });
 }
 
-/**
- * Start native audio recording via Tauri Rust command.
- * Bypasses WKWebView getUserMedia limitations.
- */
-export async function startNativeRecording(): Promise<void> {
-  await invoke('start_recording');
-}
-
-/**
- * Stop native recording, send to ElevenLabs STT from Rust, return transcription.
- */
-export async function stopNativeRecording(apiKey: string): Promise<string> {
-  return await invoke('stop_recording', { apiKey });
-}
-
-/**
- * Record audio from the microphone (browser API fallback).
- * Used by the conversation page. For exercises, use startNativeRecording/stopNativeRecording.
- */
-export function startRecording(): {
-  stop: () => void;
-  promise: Promise<Blob>;
-} {
-  let mediaRecorder: MediaRecorder;
-  let resolve: (blob: Blob) => void;
-  let reject: (err: Error) => void;
-
-  const promise = new Promise<Blob>((res, rej) => {
-    resolve = res;
-    reject = rej;
-  });
-
-  navigator.mediaDevices.getUserMedia({ audio: true })
-    .then(stream => {
-      const chunks: Blob[] = [];
-      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
-      mediaRecorder = new MediaRecorder(stream, { mimeType });
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunks.push(e.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        stream.getTracks().forEach(t => t.stop());
-        const blob = new Blob(chunks, { type: mimeType });
-        resolve(blob);
-      };
-
-      mediaRecorder.onerror = () => {
-        stream.getTracks().forEach(t => t.stop());
-        reject(new Error('Recording failed'));
-      };
-
-      mediaRecorder.start();
-    })
-    .catch(err => reject(err));
-
-  return {
-    stop: () => {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-      }
-    },
-    promise,
-  };
-}

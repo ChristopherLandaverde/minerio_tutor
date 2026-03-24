@@ -3,7 +3,7 @@
   import { sendMessage, getApiKey, setApiKey, type ChatMessage } from '$lib/claude';
   import {
     getElevenLabsKey, setElevenLabsKey,
-    textToSpeech, speechToText, playAudio, startRecording,
+    textToSpeech, playAudio,
   } from '$lib/elevenlabs';
 
   interface DisplayMessage extends ChatMessage {
@@ -23,9 +23,8 @@
 
   // Voice state
   let voiceEnabled = $state(false);
-  let recording = $state(false);
+  // recording removed — mic not supported in Tauri WebView
   let speaking = $state(false);
-  let recordingHandle: { stop: () => void; promise: Promise<Blob> } | null = $state(null);
 
   // Mineiro-themed sticker packs
   const stickerPacks = [
@@ -169,68 +168,6 @@
     await sendAndSpeak(emoji);
   }
 
-  /** Start recording voice */
-  async function startVoiceRecording() {
-    if (recording || loading) return;
-    error = null;
-
-    // Request mic permission first
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      // Got permission — start recording with this stream
-      recording = true;
-      const chunks: Blob[] = [];
-      const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-      const blobPromise = new Promise<Blob>((resolve) => {
-        mediaRecorder.ondataavailable = (e) => {
-          if (e.data.size > 0) chunks.push(e.data);
-        };
-        mediaRecorder.onstop = () => {
-          stream.getTracks().forEach(t => t.stop());
-          resolve(new Blob(chunks, { type: 'audio/webm' }));
-        };
-      });
-
-      mediaRecorder.start();
-      recordingHandle = {
-        stop: () => { if (mediaRecorder.state !== 'inactive') mediaRecorder.stop(); },
-        promise: blobPromise,
-      };
-    } catch (e: any) {
-      error = `Microfone: ${e.message || 'acesso negado'}. Verifique as permissões do sistema.`;
-      recording = false;
-    }
-  }
-
-  /** Stop recording and send the transcription */
-  async function stopVoiceRecording() {
-    if (!recordingHandle) { recording = false; return; }
-    recordingHandle.stop();
-    recording = false;
-
-    try {
-      const audioBlob = await recordingHandle.promise;
-      recordingHandle = null;
-
-      if (!elevenKey) return;
-
-      loading = true;
-      const transcription = await speechToText(audioBlob, elevenKey);
-
-      if (transcription.trim()) {
-        loading = false;
-        await sendAndSpeak(transcription.trim());
-      } else {
-        error = 'Não consegui entender. Tente novamente.';
-        loading = false;
-      }
-    } catch (e: any) {
-      error = e.message || 'Erro na transcrição.';
-      loading = false;
-    }
-  }
-
   function scrollToBottom() {
     if (chatContainer) {
       chatContainer.scrollTop = chatContainer.scrollHeight;
@@ -307,8 +244,7 @@
       <div class="flex-1">
         <p class="text-sm font-semibold leading-tight">Sabiá</p>
         <p class="text-[11px] text-white/70">
-          {#if recording}gravando... 🔴
-          {:else if speaking}falando... 🔊
+          {#if speaking}falando... 🔊
           {:else if loading}digitando...
           {:else}online{/if}
         </p>
@@ -458,30 +394,13 @@
         bind:value={input}
         onkeydown={handleKeydown}
         onfocus={() => showStickers = false}
-        placeholder={recording ? 'Gravando...' : 'Mensagem'}
-        disabled={loading || recording}
+        placeholder="Mensagem"
+        disabled={loading}
         class="flex-1 px-4 py-2.5 bg-white rounded-3xl text-sm outline-none disabled:opacity-50 border-none shadow-sm"
       />
 
-      <!-- Mic button (hold to record) OR Send button -->
-      {#if voiceEnabled && !input.trim()}
-        <button
-          onmousedown={startVoiceRecording}
-          onmouseup={stopVoiceRecording}
-          ontouchstart={startVoiceRecording}
-          ontouchend={stopVoiceRecording}
-          disabled={loading || speaking}
-          class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-colors shadow-sm disabled:opacity-40
-            {recording ? 'bg-error text-white scale-110' : 'bg-serra text-white hover:bg-serra-dark'}"
-          aria-label="Segurar para gravar"
-          title="Segurar para gravar"
-        >
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-            <path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
-          </svg>
-        </button>
-      {:else}
-        <button
+      <!-- Send button -->
+      <button
           onclick={send}
           disabled={!input.trim() || loading}
           class="w-11 h-11 rounded-full bg-serra text-white flex items-center justify-center shrink-0 hover:bg-serra-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
@@ -491,7 +410,6 @@
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
           </svg>
         </button>
-      {/if}
     </div>
   {/if}
 </div>
