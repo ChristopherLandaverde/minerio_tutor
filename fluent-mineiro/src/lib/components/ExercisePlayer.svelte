@@ -70,22 +70,12 @@
     getApiKey().then(key => { claudeKey = key; }).catch(() => {});
   });
 
-  async function startPronRecording() {
+  function startPronRecording() {
     if (!elevenKey || !claudeKey || recording) return;
     pronResult = null;
-    try {
-      // Test mic access first — fails in Tauri dev mode (http, not https)
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      stream.getTracks().forEach(t => t.stop()); // release test stream
-      recording = true;
-      currentRecordingHandle = startRecording();
-    } catch {
-      pronResult = {
-        score: 0,
-        feedback: 'Microfone não disponível. No modo dev, use "npx tauri build" para testar pronúncia.',
-        tips: ['O microfone precisa de HTTPS — funciona no app compilado, não no dev mode.']
-      };
-    }
+    recording = true;
+    currentRecordingHandle = startRecording();
+    // If mic fails, the promise will reject and stopPronRecording will catch it
   }
 
   async function stopPronRecording(expectedText: string) {
@@ -102,8 +92,13 @@
       const audioBlob = await handle.promise;
       const transcribed = await speechToText(audioBlob, elevenKey);
       pronResult = await analyzePronunciation(expectedText, transcribed, claudeKey);
-    } catch {
-      pronResult = { score: 0, feedback: 'Não foi possível analisar. Tente novamente.', tips: [] };
+    } catch (err) {
+      const msg = String(err);
+      if (msg.includes('NotAllowed') || msg.includes('Permission') || msg.includes('getUserMedia')) {
+        pronResult = { score: 0, feedback: 'Permissão de microfone negada. Abra Preferências do Sistema > Privacidade > Microfone e permita o Sabiá.', tips: [] };
+      } else {
+        pronResult = { score: 0, feedback: 'Não foi possível analisar. Tente novamente.', tips: [] };
+      }
     }
     analyzing = false;
     currentRecordingHandle = null;
