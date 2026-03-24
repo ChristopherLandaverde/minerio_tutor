@@ -421,23 +421,25 @@
           {#if !pronResult && !analyzing}
             <div class="flex items-center justify-center gap-3">
               {#if !recording}
-                <button
-                  onclick={startPronRecording}
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-terracotta/30 text-terracotta text-sm font-semibold rounded-lg hover:bg-terracotta/5 transition-colors"
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div
+                  onmousedown={startPronRecording}
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-terracotta/30 text-terracotta text-sm font-semibold rounded-lg hover:bg-terracotta/5 transition-colors cursor-pointer select-none"
                 >
                   <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                   Praticar pronúncia
                   <kbd class="text-[10px] px-1.5 py-0.5 bg-pedra-subtle rounded text-cafe-muted font-mono">espaço</kbd>
-                </button>
+                </div>
               {:else}
-                <button
-                  onclick={() => stopPronRecording(current.answer)}
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-error text-white text-sm font-semibold rounded-lg animate-pulse"
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div
+                  onmousedown={() => stopPronRecording(current.answer)}
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-error text-white text-sm font-semibold rounded-lg animate-pulse cursor-pointer select-none"
                 >
                   <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
                   Gravando...
                   <kbd class="text-[10px] px-1.5 py-0.5 bg-white/20 rounded font-mono">espaço para parar</kbd>
-                </button>
+                </div>
               {/if}
             </div>
           {:else if analyzing}
