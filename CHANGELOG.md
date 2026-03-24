@@ -2,6 +2,16 @@
 
 All notable changes to Sabiá (formerly Fluent Mineiro) will be documented in this file.
 
+## [0.5.1.0] - 2026-03-24 — Shadowing Mode
+
+### Added
+- Shadowing practice: hear native audio, repeat, compare — 3-step spacebar-driven flow
+- Playback speed control (0.75x / 1x / 1.25x) for pacing practice
+- New `/shadowing` route with nav link and dashboard card
+- Uses vocab + cloze exercises as shadowing material (20 random per session)
+- Cloze blanks filled automatically for complete sentence shadowing
+- Skip recording option for TTS-only ear training
+
 ## [0.5.0.0] - 2026-03-24 — Pronunciation Feedback
 
 ### Added
