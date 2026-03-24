@@ -1,13 +1,13 @@
 # TODOS
 
-## TTS/STT Voice Features
-**What:** Add speech-to-text (for speaking practice) and text-to-speech (for pronunciation modeling) using ElevenLabs or browser Web Speech API.
-**Why:** Speaking is the hardest language skill to practice alone. Without voice, the app is limited to reading/writing — which covers only half of language learning.
-**Pros:** Transforms the app from a flashcard tool into a real conversation partner. ElevenLabs has good Portuguese voices. Browser Web Speech API is free but lower quality.
-**Cons:** TTS APIs cost money per character. STT accuracy for Portuguese accents varies. Significant new UI (audio controls, waveform display). Tauri app needs microphone permissions.
-**Context:** Design doc defers to "Future Phases." ElevenLabs or browser Web Speech API are the two viable approaches. Start with Web Speech API (free) and upgrade to ElevenLabs if quality isn't sufficient.
-**Depends on:** Phase 3 Claude integration must be working first.
-**Added:** 2026-03-22 via /plan-eng-review
+## TTS/STT Voice Features (Phase 2+)
+**What:** Pronunciation feedback, shadowing mode, structured conversation scenarios, TTS audio caching.
+**Why:** Phase 1 voice (TTS on exercises, listening mode, settings) shipped in v0.4.1.0. Remaining: pronunciation scoring via Claude STT comparison, repeat-after-me shadowing, and guided Mineiro conversation scenarios.
+**Pros:** Transforms the app from exercises-with-audio into a complete spoken language tutor.
+**Cons:** Pronunciation scoring via STT comparison has inherent accuracy limits. ElevenLabs costs accumulate during shadowing. Need data models for pronunciation history and scenarios.
+**Context:** Full design doc at `~/.gstack/projects/ChristopherLandaverde-minerio_tutor/christopherlandaverde-feat-voice-improvements-design-*.md`. Phase 1 shipped. Phases 2-5 remain.
+**Depends on:** Nothing — Phase 1 foundation is in place.
+**Added:** 2026-03-22 via /plan-eng-review | **Updated:** 2026-03-24 via /ship (Phase 1 complete)
 
 ---
 
