@@ -17,7 +17,6 @@
     { href: '/', label: 'Dashboard', en: 'Home', icon: '🏠' },
     { href: '/lesson', label: 'Lição', en: 'Lesson', icon: '📚' },
     { href: '/review', label: 'Revisão', en: 'Review', icon: '🔄' },
-    { href: '/shadowing', label: 'Shadowing', en: 'Repeat', icon: '🎙️' },
     { href: '/conversation', label: 'Conversa', en: 'Chat', icon: '💬' },
     { href: '/writing', label: 'Escrita', en: 'Writing', icon: '✍️' },
     { href: '/reading', label: 'Leitura', en: 'Reading', icon: '📖' },

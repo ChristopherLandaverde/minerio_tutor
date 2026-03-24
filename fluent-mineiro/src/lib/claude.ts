@@ -83,67 +83,6 @@ export async function sendMessage(
 }
 
 /**
- * Analyze pronunciation by comparing expected text with STT transcription.
- * Returns structured feedback on specific sounds and Mineiro features.
- */
-export async function analyzePronunciation(
-  expected: string,
-  transcribed: string,
-  apiKey: string
-): Promise<{ score: number; feedback: string; tips: string[] }> {
-  const prompt = `You are a strict Mineiro Portuguese pronunciation coach. Compare EXACTLY what the student should have said vs what speech recognition heard.
-
-Expected: "${expected}"
-Heard: "${transcribed}"
-
-SCORING RULES (be strict):
-- 5: Transcription matches expected text exactly or with only accent marks different
-- 4: 1 word different but meaning is clear, rest matches
-- 3: Most words match but 2+ errors
-- 2: Less than half the words match, or wrong language mixed in
-- 1: Completely different, wrong language (English/Spanish instead of Portuguese), or gibberish
-
-CRITICAL: If the "Heard" text is in English or Spanish but "Expected" is Portuguese, score MUST be 1. If "Heard" is empty or very short compared to expected, score 1.
-
-Respond in this exact JSON format (no markdown, no code fences):
-{"score":N,"feedback":"one sentence in Portuguese","tips":["tip1","tip2"]}
-
-Feedback: Reference the specific words that were wrong. Be direct, not just encouraging.
-Tips: 1-2 tips about Mineiro sounds (nasal vowels ão/ã, lh→i, dropped d in gerunds, open/closed vowels). If score 1-2, tip should say to try speaking in Portuguese.`;
-
-  const response = await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true',
-    },
-    body: JSON.stringify({
-      model: MODEL,
-      max_tokens: 200,
-      messages: [{ role: 'user', content: prompt }],
-    }),
-  });
-
-  if (!response.ok) throw new Error(`API error ${response.status}`);
-
-  const data = await response.json();
-  const text = data.content[0]?.text || '';
-
-  try {
-    const parsed = JSON.parse(text);
-    return {
-      score: Math.min(5, Math.max(1, parsed.score || 3)),
-      feedback: parsed.feedback || 'Boa tentativa!',
-      tips: Array.isArray(parsed.tips) ? parsed.tips.slice(0, 2) : [],
-    };
-  } catch {
-    return { score: 3, feedback: 'Boa tentativa! Continue praticando.', tips: [] };
-  }
-}
-
-/**
  * Generate a personalized coaching note for today's session.
  * Cache-first: checks profile for today's cached note before calling API.
  * Falls back to predefined messages on failure or missing API key.
