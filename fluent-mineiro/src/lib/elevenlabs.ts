@@ -157,7 +157,8 @@ export async function speechToText(
   apiKey: string
 ): Promise<string> {
   const formData = new FormData();
-  formData.append('file', audioBlob, 'recording.webm');
+  const ext = audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
+  formData.append('file', audioBlob, `recording.${ext}`);
   formData.append('model_id', STT_MODEL);
   formData.append('language_code', 'por'); // Portuguese
 
@@ -215,7 +216,9 @@ export function startRecording(): {
   navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       const chunks: Blob[] = [];
-      mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
+      // Use mp4 on Safari/WKWebView, webm elsewhere
+      const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
+      mediaRecorder = new MediaRecorder(stream, { mimeType });
 
       mediaRecorder.ondataavailable = (e) => {
         if (e.data.size > 0) chunks.push(e.data);
@@ -223,7 +226,7 @@ export function startRecording(): {
 
       mediaRecorder.onstop = () => {
         stream.getTracks().forEach(t => t.stop());
-        const blob = new Blob(chunks, { type: 'audio/webm' });
+        const blob = new Blob(chunks, { type: mimeType });
         resolve(blob);
       };
 
