@@ -1,6 +1,6 @@
 <script lang="ts">
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
-  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio, startNativeRecording, stopNativeRecording, speechToText } from '$lib/elevenlabs';
+  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio, startNativeRecording, stopNativeRecording } from '$lib/elevenlabs';
   import { analyzePronunciation, getApiKey } from '$lib/claude';
 
   export interface SessionStats {
@@ -86,9 +86,10 @@
     recording = false;
     analyzing = true;
     try {
-      const audioBlob = await stopNativeRecording();
-      const transcribed = await speechToText(audioBlob, elevenKey);
-      pronResult = await analyzePronunciation(expectedText, transcribed, claudeKey);
+      const transcribed = await stopNativeRecording(elevenKey);
+      const result = await analyzePronunciation(expectedText, transcribed, claudeKey);
+      result.feedback = `"${transcribed}" — ${result.feedback}`;
+      pronResult = result;
     } catch (err) {
       pronResult = { score: 0, feedback: `Erro: ${String(err).slice(0, 150)}`, tips: [] };
     }

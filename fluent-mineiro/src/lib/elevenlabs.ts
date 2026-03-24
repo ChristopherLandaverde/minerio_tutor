@@ -158,7 +158,7 @@ export async function speechToText(
   apiKey: string
 ): Promise<string> {
   const formData = new FormData();
-  const ext = audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
+  const ext = audioBlob.type.includes('wav') ? 'wav' : audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
   formData.append('file', audioBlob, `recording.${ext}`);
   formData.append('model_id', STT_MODEL);
   formData.append('language_code', 'por'); // Portuguese
@@ -206,11 +206,10 @@ export async function startNativeRecording(): Promise<void> {
 }
 
 /**
- * Stop native recording and return the audio as a WAV Blob.
+ * Stop native recording, send to ElevenLabs STT from Rust, return transcription.
  */
-export async function stopNativeRecording(): Promise<Blob> {
-  const wavBytes: number[] = await invoke('stop_recording');
-  return new Blob([new Uint8Array(wavBytes)], { type: 'audio/wav' });
+export async function stopNativeRecording(apiKey: string): Promise<string> {
+  return await invoke('stop_recording', { apiKey });
 }
 
 /**
