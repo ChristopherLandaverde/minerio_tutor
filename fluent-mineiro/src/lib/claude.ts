@@ -112,15 +112,19 @@ export async function generateCoachingNote(context: {
   if (!apiKey) return getRandomFallback();
 
   try {
-    const prompt = `Generate a 2-3 sentence coaching note for a Portuguese language learner. Write in Portuguese (Mineiro dialect) with English in parentheses for grammar terms.
+    const prompt = `You're a Mineiro friend greeting someone before Portuguese practice. ONE short sentence max. Like a text message, not a paragraph.
 
-Context:
-- CEFR Level: ${context.currentLevel}
-- Streak: ${context.streak} days
-- Today's focus topics: ${context.todayTopics.join(', ') || 'mixed review'}
-- Recent mistake patterns: ${context.mistakePatterns.join(', ') || 'none yet'}
+Context: Level ${context.currentLevel}, streak ${context.streak} days, topics: ${context.todayTopics.join(', ') || 'review'}.
 
-Be warm, encouraging, and specific. Use Mineiro features (uai, cê, bão, sô). Reference the topics or mistakes specifically. Never guilt-trip about missed days.`;
+Rules:
+- MAX 15 words. Shorter is better.
+- Portuguese only. No English. No translations in parentheses.
+- Use Mineiro: uai, cê, bão, sô, trem, nó
+- Sound like a friend texting, not a teacher lecturing
+- No bullet points, no tips, no explanations
+
+Good examples: "E aí sô, bora treinar comida mineira hoje? 🍽️" or "Nó, ${context.streak} dias seguidos! Cê tá demais, uai! 🔥"
+Bad examples: anything with parentheses, anything over 2 lines, anything that explains grammar`;
 
     const response = await fetch(API_URL, {
       method: 'POST',
@@ -132,7 +136,7 @@ Be warm, encouraging, and specific. Use Mineiro features (uai, cê, bão, sô). 
       },
       body: JSON.stringify({
         model: MODEL,
-        max_tokens: 150,
+        max_tokens: 50,
         messages: [{ role: 'user', content: prompt }],
       }),
     });
