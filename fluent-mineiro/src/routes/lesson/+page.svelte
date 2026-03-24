@@ -27,9 +27,12 @@
     const type = page.url.searchParams.get('type') || 'vocab';
     const topic = page.url.searchParams.get('topic');
     listening = page.url.searchParams.get('mode') === 'listening';
-    let filtered = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic));
+    let filtered: Exercise[];
     if (listening) {
-      filtered = filtered.filter(e => ['vocab', 'cloze'].includes(e.type));
+      // In listening mode, include both vocab and cloze regardless of type param
+      filtered = SEED_EXERCISES.filter(e => ['vocab', 'cloze'].includes(e.type) && (!topic || e.topic === topic));
+    } else {
+      filtered = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic));
     }
     exercises = filtered.sort(() => Math.random() - 0.5);
     sessionDone = false;

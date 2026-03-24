@@ -90,7 +90,9 @@
     submitting = true;
     const responseTime = Date.now() - startTime;
     const ans = answer || userAnswer;
-    const result = scoreExercise(current.type, ans, current.answer, undefined, current.tags);
+    // In listening mode, score vocab as text comparison (like cloze) instead of self-rating
+    const scoreType = (listeningMode && current.type === 'vocab') ? 'cloze' : current.type;
+    const result = scoreExercise(scoreType, ans, current.answer, undefined, current.tags);
     lastResult = result;
     showFeedback = true;
     sessionTotal++;
@@ -136,8 +138,10 @@
   }
 
   // Listening mode: auto-play audio when exercise changes
+  let lastPlayedIndex = $state(-1);
   $effect(() => {
-    if (listeningMode && voiceAvailable && current && !showFeedback) {
+    if (listeningMode && voiceAvailable && current && !showFeedback && currentIndex !== lastPlayedIndex) {
+      lastPlayedIndex = currentIndex;
       speakText(getTextToSpeak(current));
     }
   });
