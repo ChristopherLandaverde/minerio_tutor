@@ -2,6 +2,22 @@
 
 All notable changes to Sabiá (formerly Fluent Mineiro) will be documented in this file.
 
+## [0.4.1.0] - 2026-03-24 — Voice Everywhere
+
+### Added
+- ElevenLabs settings panel: API key input, voice selector dropdown, "Testar voz" button
+- Speaker button on all exercise types (vocab, cloze, multiple choice, error correction, true/false, reorder)
+- "Ouvir" button next to correct answer when wrong — hear the pronunciation
+- Listening mode: audio-first exercises via `/lesson?type=vocab&mode=listening` — hear prompt, type answer
+- Listening mode includes both vocab and cloze exercises for variety
+- Dashboard "Prática de escuta" card (only visible when ElevenLabs key configured)
+- Voice status indicator in dashboard header (speaker icon when active, link to settings when not)
+
+### Fixed
+- Listening mode vocab scoring: now uses text comparison instead of self-rating (was always marking answers incorrect)
+- Auto-play effect guarded by exercise index to prevent retry storms on TTS failure
+- Removed unused `listeningPlayed` state variable
+
 ## [0.4.0.0] - 2026-03-23
 
 ### Added

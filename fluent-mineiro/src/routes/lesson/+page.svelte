@@ -14,6 +14,7 @@
   let sessionStreak = $state(0);
   let levelChange = $state<string | null>(null);
   let loaded = $state(false);
+  let listening = $state(false);
 
   // Track URL to detect navigation between lesson types
   let lastUrl = $state('');
@@ -25,7 +26,14 @@
 
     const type = page.url.searchParams.get('type') || 'vocab';
     const topic = page.url.searchParams.get('topic');
-    const filtered = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic));
+    listening = page.url.searchParams.get('mode') === 'listening';
+    let filtered: Exercise[];
+    if (listening) {
+      // In listening mode, include both vocab and cloze regardless of type param
+      filtered = SEED_EXERCISES.filter(e => ['vocab', 'cloze'].includes(e.type) && (!topic || e.topic === topic));
+    } else {
+      filtered = SEED_EXERCISES.filter(e => e.type === type && (!topic || e.topic === topic));
+    }
     exercises = filtered.sort(() => Math.random() - 0.5);
     sessionDone = false;
     sessionStats = null;
@@ -76,7 +84,7 @@
       </a>
     </div>
   {:else if exercises.length > 0}
-    <ExercisePlayer {exercises} onSessionEnd={handleSessionEnd} />
+    <ExercisePlayer {exercises} onSessionEnd={handleSessionEnd} listeningMode={listening} />
   {:else if loaded}
     <div class="bg-white border border-border rounded-xl p-8 text-center">
       <div class="text-3xl mb-3">📚</div>
