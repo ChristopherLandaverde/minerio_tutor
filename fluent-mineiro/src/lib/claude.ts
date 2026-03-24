@@ -91,17 +91,25 @@ export async function analyzePronunciation(
   transcribed: string,
   apiKey: string
 ): Promise<{ score: number; feedback: string; tips: string[] }> {
-  const prompt = `You are a Mineiro Portuguese pronunciation coach. Compare what the student SHOULD have said vs what speech recognition heard them say.
+  const prompt = `You are a strict Mineiro Portuguese pronunciation coach. Compare EXACTLY what the student should have said vs what speech recognition heard.
 
 Expected: "${expected}"
 Heard: "${transcribed}"
 
-Respond in this exact JSON format (no markdown, no code fences):
-{"score":N,"feedback":"one sentence in Portuguese about their pronunciation","tips":["tip1","tip2"]}
+SCORING RULES (be strict):
+- 5: Transcription matches expected text exactly or with only accent marks different
+- 4: 1 word different but meaning is clear, rest matches
+- 3: Most words match but 2+ errors
+- 2: Less than half the words match, or wrong language mixed in
+- 1: Completely different, wrong language (English/Spanish instead of Portuguese), or gibberish
 
-Score 1-5: 5=perfect match, 4=minor differences, 3=understandable but noticeable errors, 2=significant errors, 1=very different.
-Feedback: Be encouraging, in Portuguese. Reference specific words they got right or wrong.
-Tips: 1-2 short tips about specific Mineiro sounds (nasal vowels, lh→i, dropped d in gerunds, ão vs am). If score is 5, give one tip to sound even more Mineiro.`;
+CRITICAL: If the "Heard" text is in English or Spanish but "Expected" is Portuguese, score MUST be 1. If "Heard" is empty or very short compared to expected, score 1.
+
+Respond in this exact JSON format (no markdown, no code fences):
+{"score":N,"feedback":"one sentence in Portuguese","tips":["tip1","tip2"]}
+
+Feedback: Reference the specific words that were wrong. Be direct, not just encouraging.
+Tips: 1-2 tips about Mineiro sounds (nasal vowels ão/ã, lh→i, dropped d in gerunds, open/closed vowels). If score 1-2, tip should say to try speaking in Portuguese.`;
 
   const response = await fetch(API_URL, {
     method: 'POST',
