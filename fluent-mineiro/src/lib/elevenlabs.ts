@@ -5,6 +5,7 @@
  */
 
 import { fetch } from '@tauri-apps/plugin-http';
+import { invoke } from '@tauri-apps/api/core';
 import { getProfile, setProfile } from './db';
 
 const TTS_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
@@ -197,8 +198,24 @@ export function playAudio(blob: Blob): Promise<void> {
 }
 
 /**
- * Record audio from the microphone.
- * Returns a promise that resolves with the audio Blob when recording stops.
+ * Start native audio recording via Tauri Rust command.
+ * Bypasses WKWebView getUserMedia limitations.
+ */
+export async function startNativeRecording(): Promise<void> {
+  await invoke('start_recording');
+}
+
+/**
+ * Stop native recording and return the audio as a WAV Blob.
+ */
+export async function stopNativeRecording(): Promise<Blob> {
+  const wavBytes: number[] = await invoke('stop_recording');
+  return new Blob([new Uint8Array(wavBytes)], { type: 'audio/wav' });
+}
+
+/**
+ * Record audio from the microphone (browser API fallback).
+ * Used by the conversation page. For exercises, use startNativeRecording/stopNativeRecording.
  */
 export function startRecording(): {
   stop: () => void;
@@ -213,10 +230,9 @@ export function startRecording(): {
     reject = rej;
   });
 
-  navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100 } })
+  navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       const chunks: Blob[] = [];
-      // Use mp4 on Safari/WKWebView, webm elsewhere
       const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
       mediaRecorder = new MediaRecorder(stream, { mimeType });
 
