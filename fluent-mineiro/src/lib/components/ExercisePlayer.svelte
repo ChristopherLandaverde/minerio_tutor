@@ -70,15 +70,29 @@
     getApiKey().then(key => { claudeKey = key; }).catch(() => {});
   });
 
-  function startPronRecording() {
+  async function startPronRecording() {
     if (!elevenKey || !claudeKey || recording) return;
-    recording = true;
     pronResult = null;
-    currentRecordingHandle = startRecording();
+    try {
+      // Test mic access first — fails in Tauri dev mode (http, not https)
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach(t => t.stop()); // release test stream
+      recording = true;
+      currentRecordingHandle = startRecording();
+    } catch {
+      pronResult = {
+        score: 0,
+        feedback: 'Microfone não disponível. No modo dev, use "npx tauri build" para testar pronúncia.',
+        tips: ['O microfone precisa de HTTPS — funciona no app compilado, não no dev mode.']
+      };
+    }
   }
 
   async function stopPronRecording(expectedText: string) {
-    if (!currentRecordingHandle || !elevenKey || !claudeKey) return;
+    if (!currentRecordingHandle || !elevenKey || !claudeKey) {
+      recording = false;
+      return;
+    }
     const handle = currentRecordingHandle;
     currentRecordingHandle = null;
     recording = false;
