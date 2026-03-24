@@ -213,7 +213,7 @@ export function startRecording(): {
     reject = rej;
   });
 
-  navigator.mediaDevices.getUserMedia({ audio: true })
+  navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100 } })
     .then(stream => {
       const chunks: Blob[] = [];
       // Use mp4 on Safari/WKWebView, webm elsewhere
