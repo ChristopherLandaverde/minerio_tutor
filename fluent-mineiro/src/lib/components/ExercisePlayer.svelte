@@ -136,11 +136,9 @@
   }
 
   // Listening mode: auto-play audio when exercise changes
-  let listeningPlayed = $state(false);
   $effect(() => {
     if (listeningMode && voiceAvailable && current && !showFeedback) {
-      listeningPlayed = false;
-      speakText(getTextToSpeak(current)).then(() => { listeningPlayed = true; });
+      speakText(getTextToSpeak(current));
     }
   });
 
