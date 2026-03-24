@@ -1,7 +1,6 @@
 <script lang="ts">
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
-  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio, speechToText, startRecording } from '$lib/elevenlabs';
-  import { analyzePronunciation, getApiKey } from '$lib/claude';
+  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio } from '$lib/elevenlabs';
 
   export interface SessionStats {
     correct: number;
@@ -57,51 +56,6 @@
     } catch {} finally {
       speaking = false;
     }
-  }
-
-  // Pronunciation feedback state
-  let claudeKey = $state<string | null>(null);
-  let recording = $state(false);
-  let analyzing = $state(false);
-  let pronResult = $state<{ score: number; feedback: string; tips: string[] } | null>(null);
-  let currentRecordingHandle: { stop: () => void; promise: Promise<Blob> } | null = null;
-
-  $effect(() => {
-    getApiKey().then(key => { claudeKey = key; }).catch(() => {});
-  });
-
-  function startPronRecording() {
-    if (!elevenKey || !claudeKey || recording) return;
-    pronResult = null;
-    recording = true;
-    currentRecordingHandle = startRecording();
-    // If mic fails, the promise will reject and stopPronRecording will catch it
-  }
-
-  async function stopPronRecording(expectedText: string) {
-    if (!currentRecordingHandle || !elevenKey || !claudeKey) {
-      recording = false;
-      return;
-    }
-    const handle = currentRecordingHandle;
-    currentRecordingHandle = null;
-    recording = false;
-    analyzing = true;
-    try {
-      handle.stop();
-      const audioBlob = await handle.promise;
-      const transcribed = await speechToText(audioBlob, elevenKey);
-      pronResult = await analyzePronunciation(expectedText, transcribed, claudeKey);
-    } catch (err) {
-      const msg = String(err);
-      if (msg.includes('NotAllowed') || msg.includes('Permission') || msg.includes('getUserMedia')) {
-        pronResult = { score: 0, feedback: 'Permissão de microfone negada. Abra Preferências do Sistema > Privacidade > Microfone e permita o Sabiá.', tips: [] };
-      } else {
-        pronResult = { score: 0, feedback: 'Não foi possível analisar. Tente novamente.', tips: [] };
-      }
-    }
-    analyzing = false;
-    currentRecordingHandle = null;
   }
 
   let currentIndex = $state(0);
@@ -180,7 +134,6 @@
     showFeedback = false;
     showAnswer = false;
     lastResult = null;
-    pronResult = null;
     startTime = Date.now();
   }
 
@@ -205,15 +158,6 @@
     }
     if (showAnswer && current?.type === 'vocab' && e.key >= '1' && e.key <= '5') {
       rateVocab(parseInt(e.key));
-    }
-    // Space to start/stop pronunciation recording
-    if (e.key === ' ' && showFeedback && voiceAvailable && claudeKey && !analyzing) {
-      e.preventDefault();
-      if (recording) {
-        stopPronRecording(current.answer);
-      } else if (!pronResult) {
-        startPronRecording();
-      }
     }
   }
 </script>
@@ -423,69 +367,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Pronunciation Practice -->
-      {#if voiceAvailable && claudeKey}
-        <div class="p-4 border-t border-border/50">
-          {#if !pronResult && !analyzing}
-            <div class="flex items-center justify-center gap-3">
-              {#if !recording}
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div
-                  onmousedown={startPronRecording}
-                  class="inline-flex items-center gap-2 px-4 py-2 border border-terracotta/30 text-terracotta text-sm font-semibold rounded-lg hover:bg-terracotta/5 transition-colors cursor-pointer select-none"
-                >
-                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
-                  Praticar pronúncia
-                  <kbd class="text-[10px] px-1.5 py-0.5 bg-pedra-subtle rounded text-cafe-muted font-mono">espaço</kbd>
-                </div>
-              {:else}
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div
-                  onmousedown={() => stopPronRecording(current.answer)}
-                  class="inline-flex items-center gap-2 px-4 py-2 bg-error text-white text-sm font-semibold rounded-lg animate-pulse cursor-pointer select-none"
-                >
-                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
-                  Gravando...
-                  <kbd class="text-[10px] px-1.5 py-0.5 bg-white/20 rounded font-mono">espaço para parar</kbd>
-                </div>
-              {/if}
-            </div>
-          {:else if analyzing}
-            <div class="text-center text-sm text-cafe-muted">
-              <svg class="w-5 h-5 animate-spin inline mr-2" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>
-              Analisando pronúncia...
-            </div>
-          {:else if pronResult}
-            <div class="space-y-2">
-              <div class="flex items-center gap-2">
-                <div class="flex gap-0.5">
-                  {#each [1, 2, 3, 4, 5] as star}
-                    <span class="text-sm {star <= pronResult.score ? 'text-ouro' : 'text-pedra-subtle'}">★</span>
-                  {/each}
-                </div>
-                <span class="text-xs text-cafe-muted font-semibold">{pronResult.score}/5</span>
-              </div>
-              <p class="text-sm text-cafe-secondary">{pronResult.feedback}</p>
-              {#if pronResult.tips.length > 0}
-                <div class="space-y-1">
-                  {#each pronResult.tips as tip}
-                    <div class="text-xs px-3 py-1.5 bg-ouro/10 rounded-lg text-ouro">
-                      💡 {tip}
-                    </div>
-                  {/each}
-                </div>
-              {/if}
-              <button
-                onclick={() => { pronResult = null; }}
-                class="text-xs text-terracotta hover:underline"
-              >
-                Tentar de novo
-              </button>
-            </div>
-          {/if}
-        </div>
-      {/if}
 
       <div class="p-4 border-t border-border flex justify-center">
         <button
