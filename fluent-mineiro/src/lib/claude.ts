@@ -83,6 +83,59 @@ export async function sendMessage(
 }
 
 /**
+ * Analyze pronunciation by comparing expected text with STT transcription.
+ * Returns structured feedback on specific sounds and Mineiro features.
+ */
+export async function analyzePronunciation(
+  expected: string,
+  transcribed: string,
+  apiKey: string
+): Promise<{ score: number; feedback: string; tips: string[] }> {
+  const prompt = `You are a Mineiro Portuguese pronunciation coach. Compare what the student SHOULD have said vs what speech recognition heard them say.
+
+Expected: "${expected}"
+Heard: "${transcribed}"
+
+Respond in this exact JSON format (no markdown, no code fences):
+{"score":N,"feedback":"one sentence in Portuguese about their pronunciation","tips":["tip1","tip2"]}
+
+Score 1-5: 5=perfect match, 4=minor differences, 3=understandable but noticeable errors, 2=significant errors, 1=very different.
+Feedback: Be encouraging, in Portuguese. Reference specific words they got right or wrong.
+Tips: 1-2 short tips about specific Mineiro sounds (nasal vowels, lh→i, dropped d in gerunds, ão vs am). If score is 5, give one tip to sound even more Mineiro.`;
+
+  const response = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true',
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      max_tokens: 200,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+
+  if (!response.ok) throw new Error(`API error ${response.status}`);
+
+  const data = await response.json();
+  const text = data.content[0]?.text || '';
+
+  try {
+    const parsed = JSON.parse(text);
+    return {
+      score: Math.min(5, Math.max(1, parsed.score || 3)),
+      feedback: parsed.feedback || 'Boa tentativa!',
+      tips: Array.isArray(parsed.tips) ? parsed.tips.slice(0, 2) : [],
+    };
+  } catch {
+    return { score: 3, feedback: 'Boa tentativa! Continue praticando.', tips: [] };
+  }
+}
+
+/**
  * Generate a personalized coaching note for today's session.
  * Cache-first: checks profile for today's cached note before calling API.
  * Falls back to predefined messages on failure or missing API key.

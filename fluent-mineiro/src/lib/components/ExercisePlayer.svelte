@@ -1,6 +1,7 @@
 <script lang="ts">
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
-  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio } from '$lib/elevenlabs';
+  import { getElevenLabsKey, getSelectedVoice, textToSpeech, playAudio, speechToText, startRecording } from '$lib/elevenlabs';
+  import { analyzePronunciation, getApiKey } from '$lib/claude';
 
   export interface SessionStats {
     correct: number;
@@ -56,6 +57,40 @@
     } catch {} finally {
       speaking = false;
     }
+  }
+
+  // Pronunciation feedback state
+  let claudeKey = $state<string | null>(null);
+  let recording = $state(false);
+  let analyzing = $state(false);
+  let pronResult = $state<{ score: number; feedback: string; tips: string[] } | null>(null);
+  let recordingHandle = $state<{ stop: () => void; promise: Promise<Blob> } | null>(null);
+
+  $effect(() => {
+    getApiKey().then(key => { claudeKey = key; }).catch(() => {});
+  });
+
+  async function startPronRecording() {
+    if (!elevenKey || !claudeKey || recording) return;
+    recording = true;
+    pronResult = null;
+    recordingHandle = startRecording();
+  }
+
+  async function stopPronRecording(expectedText: string) {
+    if (!recordingHandle || !elevenKey || !claudeKey) return;
+    recording = false;
+    analyzing = true;
+    try {
+      recordingHandle.stop();
+      const audioBlob = await recordingHandle.promise;
+      const transcribed = await speechToText(audioBlob, elevenKey);
+      pronResult = await analyzePronunciation(expectedText, transcribed, claudeKey);
+    } catch {
+      pronResult = { score: 0, feedback: 'Não foi possível analisar. Tente novamente.', tips: [] };
+    }
+    analyzing = false;
+    recordingHandle = null;
   }
 
   let currentIndex = $state(0);
@@ -134,6 +169,7 @@
     showFeedback = false;
     showAnswer = false;
     lastResult = null;
+    pronResult = null;
     startTime = Date.now();
   }
 
@@ -367,6 +403,66 @@
           </div>
         </div>
       </div>
+
+      <!-- Pronunciation Practice -->
+      {#if voiceAvailable && claudeKey}
+        <div class="p-4 border-t border-border/50">
+          {#if !pronResult && !analyzing}
+            <div class="flex items-center justify-center gap-3">
+              {#if !recording}
+                <button
+                  onclick={startPronRecording}
+                  class="inline-flex items-center gap-2 px-4 py-2 border border-terracotta/30 text-terracotta text-sm font-semibold rounded-lg hover:bg-terracotta/5 transition-colors"
+                >
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
+                  Praticar pronúncia
+                </button>
+              {:else}
+                <button
+                  onclick={() => stopPronRecording(current.answer)}
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-error text-white text-sm font-semibold rounded-lg animate-pulse"
+                >
+                  <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+                  Gravando... toque para parar
+                </button>
+              {/if}
+            </div>
+          {:else if analyzing}
+            <div class="text-center text-sm text-cafe-muted">
+              <svg class="w-5 h-5 animate-spin inline mr-2" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>
+              Analisando pronúncia...
+            </div>
+          {:else if pronResult}
+            <div class="space-y-2">
+              <div class="flex items-center gap-2">
+                <div class="flex gap-0.5">
+                  {#each [1, 2, 3, 4, 5] as star}
+                    <span class="text-sm {star <= pronResult.score ? 'text-ouro' : 'text-pedra-subtle'}">★</span>
+                  {/each}
+                </div>
+                <span class="text-xs text-cafe-muted font-semibold">{pronResult.score}/5</span>
+              </div>
+              <p class="text-sm text-cafe-secondary">{pronResult.feedback}</p>
+              {#if pronResult.tips.length > 0}
+                <div class="space-y-1">
+                  {#each pronResult.tips as tip}
+                    <div class="text-xs px-3 py-1.5 bg-ouro/10 rounded-lg text-ouro">
+                      💡 {tip}
+                    </div>
+                  {/each}
+                </div>
+              {/if}
+              <button
+                onclick={() => { pronResult = null; }}
+                class="text-xs text-terracotta hover:underline"
+              >
+                Tentar de novo
+              </button>
+            </div>
+          {/if}
+        </div>
+      {/if}
+
       <div class="p-4 border-t border-border flex justify-center">
         <button
           onclick={nextExercise}
