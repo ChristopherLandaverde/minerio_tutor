@@ -1,16 +1,5 @@
 # TODOS
 
-## Native Audio Recording for Pronunciation Feedback
-**What:** Replace browser `getUserMedia` with native Rust audio recording via a Tauri command. Then wire up the pronunciation feedback UI (already built: Claude analysis, star rating, Mineiro tips).
-**Why:** WKWebView on macOS does not reliably support `getUserMedia` — fails with `OverconstrainedError` even with HTTPS scheme and entitlements. The pronunciation UI, Claude analysis function (`analyzePronunciation` in claude.ts), and ElevenLabs STT are all ready — only the recording capture is blocked.
-**Pros:** Native recording bypasses all WebView limitations. Works on macOS and Windows. Higher audio quality.
-**Cons:** Requires a Rust crate for audio capture (e.g., `cpal`) and a Tauri command to bridge to the frontend. ~100 lines of Rust.
-**Context:** Attempted browser-based recording on 2026-03-24. Tried: useHttpsScheme, Info.plist, Entitlements.plist, explicit constraints, mp4 mimeType — all failed on WKWebView. The `analyzePronunciation()` function in `claude.ts` is ready and tested. Design doc has full Phase 2-5 roadmap.
-**Depends on:** Nothing — can be done anytime.
-**Added:** 2026-03-24 via /ship
-
----
-
 ## Voice Features — Phases 3-5
 **What:** Shadowing mode (repeat-after-me), structured conversation scenarios, voice polish (preferences, heatmap, Web Speech API fallback).
 **Why:** Phase 1 (TTS everywhere + listening mode) and TTS cache shipped. Phase 2 (pronunciation) blocked on native audio recording (see above). Phases 3-5 build on that foundation.

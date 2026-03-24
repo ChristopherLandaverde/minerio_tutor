@@ -2,6 +2,15 @@
 
 All notable changes to Sabiá (formerly Fluent Mineiro) will be documented in this file.
 
+## [0.5.0.0] - 2026-03-24 — Pronunciation Feedback
+
+### Added
+- Native Rust audio recording via CoreAudio (cpal crate) — bypasses WKWebView mic limitations
+- Pronunciation practice: press spacebar after any exercise to record, get Claude analysis with star rating (1-5) and Mineiro-specific tips
+- `analyzePronunciation()` in claude.ts: compares expected text vs STT transcription
+- Tauri commands: `start_recording` (synchronous mic validation) and `stop_recording` (returns WAV bytes)
+- macOS entitlements + Info.plist for microphone permission prompt
+
 ## [0.4.1.1] - 2026-03-24 — TTS Cost Savings
 
 ### Added

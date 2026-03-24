@@ -5,6 +5,7 @@
  */
 
 import { fetch } from '@tauri-apps/plugin-http';
+import { invoke } from '@tauri-apps/api/core';
 import { getProfile, setProfile } from './db';
 
 const TTS_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
@@ -157,7 +158,7 @@ export async function speechToText(
   apiKey: string
 ): Promise<string> {
   const formData = new FormData();
-  const ext = audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
+  const ext = audioBlob.type.includes('wav') ? 'wav' : audioBlob.type.includes('mp4') ? 'mp4' : 'webm';
   formData.append('file', audioBlob, `recording.${ext}`);
   formData.append('model_id', STT_MODEL);
   formData.append('language_code', 'por'); // Portuguese
@@ -197,8 +198,23 @@ export function playAudio(blob: Blob): Promise<void> {
 }
 
 /**
- * Record audio from the microphone.
- * Returns a promise that resolves with the audio Blob when recording stops.
+ * Start native audio recording via Tauri Rust command.
+ * Bypasses WKWebView getUserMedia limitations.
+ */
+export async function startNativeRecording(): Promise<void> {
+  await invoke('start_recording');
+}
+
+/**
+ * Stop native recording, send to ElevenLabs STT from Rust, return transcription.
+ */
+export async function stopNativeRecording(apiKey: string): Promise<string> {
+  return await invoke('stop_recording', { apiKey });
+}
+
+/**
+ * Record audio from the microphone (browser API fallback).
+ * Used by the conversation page. For exercises, use startNativeRecording/stopNativeRecording.
  */
 export function startRecording(): {
   stop: () => void;
@@ -213,10 +229,9 @@ export function startRecording(): {
     reject = rej;
   });
 
-  navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100 } })
+  navigator.mediaDevices.getUserMedia({ audio: true })
     .then(stream => {
       const chunks: Blob[] = [];
-      // Use mp4 on Safari/WKWebView, webm elsewhere
       const mimeType = MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4';
       mediaRecorder = new MediaRecorder(stream, { mimeType });
 
