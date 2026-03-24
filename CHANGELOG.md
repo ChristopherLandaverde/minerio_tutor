@@ -2,6 +2,13 @@
 
 All notable changes to Sabiá (formerly Fluent Mineiro) will be documented in this file.
 
+## [0.4.1.1] - 2026-03-24 — TTS Cost Savings
+
+### Added
+- In-memory TTS audio cache: avoids re-synthesizing the same text within a session (saves 30-50% of ElevenLabs character budget)
+- Character usage tracking: daily and monthly counters stored in profile table
+- Usage stats display in settings: progress bar showing % of Creator plan (100k chars)
+
 ## [0.4.1.0] - 2026-03-24 — Voice Everywhere
 
 ### Added

@@ -15,6 +15,49 @@ const VOICES_URL = 'https://api.elevenlabs.io/v1/voices';
 const TTS_MODEL = 'eleven_multilingual_v2';
 const STT_MODEL = 'scribe_v2';
 
+// In-memory TTS cache: avoids re-synthesizing the same text within a session.
+// Key = "voiceId:text", Value = audio Blob.
+// SRS reviews repeat sentences — this prevents duplicate API calls.
+const ttsCache = new Map<string, Blob>();
+const MAX_CACHE_ENTRIES = 200;
+
+function ttsCacheKey(text: string, voiceId: string): string {
+  return `${voiceId}:${text}`;
+}
+
+/** Track characters sent to ElevenLabs TTS for cost monitoring */
+async function trackTtsUsage(charCount: number): Promise<void> {
+  try {
+    const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+    const monthKey = today.slice(0, 7); // YYYY-MM
+    const dailyRaw = await getProfile(`tts_chars_${today}`);
+    const monthlyRaw = await getProfile(`tts_chars_${monthKey}`);
+    await setProfile(`tts_chars_${today}`, String((parseInt(dailyRaw || '0') || 0) + charCount));
+    await setProfile(`tts_chars_${monthKey}`, String((parseInt(monthlyRaw || '0') || 0) + charCount));
+  } catch {}
+}
+
+/** Get TTS usage stats */
+export async function getTtsUsage(): Promise<{ today: number; month: number }> {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const monthKey = today.slice(0, 7);
+    const dailyRaw = await getProfile(`tts_chars_${today}`);
+    const monthlyRaw = await getProfile(`tts_chars_${monthKey}`);
+    return {
+      today: parseInt(dailyRaw || '0') || 0,
+      month: parseInt(monthlyRaw || '0') || 0,
+    };
+  } catch {
+    return { today: 0, month: 0 };
+  }
+}
+
+/** Get TTS cache stats */
+export function getTtsCacheStats(): { entries: number; maxEntries: number } {
+  return { entries: ttsCache.size, maxEntries: MAX_CACHE_ENTRIES };
+}
+
 export async function getElevenLabsKey(): Promise<string | null> {
   try {
     return await getProfile('elevenlabs_key');
@@ -51,7 +94,8 @@ export async function setSelectedVoice(voiceId: string): Promise<void> {
 
 /**
  * Text-to-Speech: Convert text to audio.
- * Returns an audio Blob (mp3).
+ * Returns an audio Blob (mp3). Uses in-memory cache to avoid
+ * re-synthesizing the same text within a session.
  */
 export async function textToSpeech(
   text: string,
@@ -59,6 +103,11 @@ export async function textToSpeech(
   voiceId?: string
 ): Promise<Blob> {
   const voice = voiceId || await getSelectedVoice();
+  const cacheKey = ttsCacheKey(text, voice);
+
+  // Return cached audio if available
+  const cached = ttsCache.get(cacheKey);
+  if (cached) return cached;
 
   const response = await fetch(`${TTS_URL}/${voice}`, {
     method: 'POST',
@@ -83,7 +132,19 @@ export async function textToSpeech(
     throw new Error(`TTS error ${response.status}: ${err}`);
   }
 
-  return await response.blob();
+  const blob = await response.blob();
+
+  // Cache the result (evict oldest if full)
+  if (ttsCache.size >= MAX_CACHE_ENTRIES) {
+    const firstKey = ttsCache.keys().next().value;
+    if (firstKey) ttsCache.delete(firstKey);
+  }
+  ttsCache.set(cacheKey, blob);
+
+  // Track usage for cost monitoring
+  trackTtsUsage(text.length);
+
+  return blob;
 }
 
 /**

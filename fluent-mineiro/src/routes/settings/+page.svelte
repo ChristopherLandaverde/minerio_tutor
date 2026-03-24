@@ -5,7 +5,7 @@
   import {
     getElevenLabsKey, setElevenLabsKey,
     getVoices, getSelectedVoice, setSelectedVoice,
-    textToSpeech, playAudio,
+    textToSpeech, playAudio, getTtsUsage,
   } from '$lib/elevenlabs';
 
   let currentLevel = $state('A2');
@@ -26,6 +26,7 @@
   let voicesLoading = $state(false);
   let voiceTestPlaying = $state(false);
   let voiceError = $state<string | null>(null);
+  let ttsUsage = $state({ today: 0, month: 0 });
 
   const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
   const goalOptions = [5, 10, 15, 20, 30];
@@ -43,6 +44,7 @@
       if (elKey) {
         selectedVoiceId = await getSelectedVoice();
         loadVoices(elKey);
+        ttsUsage = await getTtsUsage();
       }
     } catch {
       // DB not ready — check localStorage fallback
@@ -371,6 +373,20 @@
                 Testar voz
               {/if}
             </button>
+
+            <!-- Usage stats -->
+            {#if ttsUsage.month > 0}
+              <div class="mt-3 pt-3 border-t border-border/50">
+                <div class="flex items-center justify-between text-xs text-cafe-muted">
+                  <span>Hoje: {ttsUsage.today.toLocaleString()} chars</span>
+                  <span>Mês: {ttsUsage.month.toLocaleString()} chars</span>
+                </div>
+                <div class="mt-1 h-1.5 bg-pedra-subtle rounded-full overflow-hidden">
+                  <div class="h-full bg-serra rounded-full transition-all duration-300" style="width: {Math.min(100, (ttsUsage.month / 100000) * 100)}%"></div>
+                </div>
+                <div class="text-[10px] text-cafe-muted/60 mt-0.5 text-right">{Math.round((ttsUsage.month / 100000) * 100)}% do plano Creator (100k)</div>
+              </div>
+            {/if}
           {/if}
         {:else}
           <div class="flex gap-2">
