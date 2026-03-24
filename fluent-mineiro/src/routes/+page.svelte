@@ -317,6 +317,14 @@
           <div class="text-xs text-cafe-muted">Ouça e escreva — treine seu ouvido</div>
         </div>
       </a>
+      <a href="/shadowing"
+         class="flex items-center gap-3 p-4 bg-white border border-terracotta/20 rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 mb-6">
+        <div class="w-10 h-10 bg-terracotta/10 rounded-lg flex items-center justify-center text-lg">🎙️</div>
+        <div>
+          <div class="font-semibold text-sm">Shadowing</div>
+          <div class="text-xs text-cafe-muted">Ouça e repita — treine sua pronúncia</div>
+        </div>
+      </a>
     {/if}
 
     <!-- 6TH: Manual Lesson Cards -->
