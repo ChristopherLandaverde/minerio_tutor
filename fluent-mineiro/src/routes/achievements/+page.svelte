@@ -89,7 +89,7 @@
               <div class="text-3xl {badge.unlockedAt ? '' : 'opacity-20'}">{badge.icon}</div>
               <p class="text-xs font-semibold mt-2 line-clamp-1">{badge.title}</p>
               <span class="inline-block mt-1 text-[10px] px-2 py-0.5 rounded-full font-semibold
-                {badge.tier === 'gold' ? 'bg-ouro/20 text-ouro' : badge.tier === 'silver' ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-700'}">
+                {badge.tier === 'gold' ? 'bg-ouro/20 text-ouro' : badge.tier === 'silver' ? 'bg-cafe-muted/15 text-cafe-secondary' : 'bg-terracotta/15 text-terracotta'}">
                 {badge.tier}
               </span>
               {#if badge.unlockedAt}

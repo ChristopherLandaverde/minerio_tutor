@@ -180,7 +180,7 @@
       <p id="celebration-title" class="font-display text-2xl font-bold text-ouro">Parabéns!</p>
       <p class="font-semibold text-base text-cafe mt-2">{badge.title}</p>
       <span class="inline-block mt-2 text-[10px] px-2 py-0.5 rounded-full font-semibold
-        {badge.tier === 'gold' ? 'bg-ouro/20 text-ouro' : badge.tier === 'silver' ? 'bg-gray-100 text-gray-600' : 'bg-amber-100 text-amber-700'}">
+        {badge.tier === 'gold' ? 'bg-ouro/20 text-ouro' : badge.tier === 'silver' ? 'bg-cafe-muted/15 text-cafe-secondary' : 'bg-terracotta/15 text-terracotta'}">
         {badge.tier}
       </span>
       <p class="text-sm text-cafe-secondary mt-3">{badge.description}</p>
