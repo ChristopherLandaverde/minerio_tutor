@@ -59,7 +59,7 @@ export const CITIES: CityDef[] = [
     cefr: 'A2',
     topics: ['greetings', 'daily_routine', 'transport'],
     prerequisites: [],
-    mapPosition: { x: 370, y: 195 },
+    mapPosition: { x: 160, y: 170 },
     culturalFact: 'BH é a capital de Minas — famosa pelo pão de queijo, botecos e o Mercado Central. Os mineiros dizem que BH é a capital mundial dos botecos!',
     npcs: [
       {
@@ -93,7 +93,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'A2-B1',
     topics: ['food', 'cultural', 'shopping'],
     prerequisites: ['bh'],
-    mapPosition: { x: 480, y: 290 },
+    mapPosition: { x: 300, y: 290 },
     culturalFact: 'Ouro Preto foi a primeira capital de Minas e é Patrimônio da Humanidade. As ladeiras são famosas — e a comida mineira aqui é das melhores do estado!',
     npcs: [
       {
@@ -127,7 +127,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1',
     topics: ['family', 'emotions', 'dialogue'],
     prerequisites: ['ouro_preto'],
-    mapPosition: { x: 580, y: 355 },
+    mapPosition: { x: 180, y: 390 },
     culturalFact: 'Mariana é a cidade mais antiga de Minas Gerais, fundada em 1696. É vizinha de Ouro Preto e tem uma das mais belas catedrais barrocas do Brasil.',
     npcs: [
       {
@@ -161,8 +161,8 @@ ${NPC_BASE_RULES}`,
     region: 'Histórico',
     cefr: 'A2-B1',
     topics: ['mineiro', 'mineiro_vs_standard', 'false_cognates'],
-    prerequisites: ['bh'],
-    mapPosition: { x: 270, y: 330 },
+    prerequisites: ['mariana'],
+    mapPosition: { x: 340, y: 450 },
     culturalFact: 'Tiradentes é uma das cidades mais charmosas de Minas, com ruas de pedra e casarões coloniais. O nome homenageia o herói da Inconfidência Mineira.',
     npcs: [
       {
@@ -196,7 +196,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1',
     topics: ['clothing', 'colors', 'body_health'],
     prerequisites: ['tiradentes'],
-    mapPosition: { x: 470, y: 130 },
+    mapPosition: { x: 510, y: 370 },
     culturalFact: 'Diamantina é a terra de Juscelino Kubitschek e berço da Vesperata — concerto noturno onde músicos tocam das sacadas dos sobrados coloniais.',
     npcs: [
       {
@@ -229,8 +229,8 @@ ${NPC_BASE_RULES}`,
     region: 'Rural',
     cefr: 'B1',
     topics: ['nature', 'weather', 'sports_leisure'],
-    prerequisites: ['ouro_preto'],
-    mapPosition: { x: 255, y: 210 },
+    prerequisites: ['diamantina'],
+    mapPosition: { x: 650, y: 280 },
     culturalFact: 'A Serra da Canastra é o berço do Rio São Francisco e lar do famoso queijo canastra — patrimônio cultural brasileiro. As cachoeiras são de tirar o fôlego!',
     npcs: [
       {
@@ -263,8 +263,8 @@ ${NPC_BASE_RULES}`,
     region: 'Zona da Mata',
     cefr: 'B1-B2',
     topics: ['work', 'education', 'technology'],
-    prerequisites: ['mariana'],
-    mapPosition: { x: 640, y: 240 },
+    prerequisites: ['serra_canastra'],
+    mapPosition: { x: 520, y: 170 },
     culturalFact: 'Juiz de Fora é a "Manchester Mineira" — pioneira na industrialização do Brasil. Tem a UFJF, uma das melhores universidades federais do país.',
     npcs: [
       {
@@ -297,8 +297,8 @@ ${NPC_BASE_RULES}`,
     region: 'Triângulo Mineiro',
     cefr: 'B2',
     topics: ['verbs_present', 'verbs_past', 'ser_estar'],
-    prerequisites: ['serra_canastra'],
-    mapPosition: { x: 185, y: 135 },
+    prerequisites: ['juiz_de_fora'],
+    mapPosition: { x: 370, y: 105 },
     culturalFact: 'Uberaba é a capital mundial do gado zebu e sede da maior feira agropecuária do Brasil, a ExpoZebu. O Triângulo Mineiro tem um sotaque bem diferente do resto do estado!',
     npcs: [
       {
@@ -332,8 +332,8 @@ ${NPC_BASE_RULES}`,
     region: 'Religioso',
     cefr: 'B2',
     topics: ['prepositions', 'error_correction', 'travel'],
-    prerequisites: ['juiz_de_fora'],
-    mapPosition: { x: 500, y: 430 },
+    prerequisites: ['uberaba'],
+    mapPosition: { x: 660, y: 130 },
     culturalFact: 'Congonhas é famosa pelos 12 Profetas de Aleijadinho na Basílica do Bom Jesus de Matosinhos — obra-prima do barroco brasileiro e Patrimônio da Humanidade.',
     npcs: [
       {
@@ -363,17 +363,15 @@ ${NPC_BASE_RULES}`,
 ];
 
 export const ROADS: RoadDef[] = [
-  // Main corridor
+  // Linear journey across Minas
   { from: 'bh', to: 'ouro_preto' },
   { from: 'ouro_preto', to: 'mariana' },
-  // Western branch (language → nature → grammar)
-  { from: 'bh', to: 'tiradentes' },
+  { from: 'mariana', to: 'tiradentes' },
   { from: 'tiradentes', to: 'diamantina' },
-  { from: 'ouro_preto', to: 'serra_canastra' },
-  { from: 'serra_canastra', to: 'uberaba' },
-  // Eastern branch (family → professional → advanced)
-  { from: 'mariana', to: 'juiz_de_fora' },
-  { from: 'juiz_de_fora', to: 'congonhas' },
+  { from: 'diamantina', to: 'serra_canastra' },
+  { from: 'serra_canastra', to: 'juiz_de_fora' },
+  { from: 'juiz_de_fora', to: 'uberaba' },
+  { from: 'uberaba', to: 'congonhas' },
 ];
 
 // Lookup maps
