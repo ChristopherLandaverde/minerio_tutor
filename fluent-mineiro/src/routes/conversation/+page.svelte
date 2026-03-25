@@ -84,15 +84,14 @@
     return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   }
 
+  let started = $state(false);
+
   onMount(async () => {
     try {
       apiKey = await getApiKey();
       elevenKey = await getElevenLabsKey();
       voiceEnabled = !!elevenKey;
     } catch {}
-    if (apiKey) {
-      await startConversation();
-    }
   });
 
   async function saveKeys() {
@@ -113,17 +112,10 @@
     }
   }
 
-  async function startConversation() {
+  function startConversation() {
     const greeting = 'E aí, tudo bão? 😊 Manda um oi em português, sô!';
     messages = [{ role: 'assistant', content: greeting, time: now() }];
-    // Speak greeting if voice enabled
-    if (voiceEnabled && elevenKey) {
-      try {
-        speaking = true;
-        const audio = await textToSpeech(greeting, elevenKey);
-        await playAudio(audio);
-      } catch {} finally { speaking = false; }
-    }
+    started = true;
   }
 
   /** Send a text message and get a spoken reply */
@@ -228,6 +220,20 @@
       {#if error}
         <div class="mt-4 px-4 py-3 bg-error/10 border border-error/20 rounded-lg text-sm text-error">{error}</div>
       {/if}
+    </div>
+
+  {:else if !started}
+    <!-- Welcome screen — user decides when to start -->
+    <div class="max-w-lg mx-auto p-6 mt-12 text-center">
+      <div class="text-5xl mb-4">💬</div>
+      <h2 class="font-display text-2xl font-bold mb-2">Conversa com Sabiá</h2>
+      <p class="text-sm text-cafe-secondary mb-6">Pratique português mineiro numa conversa com seu tutor. Escreva em português — ele vai te ajudar!</p>
+      <button
+        onclick={startConversation}
+        class="px-8 py-3 bg-serra text-white font-semibold rounded-xl hover:bg-serra-dark transition-colors"
+      >
+        Começar conversa
+      </button>
     </div>
 
   {:else}
