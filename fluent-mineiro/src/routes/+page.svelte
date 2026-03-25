@@ -159,7 +159,7 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <div>
-        <h2 class="font-display text-2xl font-bold">{new Date().getHours() < 12 ? 'Bom dia!' : new Date().getHours() < 18 ? 'Boa tarde!' : 'Boa noite!'}</h2>
+        <h2 class="font-display text-2xl font-bold">{new Date().getHours() < 12 ? 'Bom dia, Krissss!' : new Date().getHours() < 18 ? 'Boa tarde, Krissss!' : 'Boa noite, Krissss!'}</h2>
         <p class="text-[10px] text-cafe-muted/50">{new Date().getHours() < 12 ? 'Good morning!' : new Date().getHours() < 18 ? 'Good afternoon!' : 'Good evening!'}</p>
       </div>
       <p class="text-sm text-cafe-secondary">Nível {currentLevel} · Vamos praticar</p>
