@@ -5,12 +5,20 @@
 
   let { children } = $props();
   let mobileMenuOpen = $state(false);
+  let splashVisible = $state(true);
+  let splashFading = $state(false);
 
   onMount(() => {
     // Apply saved theme on app load
     const saved = localStorage.getItem('dark_mode');
     if (saved === 'dark') document.documentElement.classList.add('dark');
     else if (saved === 'light') document.documentElement.classList.add('light');
+
+    // Dismiss splash after DB initializes (min 1.2s for animation)
+    setTimeout(() => {
+      splashFading = true;
+      setTimeout(() => { splashVisible = false; }, 500);
+    }, 1200);
   });
 
   const navItems = [
@@ -30,6 +38,24 @@
     return page.url.pathname.startsWith(href);
   }
 </script>
+
+<!-- Splash screen -->
+{#if splashVisible}
+  <div
+    class="fixed inset-0 z-[100] bg-pedra flex flex-col items-center justify-center transition-opacity duration-500"
+    class:opacity-100={!splashFading}
+    class:opacity-0={splashFading}
+  >
+    <div class="text-6xl mb-4 animate-bounce" style="animation-duration: 1.5s;">🐦</div>
+    <h1 class="font-display text-3xl font-bold text-terracotta">Sabiá</h1>
+    <p class="text-sm text-cafe-secondary mt-1">Aprenda mineirês, uai!</p>
+    <div class="mt-6 flex gap-1.5">
+      <div class="w-2 h-2 bg-terracotta/40 rounded-full animate-pulse" style="animation-delay: 0ms;"></div>
+      <div class="w-2 h-2 bg-terracotta/40 rounded-full animate-pulse" style="animation-delay: 200ms;"></div>
+      <div class="w-2 h-2 bg-terracotta/40 rounded-full animate-pulse" style="animation-delay: 400ms;"></div>
+    </div>
+  </div>
+{/if}
 
 <div class="flex h-screen bg-pedra">
   <!-- Mobile header -->
@@ -86,7 +112,7 @@
       {/each}
     </div>
     <div class="p-4 border-t border-border text-xs text-cafe-muted hidden md:block">
-      Sabiá v0.4.0
+      Sabiá v0.5.0
     </div>
   </nav>
 
