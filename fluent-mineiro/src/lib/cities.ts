@@ -59,7 +59,7 @@ export const CITIES: CityDef[] = [
     cefr: 'A2',
     topics: ['greetings', 'daily_routine', 'transport'],
     prerequisites: [],
-    mapPosition: { x: 380, y: 260 },
+    mapPosition: { x: 350, y: 220 },
     culturalFact: 'BH é a capital de Minas — famosa pelo pão de queijo, botecos e o Mercado Central. Os mineiros dizem que BH é a capital mundial dos botecos!',
     npcs: [
       {
@@ -93,7 +93,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'A2-B1',
     topics: ['food', 'cultural', 'food_drinks'],
     prerequisites: ['bh'],
-    mapPosition: { x: 470, y: 340 },
+    mapPosition: { x: 460, y: 330 },
     culturalFact: 'Ouro Preto foi a primeira capital de Minas e é Patrimônio da Humanidade. As ladeiras são famosas — e a comida mineira aqui é das melhores do estado!',
     npcs: [
       {
@@ -127,7 +127,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1',
     topics: ['family', 'emotions', 'dialogue'],
     prerequisites: ['ouro_preto'],
-    mapPosition: { x: 530, y: 370 },
+    mapPosition: { x: 560, y: 410 },
     culturalFact: 'Mariana é a cidade mais antiga de Minas Gerais, fundada em 1696. É vizinha de Ouro Preto e tem uma das mais belas catedrais barrocas do Brasil.',
     npcs: [
       {
