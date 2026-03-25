@@ -11,6 +11,7 @@
   import NpcChat from '$lib/components/NpcChat.svelte';
   import { CITIES, CITY_MAP, TOPIC_TO_CITY, type CityDef, type NpcDef } from '$lib/cities';
   import { computeCityStates, type CityState } from '$lib/city-state';
+  import { awardCityStamp, getJournalStats } from '$lib/journal';
 
   let streak = $state(0);
   let totalXp = $state(0);
@@ -37,6 +38,9 @@
   let selectedCity = $state<CityDef | null>(null);
   let selectedNpc = $state<NpcDef | null>(null);
   let cityPanelOpen = $state(false);
+  let journalStamps = $state(0);
+  let journalNpcs = $state(0);
+  let journalTotal = $state(0);
 
   // Topic metadata
   const topicMeta: Record<string, { label: string; icon: string }> = {
@@ -96,6 +100,11 @@
       cityStates = await computeCityStates(db);
       challenges = await getActiveChallenges();
       hasVoice = !!(await getElevenLabsKey());
+
+      const jStats = await getJournalStats();
+      journalStamps = jStats.stamps;
+      journalNpcs = jStats.npcs;
+      journalTotal = jStats.total;
     } catch {}
     loaded = true;
     loadCoachingNote();
@@ -153,6 +162,8 @@
     if (!city) return;
     selectedCity = city;
     selectedNpc = null;
+    // Award stamp on first visit
+    awardCityStamp(cityId);
     // Trigger animation
     setTimeout(() => { cityPanelOpen = true; }, 10);
   }
@@ -255,23 +266,27 @@
     </div>
 
     <!-- Stats + Progress row -->
-    <div class="grid grid-cols-4 gap-3 mb-4">
-      <div class="bg-white border border-border rounded-xl p-3 text-center">
+    <div class="grid grid-cols-5 gap-2 mb-4">
+      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
         <div class="font-display text-lg font-bold text-terracotta">{streak}</div>
-        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">Streak</div>
+        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Streak</div>
       </div>
-      <div class="bg-white border border-border rounded-xl p-3 text-center">
+      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
         <div class="font-display text-lg font-bold text-serra">{accuracy}%</div>
-        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">Acertos</div>
+        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Acertos</div>
       </div>
-      <div class="bg-white border border-border rounded-xl p-3 text-center">
+      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
         <div class="font-display text-lg font-bold text-ouro">{dueReviews}</div>
-        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">Revisões</div>
+        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Revisões</div>
       </div>
-      <div class="bg-white border border-border rounded-xl p-3 text-center">
+      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
         <div class="font-display text-lg font-bold text-cafe">{totalXp}</div>
-        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">XP</div>
+        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">XP</div>
       </div>
+      <a href="/achievements" class="bg-white border border-border rounded-xl p-2.5 text-center hover:border-terracotta transition-colors">
+        <div class="font-display text-lg font-bold text-terracotta-light">{journalStamps}</div>
+        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Selos</div>
+      </a>
     </div>
 
     <!-- Daily goal + CEFR -->

@@ -3,6 +3,7 @@
   import { getApiKey, type ChatMessage } from '$lib/claude';
   import { loadNpcConversation, saveNpcConversation, sendNpcMessage, resetNpcConversation } from '$lib/npc';
   import type { NpcDef } from '$lib/cities';
+  import { awardNpcRelationship } from '$lib/journal';
 
   interface DisplayMessage extends ChatMessage {
     time: string;
@@ -59,6 +60,8 @@
       const history: ChatMessage[] = messages.map(m => ({ role: m.role, content: m.content }));
       const reply = await sendNpcMessage(npc, history.slice(0, -1), text);
       messages = [...messages, { role: 'assistant', content: reply, time: now() }];
+      // Award NPC relationship on first message
+      awardNpcRelationship(npc.id, npc.cityId);
       await tick();
       scrollToBottom();
 
