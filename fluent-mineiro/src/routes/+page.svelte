@@ -248,19 +248,19 @@
     <div class="relative mb-4">
       <MinasMap {cityStates} onCityClick={handleCityClick} />
 
-      <!-- "Sabiá recomenda" overlay -->
+      <!-- "Sabiá recomenda" compact pill -->
       {#if sabiaRecommendations().length > 0}
-        <div class="absolute bottom-3 left-3 md:max-w-[280px] bg-white/95 backdrop-blur-sm border border-border rounded-xl p-3 shadow-lg">
-          <p class="text-[10px] text-cafe-muted uppercase tracking-wider font-semibold mb-2">🐦 Sabiá recomenda</p>
-          <div class="space-y-1">
-            {#each sabiaRecommendations() as rec}
-              <a href="/lesson?type={rec.type}&topic={rec.topic}" class="flex items-center gap-2 py-1 text-xs text-cafe hover:text-terracotta transition-colors">
-                <span class="text-sm">{rec.icon}</span>
-                <span class="font-medium">{rec.topicLabel}</span>
-                <span class="text-cafe-muted/60 text-[10px]">{rec.cityName}</span>
-              </a>
-            {/each}
-          </div>
+        <div class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-border rounded-full pl-2.5 pr-1 py-1 shadow-sm text-[10px]">
+          <span>🐦</span>
+          <a href="/lesson?type={sabiaRecommendations()[0].type}&topic={sabiaRecommendations()[0].topic}" class="text-cafe hover:text-terracotta font-medium transition-colors">
+            {sabiaRecommendations()[0].topicLabel}
+          </a>
+          {#if sabiaRecommendations().length > 1}
+            <span class="text-cafe-muted">·</span>
+            <a href="/lesson?type={sabiaRecommendations()[1].type}&topic={sabiaRecommendations()[1].topic}" class="text-cafe hover:text-terracotta font-medium transition-colors">
+              {sabiaRecommendations()[1].topicLabel}
+            </a>
+          {/if}
         </div>
       {/if}
     </div>

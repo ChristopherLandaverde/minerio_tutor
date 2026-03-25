@@ -105,8 +105,11 @@ const JOURNAL_DEFS = new Map<string, Omit<JournalEntry, 'id' | 'earnedAt'>>([
 
   // NPC relationships
   ['journal:npc:seu_ze', { type: 'npc', cityId: 'bh', label: 'Seu Zé', detail: 'Garçom do boteco em BH — seu primeiro amigo mineiro' }],
+  ['journal:npc:motorista_carlos', { type: 'npc', cityId: 'bh', label: 'Carlos', detail: 'Motorista de ônibus — conhece BH inteirinha' }],
   ['journal:npc:dona_lourdes', { type: 'npc', cityId: 'ouro_preto', label: 'Dona Lourdes', detail: 'Guia turístico de Ouro Preto — apaixonada pela história' }],
+  ['journal:npc:dona_pousada', { type: 'npc', cityId: 'ouro_preto', label: 'Dona Francisca', detail: 'Dona da pousada — cozinha que é um amor' }],
   ['journal:npc:dona_aparecida', { type: 'npc', cityId: 'mariana', label: 'Dona Aparecida', detail: 'Vizinha fofoqueira de Mariana — sabe de tudo' }],
+  ['journal:npc:padre_marcos', { type: 'npc', cityId: 'mariana', label: 'Padre Marcos', detail: 'Padre da catedral — gentil e sábio' }],
   ['journal:npc:professor_helio', { type: 'npc', cityId: 'tiradentes', label: 'Professor Hélio', detail: 'Professor aposentado — mestre do mineirês' }],
   ['journal:npc:rita', { type: 'npc', cityId: 'diamantina', label: 'Rita', detail: 'Artesã de Diamantina — mundo de cores e tecidos' }],
   ['journal:npc:toninho', { type: 'npc', cityId: 'serra_canastra', label: 'Toninho', detail: 'Guia de ecoturismo — conhece cada trilha da Serra' }],
