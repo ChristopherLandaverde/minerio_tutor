@@ -11,30 +11,70 @@
     minWords: number;
   }
 
-  const prompts: WritingPrompt[] = [
-    { title: 'E-mail para um amigo', description: 'Escreva um e-mail para um amigo convidando-o para visitar Belo Horizonte. Mencione lugares para visitar e comidas para provar.', level: 'A2', type: 'email', minWords: 30 },
-    { title: 'Minha rotina diária', description: 'Descreva sua rotina diária: o que você faz de manhã, à tarde e à noite.', level: 'A2', type: 'description', minWords: 40 },
-    { title: 'Pedido no restaurante', description: 'Imagine que você está em um restaurante mineiro. Escreva o diálogo entre você e o garçom.', level: 'A2', type: 'dialogue', minWords: 30 },
-    { title: 'Reclamação educada', description: 'Escreva uma mensagem para um hotel reclamando de um problema com o quarto, mas de forma educada.', level: 'B1', type: 'formal', minWords: 50 },
-    { title: 'Minha comida favorita', description: 'Descreva sua comida brasileira favorita: como é, como é preparada, e por que você gosta.', level: 'A2', type: 'description', minWords: 40 },
-    { title: 'Carta para o futuro', description: 'Escreva uma carta para você mesmo no futuro, quando já falar português fluentemente. Use o futuro do indicativo.', level: 'B1', type: 'letter', minWords: 60 },
-    { title: 'Recomendação de filme', description: 'Recomende um filme ou série para um amigo brasileiro. Explique a história e por que vale a pena assistir.', level: 'B1', type: 'review', minWords: 50 },
-    { title: 'Experiência de viagem', description: 'Conte sobre uma viagem que você fez (ou gostaria de fazer) ao Brasil. Use o pretérito perfeito.', level: 'B1', type: 'narrative', minWords: 60 },
-    { title: 'Opinião sobre tecnologia', description: 'Dê sua opinião: a tecnologia está melhorando ou piorando nossa vida? Justifique com exemplos.', level: 'B2', type: 'opinion', minWords: 80 },
-    { title: 'Mensagem para o chefe', description: 'Escreva uma mensagem profissional pedindo férias. Explique quando, por quanto tempo, e por quê.', level: 'B1', type: 'formal', minWords: 50 },
+  interface StarterKit {
+    starters: string[];
+    vocab: string[];
+  }
+
+  const prompts: (WritingPrompt & { kit: StarterKit })[] = [
+    { title: 'E-mail para um amigo', description: 'Escreva um e-mail para um amigo convidando-o para visitar Belo Horizonte. Mencione lugares para visitar e comidas para provar.', level: 'A2', type: 'email', minWords: 30, kit: {
+      starters: ['Oi [nome], tudo bão?', 'Cê precisa vir pra BH, uai!', 'Aqui tem uns trem bão demais...'],
+      vocab: ['visitar (to visit)', 'provar (to try/taste)', 'pão de queijo', 'Praça da Liberdade', 'Mercado Central', 'saudade (missing you)'],
+    }},
+    { title: 'Minha rotina diária', description: 'Descreva sua rotina diária: o que você faz de manhã, à tarde e à noite.', level: 'A2', type: 'description', minWords: 40, kit: {
+      starters: ['De manhã eu...', 'Depois do almoço...', 'À noite eu gosto de...'],
+      vocab: ['acordar (to wake up)', 'tomar café (to have coffee)', 'almoçar (to have lunch)', 'trabalhar (to work)', 'descansar (to rest)', 'jantar (to have dinner)'],
+    }},
+    { title: 'Pedido no restaurante', description: 'Imagine que você está em um restaurante mineiro. Escreva o diálogo entre você e o garçom.', level: 'A2', type: 'dialogue', minWords: 30, kit: {
+      starters: ['Garçom: Boa noite! O que vai ser?', 'Eu: Por favor, eu queria...', 'Garçom: Mais alguma coisa?'],
+      vocab: ['o cardápio (the menu)', 'a conta (the bill)', 'eu queria (I would like)', 'tá incluso? (is it included?)', 'feijão tropeiro', 'tutu de feijão'],
+    }},
+    { title: 'Reclamação educada', description: 'Escreva uma mensagem para um hotel reclamando de um problema com o quarto, mas de forma educada.', level: 'B1', type: 'formal', minWords: 50, kit: {
+      starters: ['Prezado(a) gerente,', 'Gostaria de informar que...', 'Agradeço a atenção.'],
+      vocab: ['reclamar (to complain)', 'o quarto (the room)', 'o chuveiro (the shower)', 'barulho (noise)', 'resolver (to resolve)', 'agradecer (to thank)'],
+    }},
+    { title: 'Minha comida favorita', description: 'Descreva sua comida brasileira favorita: como é, como é preparada, e por que você gosta.', level: 'A2', type: 'description', minWords: 40, kit: {
+      starters: ['Minha comida favorita é...', 'É feita com...', 'Eu gosto porque...'],
+      vocab: ['gostoso/a (delicious)', 'tempero (seasoning)', 'cozinhar (to cook)', 'ingrediente (ingredient)', 'receita (recipe)', 'caseiro (homemade)'],
+    }},
+    { title: 'Carta para o futuro', description: 'Escreva uma carta para você mesmo no futuro, quando já falar português fluentemente. Use o futuro do indicativo.', level: 'B1', type: 'letter', minWords: 60, kit: {
+      starters: ['Querido eu do futuro,', 'Quando cê ler isso...', 'Eu espero que...'],
+      vocab: ['conseguir (to achieve)', 'fluente (fluent)', 'orgulho (pride)', 'sonhar (to dream)', 'lembrar (to remember)', 'valer a pena (to be worth it)'],
+    }},
+    { title: 'Recomendação de filme', description: 'Recomende um filme ou série para um amigo brasileiro. Explique a história e por que vale a pena assistir.', level: 'B1', type: 'review', minWords: 50, kit: {
+      starters: ['Cê tem que assistir...', 'A história é sobre...', 'Eu recomendo porque...'],
+      vocab: ['o enredo (the plot)', 'o personagem (the character)', 'emocionante (exciting)', 'vale a pena (worth it)', 'a temporada (the season)', 'o final (the ending)'],
+    }},
+    { title: 'Experiência de viagem', description: 'Conte sobre uma viagem que você fez (ou gostaria de fazer) ao Brasil. Use o pretérito perfeito.', level: 'B1', type: 'narrative', minWords: 60, kit: {
+      starters: ['No ano passado eu fui...', 'A melhor parte foi...', 'Eu queria muito voltar porque...'],
+      vocab: ['viajar (to travel)', 'conhecer (to get to know)', 'a paisagem (the scenery)', 'inesquecível (unforgettable)', 'o voo (the flight)', 'a hospedagem (the lodging)'],
+    }},
+    { title: 'Opinião sobre tecnologia', description: 'Dê sua opinião: a tecnologia está melhorando ou piorando nossa vida? Justifique com exemplos.', level: 'B2', type: 'opinion', minWords: 80, kit: {
+      starters: ['Na minha opinião...', 'Por um lado... por outro lado...', 'Por exemplo...'],
+      vocab: ['melhorar (to improve)', 'piorar (to worsen)', 'a rede social (social media)', 'depender (to depend)', 'o impacto (the impact)', 'no entanto (however)'],
+    }},
+    { title: 'Mensagem para o chefe', description: 'Escreva uma mensagem profissional pedindo férias. Explique quando, por quanto tempo, e por quê.', level: 'B1', type: 'formal', minWords: 50, kit: {
+      starters: ['Prezado(a) [nome],', 'Venho solicitar...', 'Fico à disposição.'],
+      vocab: ['férias (vacation)', 'solicitar (to request)', 'o período (the period)', 'a partir de (starting from)', 'retornar (to return)', 'antecipadamente (in advance)'],
+    }},
   ];
 
   let apiKey = $state<string | null>(null);
-  let selectedPrompt = $state<WritingPrompt | null>(null);
+  let selectedPrompt = $state<(WritingPrompt & { kit: StarterKit }) | null>(null);
   let userText = $state('');
   let feedback = $state<string | null>(null);
   let loading = $state(false);
   let error = $state<string | null>(null);
   let wordCount = $state(0);
+  let showHelper = $state(true);
 
   $effect(() => {
     wordCount = userText.trim() ? userText.trim().split(/\s+/).length : 0;
   });
+
+  function insertStarter(text: string) {
+    userText = userText ? userText + ' ' + text : text;
+  }
 
   onMount(async () => {
     try {
@@ -42,7 +82,7 @@
     } catch {}
   });
 
-  function selectPrompt(p: WritingPrompt) {
+  function selectPrompt(p: WritingPrompt & { kit: StarterKit }) {
     selectedPrompt = p;
     userText = '';
     feedback = null;
@@ -173,17 +213,62 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
       <p class="text-sm text-cafe">{selectedPrompt.description}</p>
     </div>
 
+    <!-- Helper Panel: Starters + Vocab -->
+    {#if showHelper && selectedPrompt.kit}
+      <div class="bg-white border border-border rounded-xl p-4 mb-4">
+        <div class="flex items-center justify-between mb-3">
+          <span class="text-xs font-semibold text-cafe-muted uppercase tracking-wider">Precisa de ajuda?</span>
+          <button onclick={() => showHelper = false} class="text-xs text-cafe-muted hover:text-cafe">esconder</button>
+        </div>
+
+        <!-- Starter phrases — click to insert -->
+        <div class="mb-3">
+          <p class="text-[10px] text-cafe-muted mb-1.5">Comece com:</p>
+          <div class="flex flex-wrap gap-1.5">
+            {#each selectedPrompt.kit.starters as starter}
+              <button
+                onclick={() => insertStarter(starter)}
+                class="text-xs px-2.5 py-1 bg-terracotta/10 text-terracotta rounded-full hover:bg-terracotta/20 transition-colors"
+              >
+                {starter}
+              </button>
+            {/each}
+          </div>
+        </div>
+
+        <!-- Vocabulary hints -->
+        <div>
+          <p class="text-[10px] text-cafe-muted mb-1.5">Vocabulário útil:</p>
+          <div class="flex flex-wrap gap-1.5">
+            {#each selectedPrompt.kit.vocab as word}
+              <span class="text-xs px-2 py-0.5 bg-pedra-subtle rounded-full text-cafe-secondary">{word}</span>
+            {/each}
+          </div>
+        </div>
+      </div>
+    {:else if !showHelper}
+      <button onclick={() => showHelper = true} class="text-xs text-terracotta hover:underline mb-3 block">
+        Mostrar ajuda
+      </button>
+    {/if}
+
     <!-- Text Area -->
     <div class="relative mb-4">
       <textarea
         bind:value={userText}
-        placeholder="Escreva seu texto em português aqui..."
+        placeholder="Escreva seu texto em português aqui... (clique nas frases acima para começar!)"
         rows={8}
         disabled={loading}
         class="w-full px-4 py-3 border-2 border-border rounded-xl text-sm bg-white focus:border-terracotta outline-none resize-none disabled:opacity-50 leading-relaxed"
       ></textarea>
-      <div class="absolute bottom-3 right-3 text-xs {wordCount >= selectedPrompt.minWords ? 'text-serra' : 'text-cafe-muted'}">
-        {wordCount}/{selectedPrompt.minWords} palavras
+      <div class="absolute bottom-3 right-3 text-xs font-semibold {wordCount >= selectedPrompt.minWords ? 'text-serra' : wordCount > 0 ? 'text-ouro' : 'text-cafe-muted'}">
+        {#if wordCount >= selectedPrompt.minWords}
+          ✓ {wordCount} palavras
+        {:else if wordCount > 0}
+          {wordCount}/{selectedPrompt.minWords} palavras
+        {:else}
+          {selectedPrompt.minWords} palavras mínimo
+        {/if}
       </div>
     </div>
 
