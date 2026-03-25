@@ -14,11 +14,11 @@
     if (saved === 'dark') document.documentElement.classList.add('dark');
     else if (saved === 'light') document.documentElement.classList.add('light');
 
-    // Dismiss splash after DB initializes (min 1.2s for animation)
+    // Dismiss splash after DB initializes (2.5s display + 800ms fade)
     setTimeout(() => {
       splashFading = true;
-      setTimeout(() => { splashVisible = false; }, 500);
-    }, 1200);
+      setTimeout(() => { splashVisible = false; }, 800);
+    }, 2500);
   });
 
   const navItems = [
@@ -42,11 +42,11 @@
 <!-- Splash screen -->
 {#if splashVisible}
   <div
-    class="fixed inset-0 z-[100] bg-pedra flex flex-col items-center justify-center transition-opacity duration-500"
+    class="fixed inset-0 z-[100] bg-pedra flex flex-col items-center justify-center transition-opacity duration-800 ease-out"
     class:opacity-100={!splashFading}
     class:opacity-0={splashFading}
   >
-    <div class="text-6xl mb-4 animate-bounce" style="animation-duration: 1.5s;">🐦</div>
+    <div class="text-6xl mb-4 splash-bird">🐦</div>
     <h1 class="font-display text-3xl font-bold text-terracotta">Sabiá</h1>
     <p class="text-sm text-cafe-secondary mt-1">Aprenda mineirês, uai!</p>
     <div class="mt-6 flex gap-1.5">

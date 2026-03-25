@@ -135,6 +135,17 @@ html.dark .animate-pulse {
   background-color: #352A20 !important;
 }
 
+/* Splash bird bounce */
+@keyframes bird-hop {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-18px); }
+  50% { transform: translateY(-4px); }
+  70% { transform: translateY(-10px); }
+}
+.splash-bird {
+  animation: bird-hop 1.2s ease-in-out infinite;
+}
+
 /* Chat background with cross-hatch pattern */
 .chat-bg {
   background-color: var(--color-pedra-subtle);
