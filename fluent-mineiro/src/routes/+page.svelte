@@ -7,6 +7,10 @@
   import { getMistakePatterns } from '$lib/db';
   import { getActiveChallenges, type Challenge } from '$lib/challenges';
   import { getElevenLabsKey } from '$lib/elevenlabs';
+  import MinasMap from '$lib/components/MinasMap.svelte';
+  import NpcChat from '$lib/components/NpcChat.svelte';
+  import { CITIES, CITY_MAP, TOPIC_TO_CITY, type CityDef, type NpcDef } from '$lib/cities';
+  import { computeCityStates, type CityState } from '$lib/city-state';
 
   let streak = $state(0);
   let totalXp = $state(0);
@@ -28,6 +32,27 @@
   // Voice
   let hasVoice = $state(false);
 
+  // Map state
+  let cityStates = $state<CityState[]>([]);
+  let selectedCity = $state<CityDef | null>(null);
+  let selectedNpc = $state<NpcDef | null>(null);
+  let showCoachingPanel = $state(true);
+
+  // Topic metadata for city detail panel
+  const topicMeta: Record<string, { label: string; icon: string }> = {
+    food: { label: 'Comida Mineira', icon: '🍽️' },
+    mineiro: { label: 'Expressões Mineiras', icon: '🏔️' },
+    greetings: { label: 'Cumprimentos', icon: '👋' },
+    travel: { label: 'Viagem & Direções', icon: '🗺️' },
+    family: { label: 'Família', icon: '👨‍👩‍👧' },
+    daily_routine: { label: 'Rotina Diária', icon: '☀️' },
+    transport: { label: 'Transporte', icon: '🚌' },
+    emotions: { label: 'Emoções', icon: '💛' },
+    cultural: { label: 'Cultura Mineira', icon: '🎭' },
+    food_drinks: { label: 'Comida & Bebida', icon: '🍹' },
+    dialogue: { label: 'Diálogos', icon: '💬' },
+  };
+
   onMount(async () => {
     try {
       streak = parseInt(await getProfile('streak') || '0');
@@ -43,6 +68,9 @@
       const db = await getDb();
       sessionPlan = await planSession(db);
 
+      // Compute city states
+      cityStates = await computeCityStates(db);
+
       // Load challenges
       challenges = await getActiveChallenges();
 
@@ -51,7 +79,7 @@
     } catch {}
     loaded = true;
 
-    // Load coaching note async (don't block dashboard)
+    // Load coaching note async
     loadCoachingNote();
   });
 
@@ -74,109 +102,84 @@
   }
 
   const accuracy = $derived(todayTotal > 0 ? Math.round((todayCorrect / todayTotal) * 100) : 0);
-  const xpProgress = $derived(Math.min(100, (totalXp % 1000) / 10));
   const goalProgress = $derived(Math.min(100, (todayTotal / dailyGoal) * 100));
   const goalMet = $derived(todayTotal >= dailyGoal);
 
-  // CEFR progress map data
-  const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
-  const cefrOrder = $derived(cefrLevels.map(level => ({
-    level,
-    isCurrent: level === currentLevel,
-    isPast: cefrLevels.indexOf(level) < cefrLevels.indexOf(currentLevel),
-    isFuture: cefrLevels.indexOf(level) > cefrLevels.indexOf(currentLevel),
-  })));
+  // "What Sabiá thinks you need now" — top 2 recommendations
+  const sabiaRecommendations = $derived(() => {
+    if (!sessionPlan) return [];
+    const seen = new Set<string>();
+    const recs: { type: string; topic: string; cityName: string; topicLabel: string }[] = [];
+    for (const ex of sessionPlan.exercises) {
+      const key = `${ex.type}:${ex.topic}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      const cityId = TOPIC_TO_CITY.get(ex.topic);
+      const city = cityId ? CITY_MAP.get(cityId) : undefined;
+      const tm = topicMeta[ex.topic];
+      recs.push({
+        type: ex.type,
+        topic: ex.topic,
+        cityName: city?.name || 'Minas Gerais',
+        topicLabel: tm?.label || ex.topic,
+      });
+      if (recs.length >= 2) break;
+    }
+    return recs;
+  });
 
-  // Lesson cards (existing)
-  const topicMeta: Record<string, { label: string; icon: string; bg: string }> = {
-    food: { label: 'Comida Mineira', icon: '🍽️', bg: 'bg-green-50' },
-    mineiro: { label: 'Expressões Mineiras', icon: '🏔️', bg: 'bg-amber-50' },
-    greetings: { label: 'Cumprimentos', icon: '👋', bg: 'bg-blue-50' },
-    travel: { label: 'Viagem & Direções', icon: '🗺️', bg: 'bg-sky-50' },
-    family: { label: 'Família', icon: '👨‍👩‍👧', bg: 'bg-pink-50' },
-    daily_routine: { label: 'Rotina Diária', icon: '☀️', bg: 'bg-orange-50' },
-    body_health: { label: 'Corpo & Saúde', icon: '🏥', bg: 'bg-red-50' },
-    emotions: { label: 'Emoções', icon: '💛', bg: 'bg-yellow-50' },
-    shopping: { label: 'Compras', icon: '🛍️', bg: 'bg-purple-50' },
-    work: { label: 'Trabalho', icon: '💼', bg: 'bg-slate-50' },
-    ser_estar: { label: 'Ser vs Estar', icon: '⚖️', bg: 'bg-indigo-50' },
-    verbs_present: { label: 'Verbos: Presente', icon: '📝', bg: 'bg-emerald-50' },
-    verbs_past: { label: 'Verbos: Passado', icon: '⏮️', bg: 'bg-teal-50' },
-    prepositions: { label: 'Preposições', icon: '🔗', bg: 'bg-cyan-50' },
-    false_cognates: { label: 'Falsos Cognatos (PT vs ES)', icon: '⚠️', bg: 'bg-rose-50' },
-    mineiro_vs_standard: { label: 'Mineiro vs Padrão', icon: '🗣️', bg: 'bg-amber-50' },
-    cultural: { label: 'Cultura Mineira', icon: '🎭', bg: 'bg-violet-50' },
-    error_correction: { label: 'Correção de Erros', icon: '🔧', bg: 'bg-orange-50' },
-    transport: { label: 'Transporte', icon: '🚌', bg: 'bg-zinc-50' },
-    clothing: { label: 'Roupas', icon: '👕', bg: 'bg-fuchsia-50' },
-    sports_leisure: { label: 'Esportes & Lazer', icon: '⚽', bg: 'bg-green-50' },
-    food_drinks: { label: 'Comida & Bebida', icon: '🍹', bg: 'bg-amber-50' },
-    nature: { label: 'Natureza & Animais', icon: '🌿', bg: 'bg-lime-50' },
-    house: { label: 'Casa & Lar', icon: '🏠', bg: 'bg-stone-50' },
-    education: { label: 'Educação', icon: '📚', bg: 'bg-blue-50' },
-    technology: { label: 'Tecnologia', icon: '📱', bg: 'bg-gray-50' },
-    time_numbers: { label: 'Tempo & Números', icon: '🕐', bg: 'bg-blue-50' },
-    weather: { label: 'Clima', icon: '🌤️', bg: 'bg-sky-50' },
-    colors: { label: 'Cores', icon: '🎨', bg: 'bg-pink-50' },
-    true_false: { label: 'Verdadeiro ou Falso', icon: '✅', bg: 'bg-lime-50' },
-    reorder: { label: 'Reordene a Frase', icon: '🔀', bg: 'bg-fuchsia-50' },
-    dialogue: { label: 'Diálogos', icon: '💬', bg: 'bg-sky-50' },
-  };
+  function handleCityClick(cityId: string) {
+    const city = CITY_MAP.get(cityId);
+    if (!city) return;
+    selectedCity = city;
+    selectedNpc = null;
+  }
 
-  const typeMeta: Record<string, { label: string; badge: string; badgeColor: string }> = {
-    vocab: { label: 'Vocabulário', badge: 'palavras', badgeColor: 'text-serra' },
-    cloze: { label: 'Gramática', badge: 'exercícios', badgeColor: 'text-terracotta' },
-    multiple_choice: { label: 'Quiz', badge: 'questões', badgeColor: 'text-info' },
-    error_correction: { label: 'Correção', badge: 'exercícios', badgeColor: 'text-ouro' },
-    true_false: { label: 'Verdadeiro/Falso', badge: 'questões', badgeColor: 'text-serra' },
-    reorder: { label: 'Reordene', badge: 'exercícios', badgeColor: 'text-terracotta' },
-  };
+  function handleNpcClick(npc: NpcDef) {
+    selectedNpc = npc;
+  }
 
-  interface LessonCard { type: string; topic: string; count: number; cefr: string }
+  function handleNpcClose() {
+    selectedNpc = null;
+  }
 
-  const lessonCards = $derived(
-    Object.entries(
-      SEED_EXERCISES.reduce((acc, e) => {
-        const key = `${e.type}:${e.topic}`;
-        if (!acc[key]) acc[key] = { type: e.type, topic: e.topic, count: 0, cefr: e.cefr_level };
-        acc[key].count++;
-        return acc;
-      }, {} as Record<string, LessonCard>)
-    ).map(([, v]) => v)
-  );
+  function closeCityPanel() {
+    selectedCity = null;
+    selectedNpc = null;
+  }
 
-  const typeOrder = ['vocab', 'cloze', 'multiple_choice', 'error_correction', 'true_false', 'reorder'];
-  const groupedByType = $derived(
-    typeOrder.map(t => ({
-      type: t,
-      meta: typeMeta[t],
-      cards: lessonCards.filter(c => c.type === t),
-    })).filter(g => g.cards.length > 0)
-  );
+  function getCityState(cityId: string): CityState | undefined {
+    return cityStates.find(s => s.cityId === cityId);
+  }
+
+  function getStatusBadge(status: string): { label: string; color: string } {
+    switch (status) {
+      case 'locked': return { label: 'Bloqueada', color: 'bg-cafe-muted/20 text-cafe-muted' };
+      case 'open': return { label: 'Aberta', color: 'bg-terracotta/15 text-terracotta' };
+      case 'fading': return { label: 'Precisa revisão', color: 'bg-ouro/15 text-ouro' };
+      case 'mastered': return { label: 'Dominada', color: 'bg-serra/15 text-serra' };
+      default: return { label: status, color: 'bg-pedra-subtle text-cafe-muted' };
+    }
+  }
 </script>
 
-<div class="max-w-3xl mx-auto p-6">
-  <div class="flex items-center justify-between mb-6">
+<div class="max-w-3xl mx-auto p-4 md:p-6">
+  <!-- Compact top bar -->
+  <div class="flex items-center justify-between mb-4">
     <div>
-      <div>
-        <h2 class="font-display text-2xl font-bold">{new Date().getHours() < 12 ? 'Bom dia, Krissss!' : new Date().getHours() < 18 ? 'Boa tarde, Krissss!' : 'Boa noite, Krissss!'}</h2>
-        <p class="text-[10px] text-cafe-muted/50">{new Date().getHours() < 12 ? 'Good morning!' : new Date().getHours() < 18 ? 'Good afternoon!' : 'Good evening!'}</p>
-      </div>
-      <p class="text-sm text-cafe-secondary">Nível {currentLevel} · Vamos praticar</p>
+      <h2 class="font-display text-xl font-bold">{new Date().getHours() < 12 ? 'Bom dia, Krissss!' : new Date().getHours() < 18 ? 'Boa tarde, Krissss!' : 'Boa noite, Krissss!'}</h2>
+      <p class="text-xs text-cafe-secondary">Nível {currentLevel} · 🔥 {streak} {streak === 1 ? 'dia' : 'dias'}</p>
     </div>
     <div class="flex items-center gap-3">
-      {#if hasVoice}
-        <span class="text-xs text-serra flex items-center gap-1" title="Voz ativada">
-          <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M11 5L6 9H2v6h4l5 4V5z"/></svg>
-        </span>
-      {:else}
-        <a href="/settings" class="text-xs text-cafe-muted hover:text-terracotta transition-colors" title="Configurar voz">
-          <svg class="w-3.5 h-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707A1 1 0 0112 5v14a1 1 0 01-1.707.707L5.586 15z" /><path stroke-linecap="round" stroke-linejoin="round" d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"/></svg>
-        </a>
-      {/if}
-      <div class="flex items-center gap-2 text-ouro font-bold">
-        🔥 {streak} {streak === 1 ? 'dia' : 'dias'}
+      <div class="text-right">
+        <div class="text-xs text-cafe-muted">{todayTotal}/{dailyGoal}</div>
+        <div class="w-16 h-1.5 bg-pedra-subtle rounded-full overflow-hidden">
+          <div class="h-full rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></div>
+        </div>
       </div>
+      <a href="/session" class="px-3 py-1.5 bg-terracotta text-white text-xs font-semibold rounded-lg hover:bg-terracotta-dark transition-colors">
+        Praticar
+      </a>
     </div>
   </div>
 
@@ -187,156 +190,170 @@
       {/each}
     </div>
   {:else}
-    <!-- 1ST: Start Today's Session Card -->
-    {#if sessionPlan && sessionPlan.exercises.length > 0}
-      <div class="bg-white border border-terracotta/20 rounded-2xl p-6 shadow-sm mb-6">
-        <!-- Coaching Note -->
-        {#if noteLoading}
-          <div class="h-12 bg-pedra-subtle rounded-lg animate-pulse mb-4"></div>
-        {:else if coachingNote}
-          <p class="text-sm text-cafe-secondary italic font-display mb-4">{coachingNote}</p>
-        {/if}
+    <!-- Map -->
+    <div class="relative mb-4">
+      <MinasMap {cityStates} onCityClick={handleCityClick} />
 
-        <!-- Session Summary Pills -->
-        <div class="flex flex-wrap gap-2 mb-4">
-          {#if sessionPlan.reviewCount > 0}
-            <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.reviewCount} revisões</span>
+      <!-- "What Sabiá thinks" floating panel -->
+      {#if showCoachingPanel && sabiaRecommendations().length > 0}
+        <div class="absolute bottom-3 left-3 right-3 md:right-auto md:max-w-xs bg-white/95 backdrop-blur-sm border border-border rounded-xl p-3 shadow-lg">
+          <div class="flex items-center justify-between mb-2">
+            <p class="text-[10px] text-cafe-muted uppercase tracking-wider font-semibold">🐦 Sabiá recomenda</p>
+            <button onclick={() => showCoachingPanel = false} class="text-cafe-muted hover:text-cafe text-xs p-0.5" aria-label="Fechar">✕</button>
+          </div>
+          {#if noteLoading}
+            <div class="h-4 bg-pedra-subtle rounded animate-pulse mb-2"></div>
+          {:else if coachingNote}
+            <p class="text-xs text-cafe-secondary italic mb-2">{coachingNote}</p>
           {/if}
-          {#if sessionPlan.weakTopicCount > 0}
-            <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.weakTopicCount} reforço</span>
-          {/if}
-          {#if sessionPlan.newCount > 0}
-            <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.newCount} novos</span>
-          {/if}
-          <span class="text-xs px-3 py-1 bg-pedra-subtle rounded-full text-cafe-secondary">{sessionPlan.exercises.length} total</span>
+          <div class="space-y-1.5">
+            {#each sabiaRecommendations() as rec}
+              <a href="/lesson?type={rec.type}&topic={rec.topic}" class="flex items-center gap-2 text-xs text-cafe hover:text-terracotta transition-colors">
+                <span>{topicMeta[rec.topic]?.icon || '📖'}</span>
+                <span class="font-medium">{rec.topicLabel}</span>
+                <span class="text-cafe-muted">· {rec.cityName}</span>
+              </a>
+            {/each}
+          </div>
         </div>
+      {/if}
+    </div>
 
-        <!-- Start Button -->
-        <a
-          href="/session"
-          class="block w-full py-3 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors text-center"
-          aria-label="Começar sessão de hoje — {sessionPlan.exercises.length} exercícios"
-        >
-          Começar <span class="text-white/60 text-xs font-normal">Start</span>
-        </a>
+    <!-- Compact stats row -->
+    <div class="grid grid-cols-3 gap-3 mb-4">
+      <div class="bg-white border border-border rounded-xl p-3 text-center">
+        <div class="font-display text-lg font-bold text-terracotta">{streak}</div>
+        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">Streak</div>
       </div>
-    {:else}
-      <div class="bg-white border border-border rounded-2xl p-6 mb-6 text-center">
-        <div class="text-3xl mb-2">✅</div>
-        <p class="text-sm text-cafe-muted">Nenhum exercício pendente! Tente o modo conversa ou escrita, ou volte amanhã.</p>
+      <div class="bg-white border border-border rounded-xl p-3 text-center">
+        <div class="font-display text-lg font-bold text-serra">{accuracy}%</div>
+        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">Acertos</div>
       </div>
-    {/if}
+      <div class="bg-white border border-border rounded-xl p-3 text-center">
+        <div class="font-display text-lg font-bold text-ouro">{dueReviews}</div>
+        <div class="text-[10px] text-cafe-muted uppercase tracking-wider">Revisões</div>
+      </div>
+    </div>
 
-    <!-- 2ND: Weekly Challenges -->
+    <!-- Weekly challenges (compact) -->
     {#if challenges.length > 0}
-      <div class="flex gap-3 mb-6 overflow-x-auto">
+      <div class="flex gap-2 mb-4 overflow-x-auto">
         {#each challenges as challenge}
-          <div class="min-w-[180px] flex-1 bg-white border border-border rounded-xl p-3">
-            <p class="text-xs text-cafe font-medium line-clamp-2">{challenge.label}</p>
-            <div class="mt-2 h-1.5 bg-pedra-subtle rounded-full overflow-hidden" role="progressbar" aria-valuenow={challenge.currentValue} aria-valuemax={challenge.targetValue} aria-label={challenge.label}>
-              <div class="h-full bg-ouro rounded-full transition-all duration-300" style="width: {Math.min(100, (challenge.currentValue / challenge.targetValue) * 100)}%"></div>
+          <div class="min-w-[160px] flex-1 bg-white border border-border rounded-lg p-2.5">
+            <p class="text-[11px] text-cafe font-medium line-clamp-1">{challenge.label}</p>
+            <div class="mt-1.5 h-1 bg-pedra-subtle rounded-full overflow-hidden">
+              <div class="h-full bg-ouro rounded-full transition-all" style="width: {Math.min(100, (challenge.currentValue / challenge.targetValue) * 100)}%"></div>
             </div>
-            <div class="flex items-center justify-between mt-1">
-              <span class="text-[10px] text-cafe-muted">{challenge.currentValue}/{challenge.targetValue}</span>
+            <div class="flex items-center justify-between mt-0.5">
+              <span class="text-[9px] text-cafe-muted">{challenge.currentValue}/{challenge.targetValue}</span>
               {#if challenge.completed}
-                <span class="text-[10px] font-semibold text-serra">✓ Completo</span>
+                <span class="text-[9px] font-semibold text-serra">✓</span>
               {:else}
-                <span class="text-[10px] text-ouro">+{challenge.xpReward} XP</span>
+                <span class="text-[9px] text-ouro">+{challenge.xpReward} XP</span>
               {/if}
             </div>
           </div>
         {/each}
       </div>
-    {:else}
-      <p class="text-xs text-cafe-muted italic mb-6">Desafios começam na segunda-feira!</p>
     {/if}
+  {/if}
+</div>
 
-    <!-- 3RD: Stats Row -->
-    <div class="grid grid-cols-3 gap-4 mb-6">
-      <div class="bg-white border border-border rounded-xl p-4 text-center">
-        <div class="font-display text-2xl font-bold text-terracotta">{streak}</div>
-        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Streak</div>
-      </div>
-      <div class="bg-white border border-border rounded-xl p-4 text-center">
-        <div class="font-display text-2xl font-bold text-serra">{accuracy}%</div>
-        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Acertos hoje</div>
-      </div>
-      <div class="bg-white border border-border rounded-xl p-4 text-center">
-        <div class="font-display text-2xl font-bold text-ouro">{dueReviews}</div>
-        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Revisões</div>
-      </div>
-    </div>
+<!-- City detail side panel -->
+{#if selectedCity}
+  {@const state = getCityState(selectedCity.id)}
+  {@const badge = getStatusBadge(state?.status || 'locked')}
+  <div
+    class="fixed inset-0 bg-black/20 z-30"
+    onclick={closeCityPanel}
+    role="presentation"
+  ></div>
+  <div class="fixed right-0 top-0 bottom-0 w-full max-w-sm bg-pedra z-40 shadow-2xl overflow-y-auto">
+    <div class="p-6">
+      <!-- Close button -->
+      <button
+        onclick={closeCityPanel}
+        class="absolute top-4 right-4 text-cafe-muted hover:text-cafe transition-colors"
+        aria-label="Fechar"
+      >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
 
-    <!-- 4TH: Daily Goal -->
-    <div class="mb-6 bg-white border border-border rounded-xl p-4">
-      <div class="flex items-center justify-between mb-2">
-        <span class="text-sm font-semibold">{goalMet ? '🎯 Meta cumprida!' : '📋 Meta diária'} <span class="text-[10px] font-normal text-cafe-muted/50">{goalMet ? 'Goal met!' : 'Daily goal'}</span></span>
-        <span class="text-xs text-cafe-muted">{todayTotal}/{dailyGoal} exercícios</span>
-      </div>
-      <div class="h-3 bg-pedra-subtle rounded-full overflow-hidden">
-        <div class="h-full rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></div>
-      </div>
-    </div>
-
-    <!-- 5TH: CEFR Progress Map -->
-    <div class="mb-6 bg-white border border-border rounded-xl p-4">
-      <p class="text-xs text-cafe-muted uppercase tracking-wider font-semibold mb-3">Progresso CEFR <span class="font-normal opacity-50 normal-case">Progress</span></p>
-      <div class="flex items-center justify-between">
-        {#each cefrOrder as node, i}
-          <div class="flex items-center" role="listitem" aria-label="{node.level} — {node.isCurrent ? 'nível atual' : node.isPast ? 'completo' : 'futuro'}">
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all
-              {node.isPast ? 'bg-serra text-white' : node.isCurrent ? 'bg-terracotta text-white ring-2 ring-terracotta/30 ring-offset-2' : 'bg-pedra-subtle text-cafe-muted'}">
-              {node.level}
-            </div>
-            {#if i < cefrOrder.length - 1}
-              <div class="w-8 sm:w-12 h-0.5 {node.isPast ? 'bg-serra' : 'bg-pedra-subtle'}"></div>
-            {/if}
+      <!-- City header -->
+      <div class="mb-6">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-12 h-12 bg-terracotta/10 rounded-xl flex items-center justify-center text-2xl">
+            {selectedCity.npcs[0]?.icon || '📍'}
           </div>
-        {/each}
-      </div>
-    </div>
-
-    <!-- XP Bar -->
-    <div class="mb-8">
-      <div class="flex justify-between text-xs text-cafe-muted mb-1">
-        <span>Nível {currentLevel}</span>
-        <span>{totalXp % 1000} / 1000 XP</span>
-      </div>
-      <div class="h-2 bg-pedra-subtle rounded-full overflow-hidden">
-        <div class="h-full bg-serra rounded-full transition-all duration-500" style="width: {xpProgress}%"></div>
-      </div>
-    </div>
-
-    <!-- Listening Practice (voice only) -->
-    {#if hasVoice}
-      <a href="/lesson?type=vocab&mode=listening"
-         class="flex items-center gap-3 p-4 bg-white border border-serra/20 rounded-xl hover:border-serra hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 mb-6">
-        <div class="w-10 h-10 bg-serra/10 rounded-lg flex items-center justify-center text-lg">🎧</div>
-        <div>
-          <div class="font-semibold text-sm">Prática de escuta</div>
-          <div class="text-xs text-cafe-muted">Ouça e escreva — treine seu ouvido</div>
+          <div>
+            <h2 class="font-display text-xl font-bold">{selectedCity.name}</h2>
+            <p class="text-xs text-cafe-secondary">{selectedCity.region}</p>
+          </div>
         </div>
-      </a>
-    {/if}
+        <div class="flex items-center gap-2 mt-2">
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full {badge.color}">{badge.label}</span>
+          <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-pedra-subtle text-cafe-muted">{selectedCity.cefr}</span>
+          {#if state && state.masteryPercent > 0}
+            <span class="text-xs text-serra font-semibold">{state.masteryPercent}% dominado</span>
+          {/if}
+        </div>
+      </div>
 
-    <!-- 6TH: Manual Lesson Cards -->
-    {#each groupedByType as group}
-      <h3 class="text-sm text-cafe-muted uppercase tracking-wider font-semibold mb-3 {group.type !== 'vocab' ? 'mt-6' : ''}">{group.meta.label}</h3>
-      <div class="space-y-2">
-        {#each group.cards as card}
-          {@const tm = topicMeta[card.topic] || { label: card.topic, icon: '📖', bg: 'bg-gray-50' }}
-          <a href="/lesson?type={card.type}&topic={card.topic}" class="flex items-center justify-between p-3.5 bg-white border border-border rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
-            <div class="flex items-center gap-3">
-              <div class="w-9 h-9 {tm.bg} rounded-lg flex items-center justify-center text-base">{tm.icon}</div>
-              <div>
-                <div class="font-semibold text-sm">{tm.label}</div>
-                <div class="text-xs text-cafe-muted">{card.count} {group.meta.badge}</div>
-              </div>
+      <!-- Cultural fact -->
+      <div class="bg-ouro/10 border border-ouro/20 rounded-xl p-3 mb-6">
+        <p class="text-xs text-cafe-secondary italic">{selectedCity.culturalFact}</p>
+      </div>
+
+      <!-- Topics -->
+      <h3 class="text-xs text-cafe-muted uppercase tracking-wider font-semibold mb-3">Temas <span class="font-normal opacity-50">Topics</span></h3>
+      <div class="space-y-2 mb-6">
+        {#each selectedCity.topics as topic}
+          {@const tm = topicMeta[topic] || { label: topic, icon: '📖' }}
+          <a
+            href="/lesson?type=vocab&topic={topic}"
+            class="flex items-center justify-between p-3 bg-white border border-border rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150"
+          >
+            <div class="flex items-center gap-2.5">
+              <span class="text-base">{tm.icon}</span>
+              <span class="text-sm font-medium">{tm.label}</span>
             </div>
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-pedra-subtle {group.meta.badgeColor}">{card.cefr}</span>
+            <svg class="w-4 h-4 text-cafe-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
           </a>
         {/each}
       </div>
-    {/each}
-  {/if}
-</div>
+
+      <!-- NPC -->
+      {#each selectedCity.npcs as npc}
+        <h3 class="text-xs text-cafe-muted uppercase tracking-wider font-semibold mb-3">Personagem <span class="font-normal opacity-50">NPC</span></h3>
+        <button
+          onclick={() => handleNpcClick(npc)}
+          class="w-full flex items-center gap-3 p-4 bg-white border border-serra/20 rounded-xl hover:border-serra hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 text-left"
+        >
+          <div class="w-11 h-11 bg-serra/10 rounded-full flex items-center justify-center text-xl">{npc.icon}</div>
+          <div class="flex-1">
+            <div class="font-semibold text-sm">{npc.name}</div>
+            <div class="text-xs text-cafe-muted">{npc.role}</div>
+          </div>
+          <div class="text-xs text-serra font-semibold">Conversar →</div>
+        </button>
+      {/each}
+
+      <!-- Start exercises button -->
+      <a
+        href="/session"
+        class="block w-full py-3 mt-6 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors text-center"
+      >
+        Praticar exercícios <span class="text-white/60 text-xs">Practice</span>
+      </a>
+    </div>
+  </div>
+{/if}
+
+<!-- NPC Chat overlay -->
+{#if selectedNpc}
+  <NpcChat npc={selectedNpc} onClose={handleNpcClose} />
+{/if}

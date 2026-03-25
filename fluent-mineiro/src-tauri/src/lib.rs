@@ -79,6 +79,21 @@ pub fn run() {
             ",
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 3,
+            description: "add_npc_conversations",
+            sql: "
+                CREATE TABLE IF NOT EXISTS npc_conversations (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    npc_id TEXT NOT NULL UNIQUE,
+                    city_id TEXT NOT NULL,
+                    messages TEXT NOT NULL DEFAULT '[]',
+                    last_interaction TEXT NOT NULL DEFAULT (datetime('now'))
+                );
+                CREATE INDEX IF NOT EXISTS idx_npc_conv_npc ON npc_conversations(npc_id);
+            ",
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()

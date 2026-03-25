@@ -14,7 +14,7 @@
   });
 
   const navItems = [
-    { href: '/', label: 'Dashboard', en: 'Home', icon: '🏠' },
+    { href: '/', label: 'Mapa', en: 'Map', icon: '🗺️' },
     { href: '/lesson', label: 'Lição', en: 'Lesson', icon: '📚' },
     { href: '/review', label: 'Revisão', en: 'Review', icon: '🔄' },
     { href: '/conversation', label: 'Conversa', en: 'Chat', icon: '💬' },
