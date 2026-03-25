@@ -149,8 +149,7 @@
   function handleKeydown(e: KeyboardEvent) {
     if (e.key === 'Enter' && !showFeedback && current?.type !== 'multiple_choice' && current?.type !== 'true_false') {
       submitAnswer();
-    }
-    if (e.key === 'Enter' && showFeedback) {
+    } else if (e.key === 'Enter' && showFeedback) {
       nextExercise();
     }
     if (e.key === 'Escape') {
