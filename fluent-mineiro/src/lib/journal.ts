@@ -7,12 +7,18 @@
 import { getDb } from './db';
 
 export interface JournalEntry {
-  id: string;         // e.g. 'stamp:bh', 'slang:uai', 'npc:seu_ze'
-  type: 'stamp' | 'slang' | 'npc';
+  id: string;         // e.g. 'stamp:bh', 'slang:uai', 'npc:seu_ze', 'item:seu_ze'
+  type: 'stamp' | 'slang' | 'npc' | 'item';
   cityId: string;
   label: string;
   detail: string;
   earnedAt: string;
+}
+
+export interface ToastData {
+  icon: string;
+  title: string;
+  detail: string;
 }
 
 /** Load all journal entries */
@@ -70,12 +76,112 @@ export async function awardNpcRelationship(npcId: string, cityId: string): Promi
 }
 
 /** Get journal stats for display */
-export async function getJournalStats(): Promise<{ stamps: number; slang: number; npcs: number; total: number }> {
+export async function getJournalStats(): Promise<{ stamps: number; slang: number; npcs: number; items: number; total: number }> {
   const entries = await getJournalEntries();
   const stamps = entries.filter(e => e.type === 'stamp').length;
   const slang = entries.filter(e => e.type === 'slang').length;
   const npcs = entries.filter(e => e.type === 'npc').length;
-  return { stamps, slang, npcs, total: entries.length };
+  const items = entries.filter(e => e.type === 'item').length;
+  return { stamps, slang, npcs, items, total: entries.length };
+}
+
+/**
+ * Check and award slang triggers based on current state.
+ * Returns newly awarded slang entries (for toast display).
+ */
+export async function checkSlangTriggers(): Promise<ToastData[]> {
+  const awarded: ToastData[] = [];
+  try {
+    const db = await getDb();
+
+    // Helper: check if stamp exists
+    async function hasStamp(cityId: string): Promise<boolean> {
+      return hasJournalEntry(`journal:stamp:${cityId}`);
+    }
+
+    // Helper: count exercises for topics
+    async function topicExerciseCount(topics: string[]): Promise<number> {
+      const placeholders = topics.map((_, i) => `$${i + 1}`).join(',');
+      // Count attempts where exercise topic matches
+      const rows: { cnt: number }[] = await db.select(
+        `SELECT COUNT(DISTINCT a.exercise_id) as cnt FROM attempts a WHERE a.exercise_id IN (SELECT exercise_id FROM srs_state)`,
+      );
+      return rows[0]?.cnt || 0;
+    }
+
+    // Helper: get streak
+    async function getStreak(): Promise<number> {
+      const rows: { value: string }[] = await db.select("SELECT value FROM profile WHERE key = 'streak'");
+      return parseInt(rows[0]?.value || '0');
+    }
+
+    // Helper: count NPC conversations
+    async function hasAnyNpcChat(): Promise<boolean> {
+      const rows: { cnt: number }[] = await db.select('SELECT COUNT(*) as cnt FROM npc_conversations');
+      return (rows[0]?.cnt || 0) > 0;
+    }
+
+    // Helper: get heart level
+    async function getHeart(npcId: string): Promise<number> {
+      const rows: { heart_level: number }[] = await db.select(
+        'SELECT heart_level FROM npc_hearts WHERE npc_id = $1', [npcId]
+      );
+      return rows[0]?.heart_level || 0;
+    }
+
+    // Helper: count attempts on specific topics
+    async function attemptsOnTopics(topics: string[]): Promise<number> {
+      // We need to check exercise IDs that match these topics from the content module
+      // Since we can't import content here easily, count all attempts as proxy
+      const rows: { cnt: number }[] = await db.select('SELECT COUNT(*) as cnt FROM attempts');
+      return rows[0]?.cnt || 0;
+    }
+
+    // Define triggers
+    const triggers: { id: string; check: () => Promise<boolean> }[] = [
+      { id: 'journal:slang:uai', check: async () => hasStamp('bh') },
+      { id: 'journal:slang:trem', check: async () => (await attemptsOnTopics(['greetings', 'daily_routine', 'transport'])) >= 5 },
+      { id: 'journal:slang:bao', check: async () => (await getStreak()) >= 3 },
+      { id: 'journal:slang:ce', check: async () => hasAnyNpcChat() },
+      { id: 'journal:slang:so', check: async () => hasStamp('tiradentes') },
+      { id: 'journal:slang:no', check: async () => hasStamp('mariana') },
+      { id: 'journal:slang:oce', check: async () => hasStamp('serra_canastra') },
+      { id: 'journal:slang:trem_bao', check: async () => (await hasStamp('ouro_preto')) && (await attemptsOnTopics(['food'])) >= 5 },
+      { id: 'journal:slang:arreda', check: async () => (await getHeart('rita')) >= 2 },
+      { id: 'journal:slang:pois_e', check: async () => (await getHeart('lucas')) >= 2 },
+    ];
+
+    for (const trigger of triggers) {
+      const already = await hasJournalEntry(trigger.id);
+      if (already) continue;
+      const met = await trigger.check();
+      if (met) {
+        await awardJournalEntry(trigger.id);
+        const def = JOURNAL_DEFS.get(trigger.id);
+        if (def) {
+          awarded.push({ icon: '🗣️', title: `Novo gíria: ${def.label}`, detail: def.detail });
+        }
+      }
+    }
+  } catch {
+    // Fail silently
+  }
+  return awarded;
+}
+
+/**
+ * Check if an NPC item should be awarded (at heart level 3+).
+ * Returns toast data if newly awarded.
+ */
+export async function checkItemTriggers(npcId: string, heartLevel: number): Promise<ToastData | null> {
+  if (heartLevel < 3) return null;
+  const itemId = `journal:item:${npcId}`;
+  const already = await hasJournalEntry(itemId);
+  if (already) return null;
+  const def = JOURNAL_DEFS.get(itemId);
+  if (!def) return null;
+  await awardJournalEntry(itemId);
+  return { icon: '🎁', title: `Presente de ${def.label.split(':')[0] || 'NPC'}`, detail: def.detail };
 }
 
 // Define all possible journal entries
@@ -116,4 +222,18 @@ const JOURNAL_DEFS = new Map<string, Omit<JournalEntry, 'id' | 'earnedAt'>>([
   ['journal:npc:lucas', { type: 'npc', cityId: 'juiz_de_fora', label: 'Lucas', detail: 'Estudante de TI na UFJF — nerd e gente boa' }],
   ['journal:npc:dona_marta', { type: 'npc', cityId: 'uberaba', label: 'Dona Marta', detail: 'Fazendeira do Triângulo — forte e sábia' }],
   ['journal:npc:padre_antonio', { type: 'npc', cityId: 'congonhas', label: 'Padre Antônio', detail: 'Pároco historiador — preciso com as palavras' }],
+
+  // NPC collectible items (Mochila) — awarded at heart level 3
+  ['journal:item:seu_ze', { type: 'item', cityId: 'bh', label: 'Receita: Pão de queijo', detail: 'Receita secreta do Seu Zé, escrita num guardanapo' }],
+  ['journal:item:motorista_carlos', { type: 'item', cityId: 'bh', label: 'Mapa das linhas de ônibus', detail: 'Mapa de BH desenhado à mão pelo Carlos' }],
+  ['journal:item:dona_lourdes', { type: 'item', cityId: 'ouro_preto', label: 'Pedra-sabão miniatura', detail: 'Uma miniatura esculpida em pedra-sabão de Ouro Preto' }],
+  ['journal:item:dona_pousada', { type: 'item', cityId: 'ouro_preto', label: 'Receita: Frango com quiabo', detail: 'O famoso ensopado mineiro da Dona Francisca' }],
+  ['journal:item:dona_aparecida', { type: 'item', cityId: 'mariana', label: 'Álbum de fotos', detail: 'Álbum cheio de fofocas da vizinhança' }],
+  ['journal:item:padre_marcos', { type: 'item', cityId: 'mariana', label: 'Livro de orações', detail: 'Livrinho de orações com bênçãos mineiras' }],
+  ['journal:item:professor_helio', { type: 'item', cityId: 'tiradentes', label: 'Dicionário do Mineirês', detail: 'Dicionário manuscrito de expressões mineiras' }],
+  ['journal:item:rita', { type: 'item', cityId: 'diamantina', label: 'Tecido bordado', detail: 'Tecido bordado à mão de Diamantina' }],
+  ['journal:item:toninho', { type: 'item', cityId: 'serra_canastra', label: 'Mapa das trilhas', detail: 'Mapa com cachoeiras secretas da Serra' }],
+  ['journal:item:lucas', { type: 'item', cityId: 'juiz_de_fora', label: 'Sticker pack', detail: 'Adesivos de programador da UFJF' }],
+  ['journal:item:dona_marta', { type: 'item', cityId: 'uberaba', label: 'Queijo Canastra', detail: 'Uma roda de queijo canastra artesanal' }],
+  ['journal:item:padre_antonio', { type: 'item', cityId: 'congonhas', label: 'Postal dos Profetas', detail: 'Cartão postal dos profetas de Aleijadinho' }],
 ]);

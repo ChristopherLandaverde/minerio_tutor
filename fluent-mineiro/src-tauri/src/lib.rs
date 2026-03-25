@@ -94,6 +94,28 @@ pub fn run() {
             ",
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 4,
+            description: "add_npc_hearts_and_city_visits",
+            sql: "
+                CREATE TABLE IF NOT EXISTS npc_hearts (
+                    npc_id TEXT PRIMARY KEY,
+                    city_id TEXT NOT NULL,
+                    message_count INTEGER NOT NULL DEFAULT 0,
+                    heart_level INTEGER NOT NULL DEFAULT 0,
+                    last_interaction TEXT
+                );
+
+                CREATE TABLE IF NOT EXISTS city_visits (
+                    city_id TEXT PRIMARY KEY,
+                    visit_count INTEGER NOT NULL DEFAULT 0,
+                    last_visit TEXT NOT NULL DEFAULT (datetime('now'))
+                );
+
+                CREATE INDEX IF NOT EXISTS idx_npc_hearts_city ON npc_hearts(city_id);
+            ",
+            kind: MigrationKind::Up,
+        },
     ];
 
     tauri::Builder::default()

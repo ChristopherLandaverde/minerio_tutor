@@ -7,6 +7,7 @@
 
 import { getDb, getProfile } from './db';
 import { SEED_EXERCISES } from './content';
+import { getCurrentSeason } from './seasons';
 
 export interface Challenge {
   id: number;
@@ -39,6 +40,8 @@ function challengeLabel(type: string, target: number, topic: string | null): str
       return `Faça ${target} sessões esta semana`;
     case 'accuracy_topic':
       return `Acerte 80%+ em ${topic || 'tema'} esta semana`;
+    case 'seasonal':
+      return topic || `Desafio da estação (${target})`;
     default:
       return `Complete o desafio (${target})`;
   }
@@ -124,6 +127,17 @@ async function generateWeeklyChallenges(d: any, weekStart: string): Promise<Chal
     // Skip topic challenge if query fails
   }
 
+  // Challenge 4: Seasonal (if active season)
+  const season = getCurrentSeason();
+  if (season) {
+    challenges.push({
+      type: 'seasonal',
+      target: season.challengeTarget,
+      topic: season.challengeLabel,
+      xp: 60,
+    });
+  }
+
   // Insert into DB
   const result: Challenge[] = [];
   for (const c of challenges) {
@@ -169,6 +183,24 @@ export async function updateChallengeProgress(sessionTotal: number): Promise<Cha
       case 'session_count':
         newValue += 1;
         break;
+      case 'seasonal': {
+        // Seasonal challenges track same as exercise_count or session_count
+        // based on the season's challengeType
+        const season = getCurrentSeason();
+        if (season) {
+          if (season.challengeType === 'exercise_count') newValue += sessionTotal;
+          else if (season.challengeType === 'session_count') newValue += 1;
+          else if (season.challengeType === 'npc_chats') {
+            // Count NPC conversations this week
+            const chatRows: { cnt: number }[] = await d.select(
+              "SELECT COUNT(*) as cnt FROM npc_conversations WHERE last_interaction >= $1",
+              [weekStart]
+            );
+            newValue = chatRows[0]?.cnt || 0;
+          }
+        }
+        break;
+      }
       case 'accuracy_topic': {
         // Recompute accuracy from attempts this week
         if (row.target_topic) {

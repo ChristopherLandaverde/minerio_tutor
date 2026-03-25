@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { getDb, getProfile, getDueReviewCount, getTodayStats } from '$lib/db';
+  import { getDb, getProfile, getDueReviewCount, getTodayStats, incrementCityVisit, getCityVisitCounts } from '$lib/db';
   import { SEED_EXERCISES } from '$lib/content';
   import { planSession, type SessionPlan } from '$lib/session-planner';
   import { generateCoachingNote, getApiKey } from '$lib/claude';
@@ -11,7 +11,10 @@
   import NpcChat from '$lib/components/NpcChat.svelte';
   import { CITIES, CITY_MAP, TOPIC_TO_CITY, type CityDef, type NpcDef } from '$lib/cities';
   import { computeCityStates, type CityState } from '$lib/city-state';
-  import { awardCityStamp, getJournalStats } from '$lib/journal';
+  import { awardCityStamp, getJournalStats, checkSlangTriggers, type ToastData } from '$lib/journal';
+  import { getAllHeartLevels, type HeartState } from '$lib/npc';
+  import Toast from '$lib/components/Toast.svelte';
+  import { getCurrentSeason, type Season } from '$lib/seasons';
 
   let streak = $state(0);
   let totalXp = $state(0);
@@ -41,6 +44,17 @@
   let journalStamps = $state(0);
   let journalNpcs = $state(0);
   let journalTotal = $state(0);
+  let npcHearts = $state<Map<string, HeartState>>(new Map());
+  let toasts = $state<ToastData[]>([]);
+  const season = getCurrentSeason();
+  let cityVisits = $state<Map<string, number>>(new Map());
+
+  function getTimeOfDay(): 'morning' | 'afternoon' | 'night' {
+    const h = new Date().getHours();
+    if (h >= 6 && h < 12) return 'morning';
+    if (h >= 12 && h < 18) return 'afternoon';
+    return 'night';
+  }
 
   // Topic metadata
   const topicMeta: Record<string, { label: string; icon: string }> = {
@@ -105,6 +119,8 @@
       journalStamps = jStats.stamps;
       journalNpcs = jStats.npcs;
       journalTotal = jStats.total;
+      npcHearts = await getAllHeartLevels();
+      cityVisits = await getCityVisitCounts();
     } catch {}
     loaded = true;
     loadCoachingNote();
@@ -162,8 +178,15 @@
     if (!city) return;
     selectedCity = city;
     selectedNpc = null;
-    // Award stamp on first visit
+    // Award stamp on first visit + track visit
     awardCityStamp(cityId);
+    incrementCityVisit(cityId).then(({ visitCount }) => {
+      cityVisits = new Map(cityVisits).set(cityId, visitCount);
+    });
+    // Check slang triggers after stamp
+    checkSlangTriggers().then(newToasts => {
+      if (newToasts.length > 0) toasts = [...toasts, ...newToasts];
+    });
     // Trigger animation
     setTimeout(() => { cityPanelOpen = true; }, 10);
   }
@@ -221,6 +244,14 @@
       {/each}
     </div>
   {:else}
+    <!-- Seasonal banner -->
+    {#if season}
+      <div class="flex items-center gap-2 px-3 py-2 mb-3 rounded-xl border {season.color}">
+        <span class="text-lg">{season.icon}</span>
+        <span class="text-xs font-medium">{season.banner}</span>
+      </div>
+    {/if}
+
     <!-- Session action bar -->
     <div class="bg-white border border-border rounded-2xl p-4 mb-4 flex items-center gap-4">
       {#if noteLoading}
@@ -246,7 +277,7 @@
 
     <!-- Map -->
     <div class="relative mb-4">
-      <MinasMap {cityStates} onCityClick={handleCityClick} />
+      <MinasMap {cityStates} onCityClick={handleCityClick} timeOfDay={getTimeOfDay()} />
 
       <!-- "Sabiá recomenda" compact pill -->
       {#if sabiaRecommendations().length > 0}
@@ -424,6 +455,9 @@
         {#if state && state.masteryPercent > 0}
           <span class="text-xs text-serra font-semibold">{state.masteryPercent}%</span>
         {/if}
+        {#if cityVisits.get(selectedCity.id)}
+          <span class="text-[10px] text-cafe-muted">👣 {cityVisits.get(selectedCity.id)}x</span>
+        {/if}
       </div>
 
       <!-- Mastery bar -->
@@ -465,18 +499,26 @@
         {/each}
       </div>
 
-      <!-- NPC -->
+      <!-- NPCs -->
+      <h3 class="text-[10px] text-cafe-muted uppercase tracking-wider font-semibold mb-2">Conversar com personagem</h3>
       {#each selectedCity.npcs as npc}
-        <h3 class="text-[10px] text-cafe-muted uppercase tracking-wider font-semibold mb-2">Conversar com personagem</h3>
+        {@const hearts = npcHearts.get(npc.id)}
         <button
           onclick={() => handleNpcClick(npc)}
-          class="w-full flex items-center gap-3 p-4 bg-serra/5 border border-serra/20 rounded-xl hover:border-serra hover:bg-serra/10 hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 text-left mb-5"
+          class="w-full flex items-center gap-3 p-4 bg-serra/5 border border-serra/20 rounded-xl hover:border-serra hover:bg-serra/10 hover:-translate-y-0.5 hover:shadow-md transition-all duration-150 text-left mb-3"
         >
           <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center text-2xl shadow-sm border border-border">{npc.icon}</div>
           <div class="flex-1 min-w-0">
             <div class="font-semibold text-sm">{npc.name}</div>
             <div class="text-xs text-cafe-muted truncate">{npc.role}</div>
-            <div class="text-[10px] text-serra mt-0.5">{npc.personality.split(',')[0]}</div>
+            <!-- Heart display -->
+            <div class="flex gap-px mt-0.5">
+              {#each Array(5) as _, i}
+                <span class="text-[9px]" class:opacity-25={i >= (hearts?.heartLevel || 0)}>
+                  {i < (hearts?.heartLevel || 0) ? '❤️' : '🤍'}
+                </span>
+              {/each}
+            </div>
           </div>
           <div class="shrink-0 w-8 h-8 bg-serra/10 rounded-full flex items-center justify-center">
             <svg class="w-4 h-4 text-serra" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -509,3 +551,14 @@
 {#if selectedNpc}
   <NpcChat npc={selectedNpc} onClose={handleNpcClose} />
 {/if}
+
+<!-- Toasts -->
+{#each toasts as toast, i}
+  <Toast
+    icon={toast.icon}
+    title={toast.title}
+    detail={toast.detail}
+    onDismiss={() => { toasts = toasts.filter((_, j) => j !== i); }}
+    duration={3500 + i * 1000}
+  />
+{/each}

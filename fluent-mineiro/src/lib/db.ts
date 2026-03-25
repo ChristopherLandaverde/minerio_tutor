@@ -187,3 +187,47 @@ export async function getTodayStats(): Promise<{ total: number; correct: number 
   );
   return { total: rows[0]?.total ?? 0, correct: rows[0]?.correct ?? 0 };
 }
+
+// City visit helpers
+export async function incrementCityVisit(cityId: string): Promise<{ visitCount: number; xpAwarded: boolean }> {
+  const d = await getDb();
+  // Upsert visit count
+  await d.execute(
+    `INSERT INTO city_visits (city_id, visit_count, last_visit)
+     VALUES ($1, 1, datetime('now'))
+     ON CONFLICT(city_id) DO UPDATE SET
+       visit_count = visit_count + 1,
+       last_visit = datetime('now')`,
+    [cityId]
+  );
+  // Check if XP already awarded today for this city
+  const rows: { last_visit: string; visit_count: number }[] = await d.select(
+    'SELECT last_visit, visit_count FROM city_visits WHERE city_id = $1',
+    [cityId]
+  );
+  const visitCount = rows[0]?.visit_count || 1;
+  // Award 2 XP if first visit of the day (simple: check if visit_count just changed)
+  // We'll award XP conservatively — only on first open per session
+  const xpAwarded = visitCount <= 1; // First ever visit gets XP
+  if (xpAwarded) {
+    const currentXp = parseInt(await getProfile('total_xp') || '0');
+    await setProfile('total_xp', String(currentXp + 2));
+  }
+  return { visitCount, xpAwarded };
+}
+
+export async function getCityVisitCounts(): Promise<Map<string, number>> {
+  const d = await getDb();
+  const map = new Map<string, number>();
+  try {
+    const rows: { city_id: string; visit_count: number }[] = await d.select(
+      'SELECT city_id, visit_count FROM city_visits'
+    );
+    for (const r of rows) {
+      map.set(r.city_id, r.visit_count);
+    }
+  } catch {
+    // Table might not exist yet
+  }
+  return map;
+}

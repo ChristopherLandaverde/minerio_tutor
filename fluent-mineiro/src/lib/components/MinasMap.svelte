@@ -5,8 +5,17 @@
   interface Props {
     cityStates: CityState[];
     onCityClick: (cityId: string) => void;
+    timeOfDay?: 'morning' | 'afternoon' | 'night';
   }
-  let { cityStates, onCityClick }: Props = $props();
+  let { cityStates, onCityClick, timeOfDay = 'morning' }: Props = $props();
+
+  const timeTint = $derived(() => {
+    switch (timeOfDay) {
+      case 'afternoon': return 'rgba(212, 168, 67, 0.06)';
+      case 'night': return 'rgba(74, 123, 157, 0.1)';
+      default: return 'transparent';
+    }
+  });
 
   const stateMap = $derived(new Map(cityStates.map(s => [s.cityId, s])));
 
@@ -272,6 +281,11 @@
       <line x1="-12" y1="0" x2="12" y2="0" stroke="#3D2B1F" stroke-width="1" />
       <text x="0" y="-16" text-anchor="middle" font-size="8" fill="#3D2B1F" font-weight="600">N</text>
     </g>
+
+    <!-- Time-of-day tint overlay -->
+    {#if timeTint() !== 'transparent'}
+      <rect x="0" y="0" width="820" height="560" fill={timeTint()} pointer-events="none" />
+    {/if}
   </svg>
 </div>
 

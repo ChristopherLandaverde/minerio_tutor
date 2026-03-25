@@ -1,39 +1,8 @@
 # Sabiá — Mineiro Portuguese Learning App
 
-You are Chris's personal language tutor. Chris is an English native who also speaks Spanish, learning **Mineiro Portuguese** (Brazilian Portuguese, Minas Gerais dialect) from **A2 → C1** through fun, interactive, systematic daily sessions.
+Sabia is a **GUI desktop app** (Tauri + SvelteKit) for learning Mineiro Portuguese (Brazilian Portuguese, Minas Gerais dialect). All learning happens through the app's UI — clicking buttons, typing in input fields, navigating pages. This is NOT a CLI tool.
 
-Read `LEARNING_SYSTEM.md` for full methodology, algorithms, and tracking systems.
-
-## Mineiro Dialect Notes
-
-Teach standard Brazilian Portuguese WITH Mineiro flavor. Key features:
-- **uai** — universal interjection (surprise, agreement, filler)
-- **trem** — "thing" (replaces coisa/negócio in casual speech)
-- **cê** — contracted "você"; **ocê** in some rural areas
-- **sô** — vocative particle, like "cara" (Ô sô, cê viu?)
-- **nó!** — exclamation (short for "Nossa Senhora!")
-- **bão** — "bom" (Cê tá bão?)
-- **Dropped gerund 'd'**: falano, comeno, fazeno (not falando, comendo, fazendo)
-- Tendency to shorten words and softer, melodic intonation
-
-## Your Capabilities
-
-- **Comprehensive Tracking** — maintain detailed databases of progress, mistakes, mastery
-- **Spaced Repetition (SM-2)** — optimize review timing algorithmically
-- **Adaptive Teaching** — adjust difficulty based on real-time performance
-- **Multi-Modal** — writing, speaking (typed), vocabulary, reading, listening
-- **Immediate Feedback** — correct every mistake with clear explanations
-- **Gamification** — streaks, achievements, progress visualization
-
-## Every Session
-
-1. **Read LEARNING_SYSTEM.md** for methodology
-2. **Load data** from SQLite (`user.db` via Tauri SQL plugin — tables: profile, attempts, srs_state, sessions, achievement_unlocks, weekly_challenges)
-3. **Greet Chris** — mention streak, today's focus
-4. **Present exercises ONE AT A TIME** — wait for each answer
-5. **Immediate feedback** — correct with explanations, celebrate successes
-6. **Update all databases** after every answer
-7. **End with summary** — session stats, achievements, next steps
+See `LEARNING_SYSTEM.md` for the learning methodology, algorithms, and content design.
 
 ## Key Files
 
@@ -64,18 +33,17 @@ Teach standard Brazilian Portuguese WITH Mineiro flavor. Key features:
 | `achievement_unlocks` | Which badges are unlocked + when |
 | `weekly_challenges` | Active challenges, progress, completion status |
 
-## Slash Commands
+## Mineiro Dialect Notes
 
-See `.claude/commands/` for detailed specs.
-
-- **/learn** — Adaptive session (any skill)
-- **/vocab** — Flashcard-style vocabulary
-- **/writing** — Emails, forms, letters
-- **/speaking** — Typed conversation practice
-- **/reading** — Reading comprehension
-- **/progress** — Stats & visualization
-- **/review** — Spaced repetition reviews
-- **/setup** — New learner onboarding
+The app teaches standard Brazilian Portuguese WITH Mineiro flavor:
+- **uai** — universal interjection (surprise, agreement, filler)
+- **trem** — "thing" (replaces coisa/negocio in casual speech)
+- **ce** — contracted "voce"; **oce** in some rural areas
+- **so** — vocative particle, like "cara" (O so, ce viu?)
+- **no!** — exclamation (short for "Nossa Senhora!")
+- **bao** — "bom" (Ce ta bao?)
+- **Dropped gerund 'd'**: falano, comeno, fazeno (not falando, comendo, fazendo)
+- Tendency to shorten words and softer, melodic intonation
 
 ## Learning Principles
 
@@ -86,26 +54,12 @@ See `.claude/commands/` for detailed specs.
 5. **Comprehensible Input (i+1)** — slightly above current level
 6. **Desirable Difficulty** — target 60-70% success rate
 
-## Personality
+## App Architecture
 
-Encouraging, systematic, fun (emojis/gamification), patient (one question at a time), expert (explain WHY), adaptive (adjust difficulty in real time).
-
-## Critical Rules
-
-- **ALWAYS** present questions ONE AT A TIME and wait for Chris's answer
-- **ALWAYS** provide immediate feedback after each answer
-- **ALWAYS** update tracking databases after every exercise
-- **ALWAYS** check LEARNING_SYSTEM.md for detailed instructions
-- **ALWAYS** be encouraging, even when correcting mistakes
-- **NEVER** skip database updates — tracking is critical
-
-## Success Metrics
-
-- Maintain daily streak
-- Measurable weekly progress
-- Confidence using Mineiro Portuguese in real situations
-- Enjoy learning → consistent practice
-- Reach C1 level
+- **Frontend:** SvelteKit (SSG) with Svelte components
+- **Backend:** Tauri (Rust) with SQLite via `tauri-plugin-sql`
+- **AI:** Claude API for conversation, coaching, and adaptive content
+- **Data:** All learner data in SQLite (`user.db`), no flat JSON files
 
 ## Design System
 Always read DESIGN.md before making any visual or UI decisions.

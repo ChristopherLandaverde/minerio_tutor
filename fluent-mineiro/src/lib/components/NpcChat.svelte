@@ -1,9 +1,10 @@
 <script lang="ts">
   import { onMount, tick } from 'svelte';
   import { getApiKey, type ChatMessage } from '$lib/claude';
-  import { loadNpcConversation, saveNpcConversation, sendNpcMessage, resetNpcConversation } from '$lib/npc';
+  import { loadNpcConversation, saveNpcConversation, sendNpcMessage, resetNpcConversation, incrementHeartProgress, getHeartLevel, nextHeartThreshold, type HeartState } from '$lib/npc';
   import type { NpcDef } from '$lib/cities';
-  import { awardNpcRelationship } from '$lib/journal';
+  import { awardNpcRelationship, checkItemTriggers, checkSlangTriggers, type ToastData } from '$lib/journal';
+  import Toast from './Toast.svelte';
 
   interface DisplayMessage extends ChatMessage {
     time: string;
@@ -21,6 +22,8 @@
   let error = $state<string | null>(null);
   let apiKey = $state<string | null>(null);
   let chatContainer: HTMLDivElement | undefined = $state();
+  let heartState = $state<HeartState | null>(null);
+  let toasts = $state<ToastData[]>([]);
 
   function now(): string {
     return new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -28,6 +31,7 @@
 
   onMount(async () => {
     apiKey = await getApiKey();
+    heartState = await getHeartLevel(npc.id);
     const history = await loadNpcConversation(npc.id);
     if (history.length > 0) {
       messages = history.map(m => ({ ...m, time: '' }));
@@ -62,6 +66,13 @@
       messages = [...messages, { role: 'assistant', content: reply, time: now() }];
       // Award NPC relationship on first message
       awardNpcRelationship(npc.id, npc.cityId);
+      // Increment heart progress
+      heartState = await incrementHeartProgress(npc.id, npc.cityId);
+      // Check for item gift (heart 3+) and slang triggers
+      const itemToast = await checkItemTriggers(npc.id, heartState.heartLevel);
+      if (itemToast) toasts = [...toasts, itemToast];
+      const slangToasts = await checkSlangTriggers();
+      if (slangToasts.length > 0) toasts = [...toasts, ...slangToasts];
       await tick();
       scrollToBottom();
 
@@ -117,7 +128,17 @@
       {npc.icon}
     </div>
     <div class="flex-1">
-      <p class="text-sm font-semibold leading-tight">{npc.name}</p>
+      <div class="flex items-center gap-1.5">
+        <p class="text-sm font-semibold leading-tight">{npc.name}</p>
+        <!-- Hearts -->
+        <div class="flex gap-px">
+          {#each Array(5) as _, i}
+            <span class="text-[10px]" class:opacity-30={i >= (heartState?.heartLevel || 0)}>
+              {i < (heartState?.heartLevel || 0) ? '❤️' : '🤍'}
+            </span>
+          {/each}
+        </div>
+      </div>
       <p class="text-[11px] text-white/70">
         {#if loading}digitando...
         {:else}{npc.role}{/if}
@@ -202,3 +223,14 @@
     </button>
   </div>
 </div>
+
+<!-- Toasts -->
+{#each toasts as toast, i}
+  <Toast
+    icon={toast.icon}
+    title={toast.title}
+    detail={toast.detail}
+    onDismiss={() => { toasts = toasts.filter((_, j) => j !== i); }}
+    duration={3500 + i * 1000}
+  />
+{/each}

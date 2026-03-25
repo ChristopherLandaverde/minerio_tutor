@@ -7,6 +7,7 @@
   import { planSession } from '$lib/session-planner';
   import { checkAchievements, type AchievementStatus } from '$lib/achievements';
   import { updateChallengeProgress } from '$lib/challenges';
+  import { checkSlangTriggers } from '$lib/journal';
 
   let exercises: Exercise[] = $state([]);
   let sessionId = $state<number | null>(null);
@@ -59,6 +60,9 @@
 
       // Update challenge progress
       await updateChallengeProgress(stats.total);
+
+      // Check slang triggers (streak-based, exercise-count-based)
+      await checkSlangTriggers();
     } catch {}
   }
 
