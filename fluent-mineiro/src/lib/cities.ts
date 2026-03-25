@@ -59,7 +59,7 @@ export const CITIES: CityDef[] = [
     cefr: 'A2',
     topics: ['greetings', 'daily_routine', 'transport'],
     prerequisites: [],
-    mapPosition: { x: 350, y: 220 },
+    mapPosition: { x: 370, y: 195 },
     culturalFact: 'BH é a capital de Minas — famosa pelo pão de queijo, botecos e o Mercado Central. Os mineiros dizem que BH é a capital mundial dos botecos!',
     npcs: [
       {
@@ -93,7 +93,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'A2-B1',
     topics: ['food', 'cultural', 'shopping'],
     prerequisites: ['bh'],
-    mapPosition: { x: 460, y: 330 },
+    mapPosition: { x: 480, y: 290 },
     culturalFact: 'Ouro Preto foi a primeira capital de Minas e é Patrimônio da Humanidade. As ladeiras são famosas — e a comida mineira aqui é das melhores do estado!',
     npcs: [
       {
@@ -127,7 +127,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1',
     topics: ['family', 'emotions', 'dialogue'],
     prerequisites: ['ouro_preto'],
-    mapPosition: { x: 560, y: 410 },
+    mapPosition: { x: 580, y: 355 },
     culturalFact: 'Mariana é a cidade mais antiga de Minas Gerais, fundada em 1696. É vizinha de Ouro Preto e tem uma das mais belas catedrais barrocas do Brasil.',
     npcs: [
       {
@@ -162,7 +162,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'A2-B1',
     topics: ['mineiro', 'mineiro_vs_standard', 'false_cognates'],
     prerequisites: ['bh'],
-    mapPosition: { x: 300, y: 370 },
+    mapPosition: { x: 270, y: 330 },
     culturalFact: 'Tiradentes é uma das cidades mais charmosas de Minas, com ruas de pedra e casarões coloniais. O nome homenageia o herói da Inconfidência Mineira.',
     npcs: [
       {
@@ -196,7 +196,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1',
     topics: ['clothing', 'colors', 'body_health'],
     prerequisites: ['tiradentes'],
-    mapPosition: { x: 500, y: 160 },
+    mapPosition: { x: 470, y: 130 },
     culturalFact: 'Diamantina é a terra de Juscelino Kubitschek e berço da Vesperata — concerto noturno onde músicos tocam das sacadas dos sobrados coloniais.',
     npcs: [
       {
@@ -230,7 +230,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1',
     topics: ['nature', 'weather', 'sports_leisure'],
     prerequisites: ['ouro_preto'],
-    mapPosition: { x: 210, y: 280 },
+    mapPosition: { x: 255, y: 210 },
     culturalFact: 'A Serra da Canastra é o berço do Rio São Francisco e lar do famoso queijo canastra — patrimônio cultural brasileiro. As cachoeiras são de tirar o fôlego!',
     npcs: [
       {
@@ -264,7 +264,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B1-B2',
     topics: ['work', 'education', 'technology'],
     prerequisites: ['mariana'],
-    mapPosition: { x: 640, y: 320 },
+    mapPosition: { x: 640, y: 240 },
     culturalFact: 'Juiz de Fora é a "Manchester Mineira" — pioneira na industrialização do Brasil. Tem a UFJF, uma das melhores universidades federais do país.',
     npcs: [
       {
@@ -298,7 +298,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B2',
     topics: ['verbs_present', 'verbs_past', 'ser_estar'],
     prerequisites: ['serra_canastra'],
-    mapPosition: { x: 160, y: 180 },
+    mapPosition: { x: 185, y: 135 },
     culturalFact: 'Uberaba é a capital mundial do gado zebu e sede da maior feira agropecuária do Brasil, a ExpoZebu. O Triângulo Mineiro tem um sotaque bem diferente do resto do estado!',
     npcs: [
       {
@@ -333,7 +333,7 @@ ${NPC_BASE_RULES}`,
     cefr: 'B2',
     topics: ['prepositions', 'error_correction', 'travel'],
     prerequisites: ['juiz_de_fora'],
-    mapPosition: { x: 430, y: 450 },
+    mapPosition: { x: 500, y: 430 },
     culturalFact: 'Congonhas é famosa pelos 12 Profetas de Aleijadinho na Basílica do Bom Jesus de Matosinhos — obra-prima do barroco brasileiro e Patrimônio da Humanidade.',
     npcs: [
       {
