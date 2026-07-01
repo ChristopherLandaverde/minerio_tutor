@@ -85,6 +85,7 @@
   }
 
   let started = $state(false);
+  let capstoneScenario = $state<string | null>(null);
 
   onMount(async () => {
     try {
@@ -92,6 +93,18 @@
       elevenKey = await getElevenLabsKey();
       voiceEnabled = !!elevenKey;
     } catch {}
+
+    // Capstone hand-off: a lesson can seed a themed opener.
+    try {
+      const raw = sessionStorage.getItem('capstone_seed');
+      if (raw) {
+        sessionStorage.removeItem('capstone_seed');
+        const seed = JSON.parse(raw) as { scenario: string; opener: string };
+        messages = [{ role: 'assistant', content: seed.opener, time: now() }];
+        capstoneScenario = seed.scenario;
+        started = true;
+      }
+    } catch { /* ignore malformed seed */ }
   });
 
   async function saveKeys() {
@@ -129,7 +142,7 @@
     error = null;
     try {
       const apiMessages = messages.map(m => ({ role: m.role, content: m.content }));
-      const reply = await sendMessage(apiMessages, apiKey);
+      const reply = await sendMessage(apiMessages, apiKey, capstoneScenario ?? undefined);
       messages = [...messages, { role: 'assistant', content: reply, time: now() }];
       await tick();
       scrollToBottom();
