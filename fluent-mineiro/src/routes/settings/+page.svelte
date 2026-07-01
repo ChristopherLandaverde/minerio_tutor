@@ -1,9 +1,9 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { getProfile, setProfile } from '$lib/db';
-  import { getApiKey, setApiKey } from '$lib/claude';
+  import { getApiKey, setApiKey, clearApiKey } from '$lib/claude';
   import {
-    getElevenLabsKey, setElevenLabsKey,
+    getElevenLabsKey, setElevenLabsKey, clearElevenLabsKey,
     getVoices, getSelectedVoice, setSelectedVoice,
     textToSpeech, playAudio, getTtsUsage,
   } from '$lib/elevenlabs';
@@ -109,7 +109,7 @@
 
   async function removeKey() {
     try {
-      await setProfile('api_key', '');
+      await clearApiKey();
       hasApiKey = false;
     } catch {}
   }
@@ -151,7 +151,7 @@
 
   async function removeElevenKey() {
     try {
-      await setProfile('elevenlabs_key', '');
+      await clearElevenLabsKey();
       hasElevenKey = false;
       voices = [];
       selectedVoiceId = '';

@@ -2,6 +2,7 @@
   import '../app.css';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { migrateSecrets } from '$lib/secrets-migration';
 
   let { children } = $props();
   let mobileMenuOpen = $state(false);
@@ -9,6 +10,9 @@
   let splashFading = $state(false);
 
   onMount(() => {
+    // One-time move of any plaintext API keys into the OS keychain.
+    migrateSecrets().catch((e) => console.error('secret migration failed', e));
+
     // Apply saved theme on app load
     const saved = localStorage.getItem('dark_mode');
     if (saved === 'dark') document.documentElement.classList.add('dark');
