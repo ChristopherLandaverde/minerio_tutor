@@ -6,7 +6,7 @@
  */
 import { SEED_EXERCISES } from './content';
 import { lookupEmoji } from './emoji-map';
-import { getProfile, getDb } from './db';
+import { getProfile } from './db';
 import { getAvailableLevels, nearestAvailableLevel } from './adaptive';
 import type { Exercise } from './exercises';
 

@@ -79,4 +79,12 @@ describe('assembleLesson', () => {
     expect(lesson.teach.length).toBe(1);
     expect(lesson.teach[0].isPattern).toBe(true);
   });
+
+  it('binds both caps when items are plentiful (produce-heavy 40/60)', () => {
+    // verbs_present @ A2 has 7 recognize + 82 produce items — both exceed the
+    // caps, so the split RATIO is exercised (a reversed 60/40 would fail this).
+    const lesson = assembleLesson('verbs_present', 'A2', 'r', 10); // recognizeCap=4, produceCap=6
+    expect(lesson.recognize.length).toBe(4);
+    expect(lesson.produce.length).toBe(6);
+  });
 });
