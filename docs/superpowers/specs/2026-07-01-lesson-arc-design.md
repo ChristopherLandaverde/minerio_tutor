@@ -22,7 +22,7 @@ Reshape `/session` into a **guided, themed, escalating Lesson Arc** that ends in
 5. **Capstone = a short themed AI conversation**; a scripted mini-dialogue fallback when no Claude key is set.
 6. Keep `/review` and `/lesson` as-is. Reuse `ExercisePlayer` (Recognize/Produce) and the conversation component (Capstone).
 
-**Out of scope:** shadowing/repeat-after-me, native mic recording + pronunciation grading, curated/AI/stock images, a full Duolingo unit-map/path, mobile/web, new-user onboarding.
+**Out of scope (own future slices):** the **4/16-week fixed-curriculum program + progress/accounting** (the *next* slice — plugs into the `chooseTheme` seam above), shadowing/repeat-after-me, native mic recording + pronunciation grading, curated/AI/stock images, mobile/web, new-user onboarding.
 
 ## Architecture
 
@@ -53,8 +53,14 @@ interface Lesson {
 }
 ```
 
-Assembly rules:
-- **Theme pick:** lowest recent-accuracy topic (last 30d, <60%) at the current CEFR level that has ≥1 item in each of teach/recognize/produce roles; else the next topic with unseen items; else any topic with items.
+**Theme selection is a pluggable seam.** `planLesson` delegates the choice to:
+
+`chooseTheme(profile, attempts, srsState): { theme: string; reason: string }`
+
+- **Default implementation (this slice):** lowest recent-accuracy topic (last 30d, <60%) at the current CEFR level that has ≥1 item in each of teach/recognize/produce roles; else the next topic with unseen items; else any topic with items. `reason` is the one-line human string for the lesson header.
+- **Next slice (the 4/16-week curriculum)** supplies an alternative `chooseTheme` that returns the theme scheduled for the current program week/day, plus a "Week X of Y" progress view — dropping into this seam **without changing the Arc**. Design the seam now so that work isn't thrown away.
+
+Assembly rules (after the theme is chosen):
 - **Teach items:** `vocab` items of the theme, prioritising unseen or low-accuracy, capped 3–6. `emoji = lookupEmoji(answer)`.
 - **Recognize/Produce:** partition the theme's non-teach items by type into the two buckets, each sorted by `difficulty` ascending. Total scored items target `max(5, dailyGoal)`, split roughly 40% Recognize / 60% Produce (produce-heavy on purpose — production is the "advance" lever), rounded to whole items, each stage getting ≥1 when items exist.
 - **Escalation:** stage order is fixed teach→recognize→produce; within recognize/produce, difficulty ascends.
@@ -97,4 +103,4 @@ New small components: `TeachCard.svelte`, a `StageProgress.svelte` indicator.
 
 ## Rollout
 
-Single PR, reshaping one screen plus two new lib modules and two small components. No data migration. `/review` and `/lesson` unchanged. This is slice 1; shadowing and the native-mic pronunciation work are separate future specs.
+Single PR, reshaping one screen plus two new lib modules and two small components. No data migration. `/review` and `/lesson` unchanged. This is **slice 1 (the Arc)**. The **4/16-week curriculum program** is slice 2 (plugs into `chooseTheme`, adds program progress/accounting); shadowing and native-mic pronunciation are later slices.
