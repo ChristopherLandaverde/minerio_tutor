@@ -1,11 +1,12 @@
 /**
  * Claude API client for conversation practice.
  * Uses Tauri HTTP plugin to bypass CORS.
- * API key stored in local SQLite profile table.
+ * API key stored in the OS keychain (see secrets.ts).
  */
 
 import { fetch } from '@tauri-apps/plugin-http';
 import { getProfile, setProfile } from './db';
+import { getSecret, setSecret, deleteSecret } from './secrets';
 import { getRandomFallback } from './coaching-fallbacks';
 
 const API_URL = 'https://api.anthropic.com/v1/messages';
@@ -40,14 +41,18 @@ PERSONALITY:
 
 export async function getApiKey(): Promise<string | null> {
   try {
-    return await getProfile('api_key');
+    return await getSecret('anthropic_api_key');
   } catch {
     return null;
   }
 }
 
 export async function setApiKey(key: string): Promise<void> {
-  await setProfile('api_key', key);
+  await setSecret('anthropic_api_key', key);
+}
+
+export async function clearApiKey(): Promise<void> {
+  await deleteSecret('anthropic_api_key');
 }
 
 export async function sendMessage(
