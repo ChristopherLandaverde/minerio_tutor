@@ -130,7 +130,7 @@
     try {
       voices = await getVoices(key);
     } catch {
-      voiceError = 'Não foi possível carregar as vozes. Verifique a chave.';
+      voiceError = 'Could not load voices. Check your key.';
     }
     voicesLoading = false;
   }
@@ -174,20 +174,19 @@
       const blob = await textToSpeech('Oi, tudo bom? Eu sou a voz do Sabiá!', key, selectedVoiceId || undefined);
       await playAudio(blob);
     } catch {
-      voiceError = 'Erro ao testar a voz. Verifique sua chave.';
+      voiceError = 'Error testing the voice. Check your key.';
     }
     voiceTestPlaying = false;
   }
 </script>
 
 <div class="max-w-3xl mx-auto p-6">
-  <h2 class="font-display text-2xl font-bold mb-1">⚙️ Configurações</h2>
-  <p class="text-[10px] text-cafe-muted/50 mb-2">Settings</p>
-  <p class="text-sm text-cafe-secondary mb-6">Personalize sua experiência <span class="text-[10px] text-cafe-muted/50">Customize your experience</span></p>
+  <h2 class="font-display text-2xl font-bold mb-1">⚙️ Settings</h2>
+  <p class="text-sm text-cafe-secondary mb-6">Customize your experience</p>
 
   {#if settingsSaved}
     <div class="mb-4 px-4 py-2 bg-serra/10 border border-serra/20 rounded-lg text-sm text-serra text-center">
-      Salvo!
+      Saved!
     </div>
   {/if}
 
@@ -202,8 +201,8 @@
       <!-- CEFR Level -->
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="mb-3">
-          <h3 class="font-semibold text-sm">Nível CEFR</h3>
-          <p class="text-xs text-cafe-muted mt-1">Seu nível atual de português. O sistema adapta automaticamente, mas você pode ajustar manualmente.</p>
+          <h3 class="font-semibold text-sm">CEFR Level</h3>
+          <p class="text-xs text-cafe-muted mt-1">Your current Portuguese level. The system adapts automatically, but you can adjust it manually.</p>
         </div>
         <div class="flex gap-2">
           {#each cefrLevels as level}
@@ -222,8 +221,8 @@
       <!-- Daily Goal -->
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="mb-3">
-          <h3 class="font-semibold text-sm">Meta diária</h3>
-          <p class="text-xs text-cafe-muted mt-1">Quantos exercícios por dia você quer praticar?</p>
+          <h3 class="font-semibold text-sm">Daily Goal</h3>
+          <p class="text-xs text-cafe-muted mt-1">How many exercises per day do you want to practice?</p>
         </div>
         <div class="flex gap-2">
           {#each goalOptions as goal}
@@ -243,8 +242,8 @@
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-semibold text-sm">Dialeto</h3>
-            <p class="text-xs text-cafe-muted mt-1">Foco regional do aprendizado</p>
+            <h3 class="font-semibold text-sm">Dialect</h3>
+            <p class="text-xs text-cafe-muted mt-1">Regional focus of learning</p>
           </div>
           <span class="text-sm font-semibold px-3 py-1.5 rounded-full bg-pedra-subtle text-ouro">Mineiro 🏔️</span>
         </div>
@@ -253,8 +252,8 @@
       <!-- Theme -->
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="mb-3">
-          <h3 class="font-semibold text-sm">Tema</h3>
-          <p class="text-xs text-cafe-muted mt-1">Escolha entre claro, escuro, ou automático (segue o sistema).</p>
+          <h3 class="font-semibold text-sm">Theme</h3>
+          <p class="text-xs text-cafe-muted mt-1">Choose between light, dark, or automatic (follows system).</p>
         </div>
         <div class="flex gap-2">
           <button
@@ -263,7 +262,7 @@
               ? 'bg-ouro text-white'
               : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
           >
-            ☀️ Claro
+            ☀️ Light
           </button>
           <button
             onclick={() => setTheme('dark')}
@@ -271,7 +270,7 @@
               ? 'bg-ouro text-white'
               : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
           >
-            🌙 Escuro
+            🌙 Dark
           </button>
           <button
             onclick={() => setTheme('system')}
@@ -279,7 +278,7 @@
               ? 'bg-ouro text-white'
               : 'bg-pedra-subtle text-cafe-secondary hover:bg-pedra hover:text-cafe'}"
           >
-            💻 Sistema
+            💻 System
           </button>
         </div>
       </div>
@@ -288,19 +287,19 @@
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="flex items-center justify-between mb-3">
           <div>
-            <h3 class="font-semibold text-sm">Chave API Anthropic</h3>
-            <p class="text-xs text-cafe-muted mt-1">Para o modo conversa com Claude</p>
+            <h3 class="font-semibold text-sm">Anthropic API Key</h3>
+            <p class="text-xs text-cafe-muted mt-1">For chat mode with Claude</p>
           </div>
           {#if hasApiKey}
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-serra/10 text-serra">Configurada</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-serra/10 text-serra">Configured</span>
           {:else}
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-error/10 text-error">Não configurada</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-error/10 text-error">Not configured</span>
           {/if}
         </div>
         {#if hasApiKey}
           <div class="flex items-center gap-2">
             <span class="text-xs text-cafe-muted">sk-ant-•••••••••</span>
-            <button onclick={removeKey} class="text-xs text-error hover:underline">Remover</button>
+            <button onclick={removeKey} class="text-xs text-error hover:underline">Remove</button>
           </div>
         {:else}
           <div class="flex gap-2">
@@ -315,12 +314,12 @@
               disabled={!apiKeyInput.trim()}
               class="px-4 py-2 bg-terracotta text-white text-sm font-semibold rounded-lg hover:bg-terracotta-dark transition-colors disabled:opacity-40"
             >
-              Salvar
+              Save
             </button>
           </div>
         {/if}
         {#if keySaved}
-          <p class="text-xs text-serra mt-2">Chave salva com sucesso!</p>
+          <p class="text-xs text-serra mt-2">Key saved!</p>
         {/if}
       </div>
 
@@ -328,27 +327,27 @@
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="flex items-center justify-between mb-3">
           <div>
-            <h3 class="font-semibold text-sm">Chave ElevenLabs</h3>
-            <p class="text-xs text-cafe-muted mt-1">Para voz nos exercícios e conversas</p>
+            <h3 class="font-semibold text-sm">ElevenLabs Key</h3>
+            <p class="text-xs text-cafe-muted mt-1">For voice in exercises and conversations</p>
           </div>
           {#if hasElevenKey}
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-serra/10 text-serra">Configurada</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-serra/10 text-serra">Configured</span>
           {:else}
-            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-cafe-muted/10 text-cafe-muted">Não configurada</span>
+            <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-cafe-muted/10 text-cafe-muted">Not configured</span>
           {/if}
         </div>
         {#if hasElevenKey}
           <div class="flex items-center gap-2 mb-3">
             <span class="text-xs text-cafe-muted">sk_•••••••••</span>
-            <button onclick={removeElevenKey} class="text-xs text-error hover:underline">Remover</button>
+            <button onclick={removeElevenKey} class="text-xs text-error hover:underline">Remove</button>
           </div>
 
           <!-- Voice selector -->
           {#if voicesLoading}
-            <div class="text-xs text-cafe-muted">Carregando vozes...</div>
+            <div class="text-xs text-cafe-muted">Loading voices…</div>
           {:else if voices.length > 0}
             <div class="mb-3">
-              <label for="voice-select" class="text-xs text-cafe-muted block mb-1">Voz</label>
+              <label for="voice-select" class="text-xs text-cafe-muted block mb-1">Voice</label>
               <select
                 id="voice-select"
                 value={selectedVoiceId}
@@ -367,10 +366,10 @@
             >
               {#if voiceTestPlaying}
                 <svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" stroke-dasharray="31.4 31.4" stroke-linecap="round"/></svg>
-                Falando...
+                Speaking...
               {:else}
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M17.95 6.05a8 8 0 010 11.9M11 5L6 9H2v6h4l5 4V5z"/></svg>
-                Testar voz
+                Test voice
               {/if}
             </button>
 
@@ -378,13 +377,13 @@
             {#if ttsUsage.month > 0}
               <div class="mt-3 pt-3 border-t border-border/50">
                 <div class="flex items-center justify-between text-xs text-cafe-muted">
-                  <span>Hoje: {ttsUsage.today.toLocaleString()} chars</span>
-                  <span>Mês: {ttsUsage.month.toLocaleString()} chars</span>
+                  <span>Today: {ttsUsage.today.toLocaleString()} chars</span>
+                  <span>Month: {ttsUsage.month.toLocaleString()} chars</span>
                 </div>
                 <div class="mt-1 h-1.5 bg-pedra-subtle rounded-full overflow-hidden">
                   <div class="h-full bg-serra rounded-full transition-all duration-300" style="width: {Math.min(100, (ttsUsage.month / 100000) * 100)}%"></div>
                 </div>
-                <div class="text-[10px] text-cafe-muted/60 mt-0.5 text-right">{Math.round((ttsUsage.month / 100000) * 100)}% do plano Creator (100k)</div>
+                <div class="text-[10px] text-cafe-muted/60 mt-0.5 text-right">{Math.round((ttsUsage.month / 100000) * 100)}% of Creator plan (100k)</div>
               </div>
             {/if}
           {/if}
@@ -401,12 +400,12 @@
               disabled={!elevenKeyInput.trim()}
               class="px-4 py-2 bg-terracotta text-white text-sm font-semibold rounded-lg hover:bg-terracotta-dark transition-colors disabled:opacity-40"
             >
-              Salvar
+              Save
             </button>
           </div>
         {/if}
         {#if elevenKeySaved}
-          <p class="text-xs text-serra mt-2">Chave salva com sucesso!</p>
+          <p class="text-xs text-serra mt-2">Key saved!</p>
         {/if}
         {#if voiceError}
           <p class="text-xs text-error mt-2">{voiceError}</p>
@@ -417,21 +416,21 @@
       <div class="bg-white border border-border rounded-xl p-5">
         <div class="flex items-center justify-between">
           <div>
-            <h3 class="font-semibold text-sm">Resetar progresso</h3>
-            <p class="text-xs text-cafe-muted mt-1">Zera XP, streak e nível. Exercícios praticados são mantidos.</p>
+            <h3 class="font-semibold text-sm">Reset Progress</h3>
+            <p class="text-xs text-cafe-muted mt-1">Resets XP, streak, and level. Practiced exercises are kept.</p>
           </div>
           <button
             onclick={resetProgress}
             class="px-4 py-2 border border-error/30 text-error text-sm font-semibold rounded-lg hover:bg-error/5 transition-colors"
           >
-            Resetar
+            Reset
           </button>
         </div>
       </div>
 
       <!-- App Info -->
       <div class="text-center text-xs text-cafe-muted pt-4">
-        Sabiá v0.4.0 · Tauri + SvelteKit · 990 exercícios
+        Sabiá v0.4.0 · Tauri + SvelteKit · 990 exercises
       </div>
     </div>
   {/if}

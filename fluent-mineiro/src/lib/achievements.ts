@@ -26,30 +26,30 @@ export interface AchievementStatus extends AchievementDef {
 
 export const ACHIEVEMENTS: AchievementDef[] = [
   // Streak
-  { id: 'streak_7', title: 'Fogo Mineiro', description: '7 dias seguidos de prática', icon: '🔥', tier: 'bronze', category: 'streak', threshold: 7, hint: 'Pratique por 7 dias seguidos' },
-  { id: 'streak_30', title: 'Consistência', description: '30 dias seguidos de prática', icon: '🔥', tier: 'silver', category: 'streak', threshold: 30, hint: 'Pratique por 30 dias seguidos' },
-  { id: 'streak_100', title: 'Dedicação', description: '100 dias seguidos de prática', icon: '🔥', tier: 'gold', category: 'streak', threshold: 100, hint: 'Pratique por 100 dias seguidos' },
+  { id: 'streak_7', title: 'Mineiro Fire', description: '7 days of practice in a row', icon: '🔥', tier: 'bronze', category: 'streak', threshold: 7, hint: 'Practice for 7 days in a row' },
+  { id: 'streak_30', title: 'Consistency', description: '30 days of practice in a row', icon: '🔥', tier: 'silver', category: 'streak', threshold: 30, hint: 'Practice for 30 days in a row' },
+  { id: 'streak_100', title: 'Dedication', description: '100 days of practice in a row', icon: '🔥', tier: 'gold', category: 'streak', threshold: 100, hint: 'Practice for 100 days in a row' },
 
   // Exercise milestones
-  { id: 'exercises_10', title: 'Primeiro Passo', description: 'Complete 10 exercícios', icon: '📝', tier: 'bronze', category: 'exercises', threshold: 10, hint: 'Complete 10 exercícios' },
-  { id: 'exercises_100', title: 'Praticante', description: 'Complete 100 exercícios', icon: '📝', tier: 'silver', category: 'exercises', threshold: 100, hint: 'Complete 100 exercícios' },
-  { id: 'exercises_500', title: 'Mestre', description: 'Complete 500 exercícios', icon: '📝', tier: 'gold', category: 'exercises', threshold: 500, hint: 'Complete 500 exercícios' },
-  { id: 'exercises_1000', title: 'Lenda', description: 'Complete 1000 exercícios', icon: '📝', tier: 'gold', category: 'exercises', threshold: 1000, hint: 'Complete 1000 exercícios' },
+  { id: 'exercises_10', title: 'First Step', description: 'Complete 10 exercises', icon: '📝', tier: 'bronze', category: 'exercises', threshold: 10, hint: 'Complete 10 exercises' },
+  { id: 'exercises_100', title: 'Practitioner', description: 'Complete 100 exercises', icon: '📝', tier: 'silver', category: 'exercises', threshold: 100, hint: 'Complete 100 exercises' },
+  { id: 'exercises_500', title: 'Master', description: 'Complete 500 exercises', icon: '📝', tier: 'gold', category: 'exercises', threshold: 500, hint: 'Complete 500 exercises' },
+  { id: 'exercises_1000', title: 'Legend', description: 'Complete 1000 exercises', icon: '📝', tier: 'gold', category: 'exercises', threshold: 1000, hint: 'Complete 1000 exercises' },
 
   // Accuracy
-  { id: 'perfect_session', title: 'Sessão Perfeita', description: '100% de acertos em uma sessão de 10+', icon: '🎯', tier: 'bronze', category: 'accuracy', threshold: 1, hint: 'Acerte tudo em uma sessão de 10+ exercícios' },
-  { id: 'strong_week', title: 'Semana Forte', description: '80%+ de acertos por 7 dias', icon: '🎯', tier: 'silver', category: 'accuracy', threshold: 7, hint: 'Mantenha 80%+ de precisão por 7 dias' },
-  { id: 'max_precision', title: 'Precisão Máxima', description: '90%+ nos últimos 100 exercícios', icon: '🎯', tier: 'gold', category: 'accuracy', threshold: 90, hint: 'Acerte 90+ dos últimos 100 exercícios' },
+  { id: 'perfect_session', title: 'Perfect Session', description: '100% correct in a session of 10+', icon: '🎯', tier: 'bronze', category: 'accuracy', threshold: 1, hint: 'Get everything right in a session of 10+ exercises' },
+  { id: 'strong_week', title: 'Strong Week', description: '80%+ accuracy for 7 days', icon: '🎯', tier: 'silver', category: 'accuracy', threshold: 7, hint: 'Keep 80%+ accuracy for 7 days' },
+  { id: 'max_precision', title: 'Max Precision', description: '90%+ on the last 100 exercises', icon: '🎯', tier: 'gold', category: 'accuracy', threshold: 90, hint: 'Get 90+ of the last 100 exercises right' },
 
   // CEFR progression
-  { id: 'cefr_a2_complete', title: 'A2 Completo', description: 'Todos os exercícios A2 praticados', icon: '📚', tier: 'bronze', category: 'cefr', threshold: 1, hint: 'Pratique todos os exercícios A2' },
-  { id: 'cefr_b1', title: 'B1 Alcançado', description: 'Chegou ao nível B1', icon: '📚', tier: 'silver', category: 'cefr', threshold: 1, hint: 'Alcance o nível B1' },
-  { id: 'cefr_b2', title: 'B2 Alcançado', description: 'Chegou ao nível B2', icon: '📚', tier: 'gold', category: 'cefr', threshold: 1, hint: 'Alcance o nível B2' },
+  { id: 'cefr_a2_complete', title: 'A2 Complete', description: 'All A2 exercises practiced', icon: '📚', tier: 'bronze', category: 'cefr', threshold: 1, hint: 'Practice all A2 exercises' },
+  { id: 'cefr_b1', title: 'B1 Reached', description: 'Reached level B1', icon: '📚', tier: 'silver', category: 'cefr', threshold: 1, hint: 'Reach level B1' },
+  { id: 'cefr_b2', title: 'B2 Reached', description: 'Reached level B2', icon: '📚', tier: 'gold', category: 'cefr', threshold: 1, hint: 'Reach level B2' },
 
   // Special
-  { id: 'first_writing', title: 'Primeiro Texto', description: 'Completou a primeira escrita', icon: '✍️', tier: 'bronze', category: 'special', threshold: 1, hint: 'Complete um exercício de escrita' },
-  { id: 'first_conversation', title: 'Primeira Conversa', description: 'Primeira conversa com Claude', icon: '💬', tier: 'bronze', category: 'special', threshold: 1, hint: 'Inicie uma conversa' },
-  { id: 'false_friends', title: 'Falsos Amigos', description: 'Dominou os falsos cognatos', icon: '⚠️', tier: 'silver', category: 'special', threshold: 1, hint: 'Acerte 90%+ em falsos cognatos' },
+  { id: 'first_writing', title: 'First Text', description: 'Completed your first piece of writing', icon: '✍️', tier: 'bronze', category: 'special', threshold: 1, hint: 'Complete a writing exercise' },
+  { id: 'first_conversation', title: 'First Conversation', description: 'First conversation with Claude', icon: '💬', tier: 'bronze', category: 'special', threshold: 1, hint: 'Start a conversation' },
+  { id: 'false_friends', title: 'False Friends', description: 'Mastered false cognates', icon: '⚠️', tier: 'silver', category: 'special', threshold: 1, hint: 'Get 90%+ on false cognates' },
 ];
 
 /** Get all achievements with their current unlock status and progress */

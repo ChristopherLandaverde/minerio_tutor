@@ -35,15 +35,15 @@ function getCurrentWeekStart(): string {
 function challengeLabel(type: string, target: number, topic: string | null): string {
   switch (type) {
     case 'exercise_count':
-      return `Complete ${target} exercícios esta semana`;
+      return `Complete ${target} exercises this week`;
     case 'session_count':
-      return `Faça ${target} sessões esta semana`;
+      return `Do ${target} sessions this week`;
     case 'accuracy_topic':
-      return `Acerte 80%+ em ${topic || 'tema'} esta semana`;
+      return `Get 80%+ in ${topic || 'topic'} this week`;
     case 'seasonal':
-      return topic || `Desafio da estação (${target})`;
+      return topic || `Season Challenge (${target})`;
     default:
-      return `Complete o desafio (${target})`;
+      return `Complete the challenge (${target})`;
   }
 }
 

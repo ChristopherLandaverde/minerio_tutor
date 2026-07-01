@@ -1,9 +1,9 @@
 <script lang="ts">
   let { current }: { current: 'teach' | 'practice' | 'capstone' } = $props();
   const stages: { key: string; label: string }[] = [
-    { key: 'teach', label: 'Aprender' },
-    { key: 'practice', label: 'Praticar' },
-    { key: 'capstone', label: 'Conversar' },
+    { key: 'teach', label: 'Learn' },
+    { key: 'practice', label: 'Practice' },
+    { key: 'capstone', label: 'Chat' },
   ];
   const order = ['teach', 'practice', 'capstone'];
   function state(key: string): 'done' | 'active' | 'todo' {

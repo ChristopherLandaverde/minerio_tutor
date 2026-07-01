@@ -159,7 +159,7 @@ export async function checkSlangTriggers(): Promise<ToastData[]> {
         await awardJournalEntry(trigger.id);
         const def = JOURNAL_DEFS.get(trigger.id);
         if (def) {
-          awarded.push({ icon: '🗣️', title: `Novo gíria: ${def.label}`, detail: def.detail });
+          awarded.push({ icon: '🗣️', title: `New slang: ${def.label}`, detail: def.detail });
         }
       }
     }
@@ -181,7 +181,7 @@ export async function checkItemTriggers(npcId: string, heartLevel: number): Prom
   const def = JOURNAL_DEFS.get(itemId);
   if (!def) return null;
   await awardJournalEntry(itemId);
-  return { icon: '🎁', title: `Presente de ${def.label.split(':')[0] || 'NPC'}`, detail: def.detail };
+  return { icon: '🎁', title: `Gift from ${def.label.split(':')[0] || 'NPC'}`, detail: def.detail };
 }
 
 // Define all possible journal entries
