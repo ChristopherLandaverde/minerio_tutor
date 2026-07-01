@@ -8,10 +8,15 @@
   let mobileMenuOpen = $state(false);
   let splashVisible = $state(true);
   let splashFading = $state(false);
+  let migrationReady = $state(false);
 
   onMount(() => {
     // One-time move of any plaintext API keys into the OS keychain.
-    migrateSecrets().catch((e) => console.error('secret migration failed', e));
+    // Gate child rendering on this settling (resolved or caught-failure) so
+    // page onMount's don't read keys before migration has copied them over.
+    migrateSecrets()
+      .catch((e) => console.error('secret migration failed', e))
+      .finally(() => { migrationReady = true; });
 
     // Apply saved theme on app load
     const saved = localStorage.getItem('dark_mode');
@@ -122,6 +127,6 @@
 
   <!-- Main content -->
   <main class="flex-1 overflow-y-auto mt-14 md:mt-0">
-    {@render children()}
+    {#if migrationReady}{@render children()}{/if}
   </main>
 </div>

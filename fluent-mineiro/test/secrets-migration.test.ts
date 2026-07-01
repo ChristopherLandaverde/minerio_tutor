@@ -68,4 +68,21 @@ describe('migrateSecrets', () => {
     expect(deleteProfile).not.toHaveBeenCalled();
     expect(setProfile).not.toHaveBeenCalled();
   });
+
+  it('migrates key1 then leaves key2 plaintext + flag unset when key2 setSecret throws', async () => {
+    getProfile
+      .mockResolvedValueOnce(null)         // secrets_migrated
+      .mockResolvedValueOnce('sk-claude')  // api_key
+      .mockResolvedValueOnce('el-key');    // elevenlabs_key
+    setSecret
+      .mockResolvedValueOnce(undefined)                          // anthropic_api_key ok
+      .mockRejectedValueOnce(new Error('keychain unreachable')); // elevenlabs_api_key fails
+    await expect(migrateSecrets()).rejects.toThrow('keychain unreachable');
+    // key1 fully migrated:
+    expect(setSecret).toHaveBeenCalledWith('anthropic_api_key', 'sk-claude');
+    expect(deleteProfile).toHaveBeenCalledWith('api_key');
+    // key2 not deleted, flag not set:
+    expect(deleteProfile).not.toHaveBeenCalledWith('elevenlabs_key');
+    expect(setProfile).not.toHaveBeenCalledWith('secrets_migrated', '1');
+  });
 });
