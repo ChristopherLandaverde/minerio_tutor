@@ -6,6 +6,13 @@
 - **Space/industry:** Language learning (Duolingo, Anki, Babbel, Drops)
 - **Project type:** Desktop app (Tauri v2 + Svelte 5)
 
+## Language (UI copy)
+**Rule (2026-07-01): English chrome, Portuguese content.**
+- **English** — everything the user *operates the app with*: navigation, page/screen titles, section headings, buttons + CTAs, form labels, settings labels + descriptions, status/toast/success/error messages, empty states, loading text, progress + stage labels, stats labels, achievement badge names + descriptions.
+- **Portuguese (as authored)** — the language being *taught*: exercise answers and their cloze/reorder sentences, `mineiro_note`, the AI conversation (capstone opener + replies), the target word on teach cards, and Mineiro expressions/stickers. Exercise *prompts* stay as authored (an English prompt → Portuguese answer is the teaching device; leave them).
+- **Rule of thumb:** if it's the app talking to you → English; if it's the Portuguese you're learning → Portuguese.
+- **No bilingual chrome:** don't show a Portuguese label with a small English gloss (or vice-versa) — pick English for chrome and drop the duplicate.
+
 ## Aesthetic Direction
 - **Direction:** Playful/Warm — Duolingo's gamification energy rooted in Minas Gerais visual culture
 - **Decoration level:** Intentional — subtle warmth, not flat and not noisy
@@ -104,3 +111,4 @@ These tokens capture the cultural identity unique to this product:
 | 2026-03-22 | Terracotta primary over green | EUREKA: Language app identity should come from the culture being taught, not generic tech branding. Every competitor uses bright green/blue; Fluent Mineiro uses the earth tones of Minas. |
 | 2026-03-22 | Cafe brown text over black | Softer, warmer reading experience that matches the organic palette. #3D2B1F has sufficient contrast against #FBF7F0 (ratio ~10:1). |
 | 2026-03-22 | Warm dark mode | Dark mode uses warm browns (#1A1410) not cold grays. Maintains the Mineiro atmosphere at night. |
+| 2026-07-01 | English chrome, Portuguese content | App was inconsistently bilingual (Portuguese chrome + stray English glosses/eyebrows). Chris operates the app in English and immerses only in the learning content. Consistent rule: UI chrome in English, the taught language in Portuguese. |
