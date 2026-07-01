@@ -37,7 +37,7 @@
     try {
       const db = await getDb();
       lesson = await planLesson(db);
-      hasKey = !!(await getApiKey());
+      try { hasKey = !!(await getApiKey()); } catch { hasKey = false; }
       if (!lesson) { phase = 'empty'; return; }
       sessionId = await startSession();
       // Optional SRS warm-up: due reviews (cap 10), any topic.
@@ -52,7 +52,6 @@
     }
   });
 
-  function startWarmup() { phase = 'warmup'; }
   function skipWarmup() { phase = 'teach'; }
   function onWarmupEnd() { phase = 'teach'; }
 
@@ -149,7 +148,14 @@
 
   {:else if phase === 'practice' && lesson}
     <StageProgress current="practice" />
-    <ExercisePlayer exercises={practiceExercises} onSessionEnd={onPracticeEnd} />
+    {#if practiceExercises.length > 0}
+      <ExercisePlayer exercises={practiceExercises} onSessionEnd={onPracticeEnd} />
+    {:else}
+      <div class="bg-white border border-border rounded-2xl p-8 text-center">
+        <p class="text-sm text-cafe-secondary mb-4">Sem exercícios de prática hoje.</p>
+        <button onclick={() => onPracticeEnd({ correct: 0, total: 0, xp: 0 })} class="w-full py-3 bg-terracotta text-white font-semibold rounded-xl">Continuar →</button>
+      </div>
+    {/if}
 
   {:else if phase === 'capstone' && lesson}
     <StageProgress current="capstone" />
