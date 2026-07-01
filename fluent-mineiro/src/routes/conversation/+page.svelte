@@ -92,6 +92,16 @@
       elevenKey = await getElevenLabsKey();
       voiceEnabled = !!elevenKey;
     } catch {}
+
+    // Capstone hand-off: a lesson can seed a themed opener.
+    try {
+      const raw = sessionStorage.getItem('capstone_seed');
+      if (raw) {
+        sessionStorage.removeItem('capstone_seed');
+        const seed = JSON.parse(raw) as { scenario: string; opener: string };
+        messages = [{ role: 'assistant', content: seed.opener, time: now() }];
+      }
+    } catch { /* ignore malformed seed */ }
   });
 
   async function saveKeys() {
