@@ -26,7 +26,7 @@ See `LEARNING_SYSTEM.md` for the learning methodology, algorithms, and content d
 
 | Table | Purpose |
 |-------|---------|
-| `profile` | Key-value store (streak, XP, level, daily goal, API key, settings) |
+| `profile` | Key-value store (streak, XP, level, daily goal, settings). API keys live in the OS keychain (see `src/lib/secrets.ts`). |
 | `attempts` | Every exercise answer (exercise_id, correct, quality, mistake_type) |
 | `srs_state` | SM-2 state per exercise (easiness, interval, next_review) |
 | `sessions` | Session start/end, exercises completed, XP earned |

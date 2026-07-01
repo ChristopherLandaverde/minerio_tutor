@@ -8,14 +8,3 @@
 **Depends on:** Native audio recording TODO above.
 **Added:** 2026-03-24 via /ship
 
----
-
-## Migrate API Key to OS Keychain
-**What:** Move API key storage from plaintext SQLite (`profile` table) to Tauri Stronghold (`tauri-plugin-stronghold`) which uses the OS keychain.
-**Why:** API keys stored as plaintext in a SQLite file can be read by any process running as the same user. Security anti-pattern even for a single-user app.
-**Pros:** Proper secret management, follows Tauri best practices, protects against accidental DB file sharing.
-**Cons:** Adds a Tauri plugin dependency. Needs migration logic to move existing key from SQLite to Stronghold on first run.
-**Context:** Found during /review adversarial pass (2026-03-23). Low urgency for a personal app but worth doing right.
-**Depends on:** Nothing — can be done anytime.
-**Added:** 2026-03-23 via /plan-eng-review
-
