@@ -14,7 +14,7 @@
 - Rust commands run from `fluent-mineiro/` using `--manifest-path src-tauri/Cargo.toml`.
 - Keychain service name (verbatim): `com.christopherlandaverde.sabia` (matches `tauri.conf.json` identifier).
 - Secret account names (verbatim): `anthropic_api_key`, `elevenlabs_api_key`.
-- `keyring` crate: `version = "3"`, features `sync-secret-service`, `crypto-rust`, `apple-native`, `windows-native`. The Linux backend (`sync-secret-service` + `crypto-rust`) is pure Rust (zbus + RustCrypto) — **no system libsecret/dbus dev headers required** to build.
+- `keyring` crate: `version = "3"`, features `sync-secret-service`, `crypto-rust`, `apple-native`, `windows-native`. On Linux, `sync-secret-service` links `libdbus` (via `dbus-secret-service` → `libdbus-sys`), so the build needs **`libdbus-1-dev` + `pkg-config`**. These are **already required by the Tauri build** (`tao` depends on the `dbus` crate), so keyring adds no new system dependency. (`setup-linux.sh` installs them.)
 - Tests: frontend at `fluent-mineiro/test/**/*.test.ts` (vitest, node env); Rust inline `#[cfg(test)]`.
 - **No silent fallback to plaintext, ever.** If the keychain is unreachable, surface an error; never write a key back to SQLite.
 - Work happens on branch `feat/api-keys-keychain` (already created; contains the spec commit).
@@ -161,10 +161,10 @@ Then in the builder chain, insert the invoke handler immediately before `.run(ta
 Run: `cargo test --manifest-path src-tauri/Cargo.toml secrets`
 Expected: PASS — `test result: ok. 3 passed`.
 
-- [ ] **Step 6: Verify the release build links keyring on Linux (no system deps)**
+- [ ] **Step 6: Verify the release build compiles keyring on Linux**
 
 Run: `cargo build --manifest-path src-tauri/Cargo.toml`
-Expected: builds successfully (pure-Rust Secret Service backend; no libsecret needed).
+Expected: builds successfully. Note: requires `libdbus-1-dev` + `pkg-config` (already needed by the Tauri/`tao` build; installed by `setup-linux.sh`).
 
 - [ ] **Step 7: Commit**
 
@@ -740,7 +740,7 @@ gh pr create --title "feat: migrate API keys to the OS keychain" --body "Moves t
 - Settings "clear key" → `deleteSecret` → Task 5. ✓
 - One-time migration, guarded, hard-delete, failure-safe → Task 3 (logic) + Task 5 (wiring). ✓
 - No plaintext fallback → enforced in Task 3 logic + Task 4 try/catch returns null (never writes). ✓
-- Linux cargo features / no system deps → Task 1 Steps 1, 6 + Global Constraints. ✓
+- Linux cargo features + libdbus build note (libdbus-1-dev/pkg-config, already required by Tauri) → Task 1 Steps 1, 6 + Global Constraints. ✓
 - Tests: Rust mock roundtrip + TS migration cases (a-e) + delegation → Tasks 1, 3, 4. ✓
 - Manual QA checklist → Task 6 Step 3. ✓
 - Non-secret profile values untouched → no task modifies them; `deleteProfile` only called with `api_key`/`elevenlabs_key`. ✓

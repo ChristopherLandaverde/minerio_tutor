@@ -31,6 +31,8 @@ sudo apt-get install -y \
   libayatana-appindicator3-dev \
   libxdo-dev \
   libssl-dev \
+  libdbus-1-dev \
+  pkg-config \
   build-essential curl wget file
 
 echo ""
