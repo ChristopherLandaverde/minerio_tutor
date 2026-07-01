@@ -9,18 +9,18 @@
   }
 
   const topicLabels: Record<string, string> = {
-    food: 'Comida', mineiro: 'Mineiro', greetings: 'Cumprimentos',
-    travel: 'Viagem', family: 'Família', daily_routine: 'Rotina',
-    body_health: 'Saúde', emotions: 'Emoções', shopping: 'Compras',
-    work: 'Trabalho', ser_estar: 'Ser vs Estar', verbs_present: 'Presente',
-    verbs_past: 'Passado', prepositions: 'Preposições',
-    false_cognates: 'Falsos Cognatos', mineiro_vs_standard: 'Mineiro vs Padrão',
-    cultural: 'Cultura', error_correction: 'Erros Comuns',
-    true_false: 'Verdadeiro/Falso', reorder: 'Reordene',
-    transport: 'Transporte', clothing: 'Roupas', sports_leisure: 'Esportes',
-    food_drinks: 'Comida & Bebida', nature: 'Natureza', house: 'Casa',
-    education: 'Educação', technology: 'Tecnologia', time_numbers: 'Tempo',
-    weather: 'Clima', colors: 'Cores', dialogue: 'Diálogos',
+    food: 'Food', mineiro: 'Mineiro', greetings: 'Greetings',
+    travel: 'Travel', family: 'Family', daily_routine: 'Daily Routine',
+    body_health: 'Health', emotions: 'Emotions', shopping: 'Shopping',
+    work: 'Work', ser_estar: 'Ser vs Estar', verbs_present: 'Present',
+    verbs_past: 'Past', prepositions: 'Prepositions',
+    false_cognates: 'False Cognates', mineiro_vs_standard: 'Mineiro vs Standard',
+    cultural: 'Culture', error_correction: 'Common Errors',
+    true_false: 'True/False', reorder: 'Reorder',
+    transport: 'Transport', clothing: 'Clothing', sports_leisure: 'Sports',
+    food_drinks: 'Food & Drink', nature: 'Nature', house: 'House',
+    education: 'Education', technology: 'Technology', time_numbers: 'Time',
+    weather: 'Weather', colors: 'Colors', dialogue: 'Dialogues',
   };
 
   interface Props {
@@ -171,15 +171,15 @@
     <div class="p-8 text-center">
       <div class="flex items-center justify-center gap-2 mb-4">
         <span class="text-xs uppercase tracking-wider text-cafe-muted font-semibold">
-          {current.type === 'vocab' ? 'Vocabulário' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correção' : current.type === 'true_false' ? 'Verdadeiro ou Falso' : current.type === 'reorder' ? 'Reordene' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
+          {current.type === 'vocab' ? 'Vocabulary' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correction' : current.type === 'true_false' ? 'True or False' : current.type === 'reorder' ? 'Reorder' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
         </span>
         {#if voiceAvailable && !listeningMode}
           <button
             onclick={() => speakText(getTextToSpeak(current))}
             disabled={speaking}
             class="inline-flex items-center justify-center w-7 h-7 rounded-full border border-border hover:border-terracotta hover:bg-terracotta/5 transition-colors disabled:opacity-40"
-            aria-label="Ouvir pronúncia"
-            title="Ouvir pronúncia"
+            aria-label="Listen to pronunciation"
+            title="Listen to pronunciation"
           >
             <svg class="w-3.5 h-3.5 text-cafe-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M11 5L6 9H2v6h4l5 4V5z"/></svg>
           </button>
@@ -192,28 +192,28 @@
           <div class="w-16 h-16 rounded-full bg-serra/10 flex items-center justify-center {speaking ? 'animate-pulse' : ''}">
             <svg class="w-8 h-8 text-serra" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.114 5.636a9 9 0 010 12.728M16.463 8.288a5.25 5.25 0 010 7.424M6.75 8.25l4.72-3.14a.75.75 0 011.28.53v12.72a.75.75 0 01-1.28.53l-4.72-3.14H3.75A.75.75 0 013 15v-6a.75.75 0 01.75-.75h3z"/></svg>
           </div>
-          <p class="text-sm text-cafe-muted">Ouça e escreva o que você ouvir</p>
+          <p class="text-sm text-cafe-muted">Listen and write what you hear</p>
           <button
             onclick={() => speakText(getTextToSpeak(current))}
             disabled={speaking}
             class="px-4 py-2 border border-serra/30 text-serra text-sm font-semibold rounded-lg hover:bg-serra/5 transition-colors disabled:opacity-40"
           >
-            {speaking ? 'Ouvindo...' : '🔊 Repetir'}
+            {speaking ? 'Listening...' : '🔊 Repeat'}
           </button>
         </div>
         <input
           bind:value={userAnswer}
-          placeholder="Escreva o que ouviu..."
+          placeholder="Write what you heard..."
           class="w-64 px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
         />
 
       {:else if current.type === 'vocab'}
         <p class="font-display text-xl font-semibold mb-2">{current.prompt}</p>
-        <p class="text-xs text-cafe-muted mb-4">Escreva em português</p>
+        <p class="text-xs text-cafe-muted mb-4">Write it in Portuguese</p>
         {#if !showFeedback}
           <input
             bind:value={userAnswer}
-            placeholder="Sua resposta..."
+            placeholder="Your answer..."
             class="w-64 px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
           />
           {#if !showAnswer}
@@ -221,11 +221,11 @@
               onclick={() => showAnswer = true}
               class="block mx-auto mt-3 text-xs text-cafe-muted hover:text-terracotta transition-colors"
             >
-              Não sei — mostrar resposta
+              I don't know — show answer
             </button>
           {:else}
             <div class="mt-3 px-3 py-2 bg-ouro/10 rounded-lg text-sm">
-              <span class="text-cafe-muted">Dica:</span> <span class="text-serra font-mono font-medium">{current.answer}</span>
+              <span class="text-cafe-muted">Hint:</span> <span class="text-serra font-mono font-medium">{current.answer}</span>
             </div>
           {/if}
         {/if}
@@ -237,7 +237,7 @@
         {#if !showFeedback}
           <input
             bind:value={userAnswer}
-            placeholder="Sua resposta..."
+            placeholder="Your answer..."
             class="w-64 px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
           />
         {/if}
@@ -258,14 +258,14 @@
         {/if}
 
       {:else if current.type === 'error_correction'}
-        <p class="text-xs text-cafe-muted mb-2">Corrija a frase abaixo:</p>
+        <p class="text-xs text-cafe-muted mb-2">Correct the sentence below:</p>
         <div class="font-mono text-lg bg-error/5 border border-error/20 p-4 rounded-xl mb-6 text-error">
           {current.prompt}
         </div>
         {#if !showFeedback}
           <input
             bind:value={userAnswer}
-            placeholder="Frase corrigida..."
+            placeholder="Corrected sentence..."
             class="w-full max-w-md px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
           />
         {/if}
@@ -278,26 +278,26 @@
               onclick={() => submitAnswer('true')}
               class="px-8 py-3 border-2 border-serra/30 rounded-xl text-serra font-semibold hover:bg-serra/10 transition-colors"
             >
-              ✅ Verdadeiro
+              ✅ True
             </button>
             <button
               onclick={() => submitAnswer('false')}
               class="px-8 py-3 border-2 border-error/30 rounded-xl text-error font-semibold hover:bg-error/10 transition-colors"
             >
-              ❌ Falso
+              ❌ False
             </button>
           </div>
         {/if}
 
       {:else if current.type === 'reorder'}
-        <p class="text-xs text-cafe-muted mb-2">Reordene as palavras para formar uma frase correta:</p>
+        <p class="text-xs text-cafe-muted mb-2">Reorder the words to form a correct sentence:</p>
         <div class="font-mono text-lg bg-ouro/10 border border-ouro/20 p-4 rounded-xl mb-6 text-cafe">
           {current.prompt}
         </div>
         {#if !showFeedback}
           <input
             bind:value={userAnswer}
-            placeholder="Escreva a frase na ordem correta..."
+            placeholder="Write the sentence in the correct order..."
             class="w-full max-w-md px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
           />
         {/if}
@@ -312,7 +312,7 @@
           disabled={!userAnswer.trim()}
           class="px-8 py-2.5 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Verificar
+          Check
         </button>
       </div>
     {/if}
@@ -323,10 +323,10 @@
         <div class="flex items-start gap-3">
           <span class="text-2xl">{lastResult.isCorrect ? '✅' : '❌'}</span>
           <div>
-            <div class="font-bold text-sm">{lastResult.isCorrect ? 'Correto!' : 'Incorreto'}</div>
+            <div class="font-bold text-sm">{lastResult.isCorrect ? 'Correct!' : 'Incorrect'}</div>
             {#if !lastResult.isCorrect}
               <div class="text-sm text-cafe-secondary mt-1 flex items-center gap-1.5 flex-wrap">
-                Resposta: <strong class="text-serra">{current.answer}</strong>
+                Answer: <strong class="text-serra">{current.answer}</strong>
                 {#if voiceAvailable}
                   <button
                     onclick={() => speakText(current.answer)}
@@ -334,7 +334,7 @@
                     class="inline-flex items-center gap-1 text-xs text-serra hover:underline disabled:opacity-40"
                   >
                     <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M15.536 8.464a5 5 0 010 7.072M11 5L6 9H2v6h4l5 4V5z"/></svg>
-                    Ouvir
+                    Listen
                   </button>
                 {/if}
               </div>
@@ -342,7 +342,7 @@
             <div class="text-sm text-cafe-secondary mt-1">{current.explanation}</div>
             {#if lastResult.mistakeType === 'spanish_interference'}
               <div class="mt-2 px-3 py-1.5 bg-ouro/15 rounded-lg text-xs text-ouro font-medium">
-                ⚠️ Cuidado! Isso é interferência do espanhol.
+                ⚠️ Careful! That's Spanish interference.
               </div>
             {/if}
             {#if current.mineiro_note && current.type !== 'vocab'}
@@ -359,13 +359,13 @@
           onclick={nextExercise}
           class="px-8 py-2.5 bg-serra text-white font-semibold rounded-xl hover:bg-serra-dark transition-colors"
         >
-          Continuar →
+          Continue →
         </button>
       </div>
     {/if}
   </div>
 
   <div class="text-center mt-4 text-xs text-cafe-muted">
-    {currentIndex + 1} / {exercises.length} · Esc para sair
+    {currentIndex + 1} / {exercises.length} · Esc to exit
   </div>
 {/if}

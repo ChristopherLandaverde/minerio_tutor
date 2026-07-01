@@ -237,9 +237,8 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
 <div class="max-w-3xl mx-auto p-6">
   {#if !selectedPassage}
     <!-- Passage Selection -->
-    <h2 class="font-display text-2xl font-bold mb-1">📖 Leitura</h2>
-    <p class="text-[10px] text-cafe-muted/50 mb-2">Reading</p>
-    <p class="text-sm text-cafe-secondary mb-6">Leia textos em português e responda perguntas de compreensão <span class="text-[10px] text-cafe-muted/50">Read texts & answer questions</span></p>
+    <h2 class="font-display text-2xl font-bold mb-1">📖 Reading</h2>
+    <p class="text-sm text-cafe-secondary mb-6">Read texts in Portuguese and answer comprehension questions</p>
 
     <div class="space-y-3">
       {#each passages as passage, i}
@@ -250,7 +249,7 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
           <div class="flex items-center justify-between">
             <div>
               <h3 class="font-semibold text-sm">{passage.title}</h3>
-              <p class="text-xs text-cafe-muted mt-1">{passage.questions.length} perguntas · {passage.vocab.length} palavras novas</p>
+              <p class="text-xs text-cafe-muted mt-1">{passage.questions.length} questions · {passage.vocab.length} new words</p>
             </div>
             <span class="text-xs font-semibold px-2.5 py-1 rounded-full bg-pedra-subtle {passage.level === 'A2' ? 'text-serra' : 'text-terracotta'}">{passage.level}</span>
           </div>
@@ -261,14 +260,14 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
   {:else if !quizDone}
     <!-- Reading + Questions -->
     <div class="flex items-center gap-3 mb-4">
-      <button onclick={backToList} class="text-cafe-muted hover:text-cafe transition-colors" aria-label="Voltar">
+      <button onclick={backToList} class="text-cafe-muted hover:text-cafe transition-colors" aria-label="Back">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
       <div>
         <h2 class="font-display text-lg font-bold">{selectedPassage.title}</h2>
-        <p class="text-xs text-cafe-muted">{selectedPassage.level} · Pergunta {currentQuestion + 1}/{selectedPassage.questions.length}</p>
+        <p class="text-xs text-cafe-muted">{selectedPassage.level} · Question {currentQuestion + 1}/{selectedPassage.questions.length}</p>
       </div>
     </div>
 
@@ -277,7 +276,7 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
       onclick={() => showVocab = !showVocab}
       class="mb-3 text-xs px-3 py-1.5 border border-ouro/30 rounded-lg text-ouro hover:bg-ouro/10 transition-colors"
     >
-      {showVocab ? '📕 Esconder vocabulário' : '📖 Mostrar vocabulário'}
+      {showVocab ? '📕 Hide vocabulary' : '📖 Show vocabulary'}
     </button>
 
     {#if showVocab}
@@ -320,14 +319,14 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
 
       {#if showResult}
         <div class="mt-4 p-3 rounded-lg text-sm {selectedAnswer === selectedPassage.questions[currentQuestion].correct ? 'bg-serra/10 text-serra' : 'bg-error/10 text-error'}">
-          <span class="font-bold">{selectedAnswer === selectedPassage.questions[currentQuestion].correct ? '✅ Correto!' : '❌ Incorreto.'}</span>
+          <span class="font-bold">{selectedAnswer === selectedPassage.questions[currentQuestion].correct ? '✅ Correct!' : '❌ Incorrect.'}</span>
           <span class="ml-1">{selectedPassage.questions[currentQuestion].explanation}</span>
         </div>
         <button
           onclick={nextQuestion}
           class="mt-4 w-full py-2.5 bg-serra text-white font-semibold rounded-xl hover:bg-serra-dark transition-colors"
         >
-          {currentQuestion + 1 >= selectedPassage.questions.length ? 'Ver resultado' : 'Próxima pergunta →'}
+          {currentQuestion + 1 >= selectedPassage.questions.length ? 'See results' : 'Next question →'}
         </button>
       {/if}
     </div>
@@ -336,25 +335,25 @@ Os mineiros têm uma relação especial com a saudade. Talvez por serem um povo 
     <!-- Quiz Complete -->
     <div class="text-center py-12">
       <div class="text-5xl mb-4">📖</div>
-      <h2 class="font-display text-2xl font-bold mb-2">Leitura completa!</h2>
+      <h2 class="font-display text-2xl font-bold mb-2">Reading complete!</h2>
       <p class="text-xl font-display font-bold mb-1 {score === selectedPassage.questions.length ? 'text-serra' : score >= selectedPassage.questions.length / 2 ? 'text-ouro' : 'text-error'}">
-        {score}/{selectedPassage.questions.length} corretas
+        {score}/{selectedPassage.questions.length} correct
       </p>
       <p class="text-sm text-cafe-muted mb-6">
-        {score === selectedPassage.questions.length ? 'Perfeito! Compreensão excelente.' : score >= selectedPassage.questions.length / 2 ? 'Bom trabalho! Continue praticando.' : 'Tente ler o texto novamente com mais atenção.'}
+        {score === selectedPassage.questions.length ? 'Perfect! Excellent comprehension.' : score >= selectedPassage.questions.length / 2 ? 'Good job! Keep practicing.' : 'Try reading the text again more carefully.'}
       </p>
       <div class="flex gap-3 justify-center">
         <button
           onclick={() => selectPassage(selectedPassage!)}
           class="px-6 py-2.5 border border-border font-semibold rounded-xl hover:bg-pedra-subtle transition-colors"
         >
-          Tentar de novo
+          Try again
         </button>
         <button
           onclick={backToList}
           class="px-6 py-2.5 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors"
         >
-          Outro texto
+          Another text
         </button>
       </div>
     </div>

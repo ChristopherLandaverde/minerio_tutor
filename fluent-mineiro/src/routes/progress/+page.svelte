@@ -37,16 +37,16 @@
   ).sort(([a], [b]) => a.localeCompare(b));
 
   const typeLabels: Record<string, string> = {
-    vocab: 'Vocabulário',
-    cloze: 'Gramática',
+    vocab: 'Vocabulary',
+    cloze: 'Grammar',
     multiple_choice: 'Quiz',
-    error_correction: 'Correção',
+    error_correction: 'Correction',
   };
 
   const mistakeLabels: Record<string, string> = {
-    spanish_interference: 'Interferência do Espanhol',
-    grammar: 'Gramática',
-    vocabulary: 'Vocabulário',
+    spanish_interference: 'Spanish Interference',
+    grammar: 'Grammar',
+    vocabulary: 'Vocabulary',
   };
 
   onMount(async () => {
@@ -77,9 +77,8 @@
 </script>
 
 <div class="max-w-3xl mx-auto p-6">
-  <h2 class="font-display text-2xl font-bold mb-1">📊 Progresso</h2>
-  <p class="text-[10px] text-cafe-muted/50 mb-2">Progress</p>
-  <p class="text-sm text-cafe-secondary mb-6">Seu desempenho e estatísticas <span class="text-[10px] text-cafe-muted/50">Your stats & performance</span></p>
+  <h2 class="font-display text-2xl font-bold mb-1">📊 Progress</h2>
+  <p class="text-sm text-cafe-secondary mb-6">Your stats & performance</p>
 
   {#if !loaded}
     <div class="space-y-4">
@@ -92,7 +91,7 @@
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
       <div class="bg-white border border-border rounded-xl p-4 text-center">
         <div class="font-display text-2xl font-bold text-terracotta">{totalXp}</div>
-        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">XP Total</div>
+        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Total XP</div>
       </div>
       <div class="bg-white border border-border rounded-xl p-4 text-center">
         <div class="font-display text-2xl font-bold text-ouro">🔥 {streak}</div>
@@ -100,18 +99,18 @@
       </div>
       <div class="bg-white border border-border rounded-xl p-4 text-center">
         <div class="font-display text-2xl font-bold text-serra">{overallAccuracy}%</div>
-        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Precisão</div>
+        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Accuracy</div>
       </div>
       <div class="bg-white border border-border rounded-xl p-4 text-center">
         <div class="font-display text-2xl font-bold text-info">{totalAttempts}</div>
-        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Respostas</div>
+        <div class="text-xs text-cafe-muted uppercase tracking-wider mt-1">Answers</div>
       </div>
     </div>
 
     <!-- CEFR Level & Adaptive -->
     <!-- Streak Calendar -->
     <div class="bg-white border border-border rounded-xl p-5 mb-6">
-      <h3 class="font-semibold text-sm mb-3">Calendário de Prática (90 dias)</h3>
+      <h3 class="font-semibold text-sm mb-3">Practice Calendar (90 days)</h3>
       <div class="grid grid-cols-13 gap-1">
         {#each Array(91) as _item, i}
           {@const d = new Date(Date.now() - (90 - i) * 86400000)}
@@ -120,24 +119,24 @@
           {@const isToday = i === 90}
           <div
             class="w-full aspect-square rounded-sm {isToday ? 'ring-1 ring-terracotta' : ''} {count === 0 ? 'bg-pedra-subtle' : count < 5 ? 'bg-serra/30' : count < 15 ? 'bg-serra/60' : 'bg-serra'}"
-            title="{dateStr}: {count} exercícios"
+            title="{dateStr}: {count} exercises"
           ></div>
         {/each}
       </div>
       <div class="flex items-center justify-end gap-2 mt-2 text-xs text-cafe-muted">
-        <span>Menos</span>
+        <span>Less</span>
         <div class="w-3 h-3 rounded-sm bg-pedra-subtle"></div>
         <div class="w-3 h-3 rounded-sm bg-serra/30"></div>
         <div class="w-3 h-3 rounded-sm bg-serra/60"></div>
         <div class="w-3 h-3 rounded-sm bg-serra"></div>
-        <span>Mais</span>
+        <span>More</span>
       </div>
     </div>
 
     <!-- CEFR Level -->
     <div class="bg-white border border-border rounded-xl p-5 mb-6">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold text-sm">Nível CEFR</h3>
+        <h3 class="font-semibold text-sm">CEFR Level</h3>
         <span class="text-lg font-display font-bold text-serra">{currentLevel}</span>
       </div>
       <div class="flex gap-1 mb-3">
@@ -146,14 +145,14 @@
         {/each}
       </div>
       <div class="flex items-center justify-between text-xs text-cafe-muted">
-        <span>Precisão recente: {rollingAccuracy}%</span>
+        <span>Recent accuracy: {rollingAccuracy}%</span>
         <span>
           {#if recommendation === 'up'}
-            📈 Pronto para subir
+            📈 Ready to level up
           {:else if recommendation === 'down'}
-            📉 Precisa reforçar
+            📉 Needs reinforcement
           {:else}
-            ✅ Nível adequado
+            ✅ Level is right
           {/if}
         </span>
       </div>
@@ -162,8 +161,8 @@
     <!-- Content Coverage -->
     <div class="bg-white border border-border rounded-xl p-5 mb-6">
       <div class="flex items-center justify-between mb-3">
-        <h3 class="font-semibold text-sm">Cobertura de Conteúdo</h3>
-        <span class="text-xs text-cafe-muted">{exercisesSeen}/{totalExercises} exercícios praticados</span>
+        <h3 class="font-semibold text-sm">Content Coverage</h3>
+        <span class="text-xs text-cafe-muted">{exercisesSeen}/{totalExercises} exercises practiced</span>
       </div>
       <div class="h-3 bg-pedra-subtle rounded-full overflow-hidden mb-4">
         <div class="h-full bg-terracotta rounded-full transition-all duration-500" style="width: {coveragePercent}%"></div>
@@ -180,7 +179,7 @@
 
     <!-- CEFR Content Breakdown -->
     <div class="bg-white border border-border rounded-xl p-5 mb-6">
-      <h3 class="font-semibold text-sm mb-3">Exercícios por Nível</h3>
+      <h3 class="font-semibold text-sm mb-3">Exercises by Level</h3>
       <div class="space-y-2">
         {#each cefrCounts as [level, count]}
           <div class="flex items-center gap-3">
@@ -197,7 +196,7 @@
     <!-- Mistake Patterns -->
     {#if mistakes.length > 0}
       <div class="bg-white border border-border rounded-xl p-5 mb-6">
-        <h3 class="font-semibold text-sm mb-3">Padrões de Erros</h3>
+        <h3 class="font-semibold text-sm mb-3">Mistake Patterns</h3>
         <div class="space-y-2">
           {#each mistakes as { mistake_type, count }}
             <div class="flex items-center justify-between">
@@ -215,14 +214,14 @@
     <!-- Session History -->
     {#if sessions.length > 0}
       <div class="bg-white border border-border rounded-xl p-5 mb-6">
-        <h3 class="font-semibold text-sm mb-3">Histórico de Sessões (últimos 14 dias)</h3>
+        <h3 class="font-semibold text-sm mb-3">Session History (last 14 days)</h3>
         <div class="space-y-2">
           {#each sessions as session}
             {@const acc = session.exercises > 0 ? Math.round((session.correct / session.exercises) * 100) : 0}
             <div class="flex items-center justify-between py-1.5 border-b border-pedra-subtle last:border-0">
               <span class="text-sm text-cafe-secondary">{session.date}</span>
               <div class="flex items-center gap-4 text-sm">
-                <span>{session.exercises} exercícios</span>
+                <span>{session.exercises} exercises</span>
                 <span class="{acc >= 70 ? 'text-serra' : acc >= 40 ? 'text-ouro' : 'text-error'} font-semibold">{acc}%</span>
                 <span class="text-ouro font-semibold">+{session.xp} XP</span>
               </div>
@@ -233,9 +232,9 @@
     {:else}
       <div class="bg-white border border-border rounded-xl p-8 text-center">
         <div class="text-3xl mb-3">📈</div>
-        <p class="text-cafe-muted text-sm">Complete sua primeira sessão para ver estatísticas aqui.</p>
+        <p class="text-cafe-muted text-sm">Complete your first session to see stats here.</p>
         <a href="/" class="inline-block mt-4 px-6 py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta/90 transition-colors">
-          Começar a praticar
+          Start practicing
         </a>
       </div>
     {/if}
@@ -244,15 +243,15 @@
     <div class="bg-white border border-border rounded-xl p-5">
       <div class="flex items-center justify-between">
         <div>
-          <h3 class="font-semibold text-sm">Revisões Pendentes</h3>
-          <p class="text-xs text-cafe-muted mt-0.5">Itens prontos para revisão (SM-2)</p>
+          <h3 class="font-semibold text-sm">Reviews Due</h3>
+          <p class="text-xs text-cafe-muted mt-0.5">Items ready for review (SM-2)</p>
         </div>
         {#if dueReviews > 0}
           <a href="/review" class="px-4 py-2 bg-terracotta text-white text-sm font-semibold rounded-lg hover:bg-terracotta/90 transition-colors">
-            Revisar {dueReviews} {dueReviews === 1 ? 'item' : 'itens'}
+            Review {dueReviews} {dueReviews === 1 ? 'item' : 'items'}
           </a>
         {:else}
-          <span class="text-sm text-serra font-semibold">✅ Em dia</span>
+          <span class="text-sm text-serra font-semibold">✅ Caught up</span>
         {/if}
       </div>
     </div>

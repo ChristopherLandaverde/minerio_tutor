@@ -47,10 +47,10 @@
 
   function getStatusLabel(status: CityStatus): string {
     switch (status) {
-      case 'locked': return 'Bloqueada';
-      case 'open': return 'Aberta';
-      case 'fading': return 'Precisa revisão';
-      case 'mastered': return 'Dominada';
+      case 'locked': return 'Locked';
+      case 'open': return 'Open';
+      case 'fading': return 'Needs review';
+      case 'mastered': return 'Mastered';
     }
   }
 
@@ -80,7 +80,7 @@
     viewBox="0 0 820 560"
     class="map-svg"
     role="img"
-    aria-label="Mapa de Minas Gerais — clique nas cidades para praticar"
+    aria-label="Map of Minas Gerais — click cities to practice"
   >
     <defs>
       <!-- Terrain gradient for depth -->
@@ -175,7 +175,7 @@
       <g
         role="button"
         tabindex={clickable ? 0 : -1}
-        aria-label="{city.name} — {getStatusLabel(status)}{mastery > 0 ? `, ${mastery}% dominado` : ''}"
+        aria-label="{city.name} — {getStatusLabel(status)}{mastery > 0 ? `, ${mastery}% mastered` : ''}"
         onclick={() => handleClick(city.id)}
         onkeydown={(e) => handleKeydown(e, city.id)}
         class="city-node {clickable ? 'clickable' : ''} status-{status}"
@@ -269,7 +269,7 @@
 
     <!-- Map header -->
     <text x="410" y="38" text-anchor="middle" font-size="22" font-weight="700" fill="#3D2B1F" font-family="'Fraunces', serif" letter-spacing="0.5">
-      Sua Jornada
+      Your Journey
     </text>
     <text x="410" y="55" text-anchor="middle" font-size="11" fill="#9B8B7F" letter-spacing="1.5" font-weight="500">
       MINAS GERAIS

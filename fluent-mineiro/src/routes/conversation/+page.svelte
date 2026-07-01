@@ -40,7 +40,7 @@
       ],
     },
     {
-      name: 'Comida',
+      name: 'Food',
       stickers: [
         { emoji: '🧀❤️', label: 'Pão de queijo' },
         { emoji: '🍖🫘', label: 'Feijão tropeiro' },
@@ -51,7 +51,7 @@
       ],
     },
     {
-      name: 'Reações',
+      name: 'Reactions',
       stickers: [
         { emoji: '👍🔥', label: 'Top!' },
         { emoji: '😂🤣', label: 'kkkkk' },
@@ -62,7 +62,7 @@
       ],
     },
     {
-      name: 'Estudo',
+      name: 'Study',
       stickers: [
         { emoji: '📚💪', label: 'Estudando!' },
         { emoji: '✅🎯', label: 'Acertei!' },
@@ -121,7 +121,7 @@
       elevenKeyInput = '';
       await startConversation();
     } catch {
-      error = 'Não foi possível salvar as chaves. Tente novamente.';
+      error = 'Could not save the keys. Try again.';
     }
   }
 
@@ -156,7 +156,7 @@
         } catch {} finally { speaking = false; }
       }
     } catch (e: any) {
-      error = e.message || 'Erro ao enviar mensagem.';
+      error = e.message || 'Error sending message.';
     }
     loading = false;
   }
@@ -194,14 +194,13 @@
   {#if !apiKey}
     <!-- API Key Setup -->
     <div class="max-w-lg mx-auto p-6 mt-12">
-      <h2 class="font-display text-2xl font-bold mb-1">💬 Conversa</h2>
-      <p class="text-[10px] text-cafe-muted/50 mb-2">Chat</p>
-      <p class="text-sm text-cafe-secondary mb-6">Pratique conversação com um tutor de português mineiro.</p>
+      <h2 class="font-display text-2xl font-bold mb-1">💬 Chat</h2>
+      <p class="text-sm text-cafe-secondary mb-6">Practice conversation with a Mineiro Portuguese tutor.</p>
 
       <div class="bg-white border border-border rounded-xl p-6 space-y-4">
         <div>
-          <h3 class="font-semibold text-sm mb-1">Chave da API Anthropic <span class="text-error text-xs">*</span></h3>
-          <p class="text-xs text-cafe-muted mb-2">Para conversar com Claude. Salva localmente.</p>
+          <h3 class="font-semibold text-sm mb-1">Anthropic API Key <span class="text-error text-xs">*</span></h3>
+          <p class="text-xs text-cafe-muted mb-2">To chat with Claude. Saved locally.</p>
           <input
             bind:value={apiKeyInput}
             type="password"
@@ -211,8 +210,8 @@
         </div>
 
         <div>
-          <h3 class="font-semibold text-sm mb-1">Chave ElevenLabs <span class="text-xs text-cafe-muted">(opcional — para voz)</span></h3>
-          <p class="text-xs text-cafe-muted mb-2">Para falar e ouvir em português. Salva localmente.</p>
+          <h3 class="font-semibold text-sm mb-1">ElevenLabs Key <span class="text-xs text-cafe-muted">(optional — for voice)</span></h3>
+          <p class="text-xs text-cafe-muted mb-2">To speak and listen in Portuguese. Saved locally.</p>
           <input
             bind:value={elevenKeyInput}
             type="password"
@@ -226,7 +225,7 @@
           disabled={!apiKeyInput.trim()}
           class="w-full py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
         >
-          Salvar e começar <span class="text-white/60 text-xs">Save & start</span>
+          Save & start
         </button>
       </div>
 
@@ -239,20 +238,20 @@
     <!-- Welcome screen — user decides when to start -->
     <div class="max-w-lg mx-auto p-6 mt-12 text-center">
       <div class="text-5xl mb-4">💬</div>
-      <h2 class="font-display text-2xl font-bold mb-2">Conversa com Sabiá</h2>
-      <p class="text-sm text-cafe-secondary mb-6">Pratique português mineiro numa conversa com seu tutor. Escreva em português — ele vai te ajudar!</p>
+      <h2 class="font-display text-2xl font-bold mb-2">Chat with Sabiá</h2>
+      <p class="text-sm text-cafe-secondary mb-6">Practice Mineiro Portuguese in a conversation with your tutor. Write in Portuguese — he'll help you!</p>
       <button
         onclick={startConversation}
         class="px-8 py-3 bg-serra text-white font-semibold rounded-xl hover:bg-serra-dark transition-colors"
       >
-        Começar conversa
+        Start conversation
       </button>
     </div>
 
   {:else}
     <!-- WhatsApp-style Header -->
     <div class="flex items-center gap-3 px-4 py-2.5 bg-serra text-white">
-      <a href="/" class="text-white/70 hover:text-white transition-colors" aria-label="Voltar">
+      <a href="/" class="text-white/70 hover:text-white transition-colors" aria-label="Back">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
@@ -263,8 +262,8 @@
       <div class="flex-1">
         <p class="text-sm font-semibold leading-tight">Sabiá</p>
         <p class="text-[11px] text-white/70">
-          {#if speaking}falando... 🔊
-          {:else if loading}digitando...
+          {#if speaking}speaking... 🔊
+          {:else if loading}typing...
           {:else}online{/if}
         </p>
       </div>
@@ -274,8 +273,8 @@
           <button
             onclick={() => voiceEnabled = !voiceEnabled}
             class="text-white/70 hover:text-white transition-colors p-1"
-            aria-label={voiceEnabled ? 'Desativar voz' : 'Ativar voz'}
-            title={voiceEnabled ? 'Voz ativada' : 'Voz desativada'}
+            aria-label={voiceEnabled ? 'Turn off voice' : 'Turn on voice'}
+            title={voiceEnabled ? 'Voice on' : 'Voice off'}
           >
             {#if voiceEnabled}
               <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
@@ -287,7 +286,7 @@
         <button
           onclick={() => { messages = []; startConversation(); }}
           class="text-white/70 hover:text-white transition-colors p-1"
-          aria-label="Nova conversa"
+          aria-label="New conversation"
         >
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -401,7 +400,7 @@
         onclick={() => showStickers = !showStickers}
         class="w-11 h-11 rounded-full flex items-center justify-center shrink-0 transition-colors
           {showStickers ? 'text-terracotta' : 'text-cafe-muted hover:text-cafe'}"
-        aria-label={showStickers ? 'Fechar stickers' : 'Abrir stickers'}
+        aria-label={showStickers ? 'Close stickers' : 'Open stickers'}
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -412,7 +411,7 @@
         bind:value={input}
         onkeydown={handleKeydown}
         onfocus={() => showStickers = false}
-        placeholder="Mensagem"
+        placeholder="Message"
         disabled={loading}
         class="flex-1 px-4 py-2.5 bg-white rounded-3xl text-sm outline-none disabled:opacity-50 border-2 border-transparent focus:border-terracotta shadow-sm"
       />
@@ -422,7 +421,7 @@
           onclick={send}
           disabled={!input.trim() || loading}
           class="w-11 h-11 rounded-full bg-serra text-white flex items-center justify-center shrink-0 hover:bg-serra-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed shadow-sm"
-          aria-label="Enviar mensagem"
+          aria-label="Send message"
         >
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>

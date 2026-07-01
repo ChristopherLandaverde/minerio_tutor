@@ -22,15 +22,15 @@
   });
 
   const navItems = [
-    { href: '/', label: 'Mapa', en: 'Map', icon: '🗺️' },
-    { href: '/lesson', label: 'Lição', en: 'Lesson', icon: '📚' },
-    { href: '/review', label: 'Revisão', en: 'Review', icon: '🔄' },
-    { href: '/conversation', label: 'Conversa', en: 'Chat', icon: '💬' },
-    { href: '/writing', label: 'Escrita', en: 'Writing', icon: '✍️' },
-    { href: '/reading', label: 'Leitura', en: 'Reading', icon: '📖' },
-    { href: '/progress', label: 'Progresso', en: 'Progress', icon: '📊' },
-    { href: '/achievements', label: 'Conquistas', en: 'Achievements', icon: '🏆' },
-    { href: '/settings', label: 'Config', en: 'Settings', icon: '⚙️' },
+    { href: '/', label: 'Map', icon: '🗺️' },
+    { href: '/lesson', label: 'Lesson', icon: '📚' },
+    { href: '/review', label: 'Review', icon: '🔄' },
+    { href: '/conversation', label: 'Chat', icon: '💬' },
+    { href: '/writing', label: 'Writing', icon: '✍️' },
+    { href: '/reading', label: 'Reading', icon: '📖' },
+    { href: '/progress', label: 'Progress', icon: '📊' },
+    { href: '/achievements', label: 'Achievements', icon: '🏆' },
+    { href: '/settings', label: 'Settings', icon: '⚙️' },
   ];
 
   function isActive(href: string): boolean {
@@ -48,7 +48,7 @@
   >
     <div class="text-6xl mb-4 splash-bird">🐦</div>
     <h1 class="font-display text-3xl font-bold text-terracotta">Sabiá</h1>
-    <p class="text-sm text-cafe-secondary mt-1">Aprenda mineirês, uai!</p>
+    <p class="text-sm text-cafe-secondary mt-1">Learn Mineirês, uai!</p>
     <div class="mt-6 flex gap-1.5">
       <div class="w-2 h-2 bg-terracotta/40 rounded-full animate-pulse" style="animation-delay: 0ms;"></div>
       <div class="w-2 h-2 bg-terracotta/40 rounded-full animate-pulse" style="animation-delay: 200ms;"></div>
@@ -104,10 +104,7 @@
             : 'text-cafe-secondary hover:bg-pedra-subtle hover:text-cafe'}"
         >
           <span class="text-base">{item.icon}</span>
-          <div class="leading-tight">
-            <span class="block">{item.label}</span>
-            <span class="block text-[10px] opacity-50 font-normal">{item.en}</span>
-          </div>
+          <span>{item.label}</span>
         </a>
       {/each}
     </div>

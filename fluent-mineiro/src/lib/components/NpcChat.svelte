@@ -83,7 +83,7 @@
         messages.map(m => ({ role: m.role, content: m.content }))
       );
     } catch (e: any) {
-      error = e.message || 'Erro ao enviar mensagem.';
+      error = e.message || 'Error sending message.';
     }
     loading = false;
   }
@@ -118,7 +118,7 @@
     <button
       onclick={onClose}
       class="text-white/70 hover:text-white transition-colors"
-      aria-label="Fechar"
+      aria-label="Close"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -140,14 +140,14 @@
         </div>
       </div>
       <p class="text-[11px] text-white/70">
-        {#if loading}digitando...
+        {#if loading}typing...
         {:else}{npc.role}{/if}
       </p>
     </div>
     <button
       onclick={handleNewConversation}
       class="text-white/70 hover:text-white transition-colors p-1"
-      aria-label="Nova conversa"
+      aria-label="New conversation"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -206,7 +206,7 @@
     <input
       bind:value={input}
       onkeydown={handleKeydown}
-      placeholder="Escreva em português..."
+      placeholder="Write in Portuguese..."
       class="flex-1 px-4 py-2 border border-border rounded-full text-sm bg-pedra focus:border-terracotta outline-none"
       disabled={loading}
     />
@@ -214,7 +214,7 @@
       onclick={send}
       disabled={!input.trim() || loading}
       class="w-10 h-10 rounded-full bg-terracotta text-white flex items-center justify-center hover:bg-terracotta-dark transition-colors disabled:opacity-40"
-      aria-label="Enviar"
+      aria-label="Send"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

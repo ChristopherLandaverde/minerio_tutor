@@ -8,10 +8,10 @@
 
   const categories = [
     { key: 'streak', label: 'Streak' },
-    { key: 'exercises', label: 'Exercícios' },
-    { key: 'accuracy', label: 'Precisão' },
-    { key: 'cefr', label: 'Nível CEFR' },
-    { key: 'special', label: 'Especial' },
+    { key: 'exercises', label: 'Exercises' },
+    { key: 'accuracy', label: 'Accuracy' },
+    { key: 'cefr', label: 'CEFR Level' },
+    { key: 'special', label: 'Special' },
   ];
 
   onMount(async () => {
@@ -31,10 +31,9 @@
   <div class="flex items-center justify-between mb-6">
     <div>
       <div>
-        <h2 class="font-display text-2xl font-bold">🏆 Conquistas</h2>
-        <p class="text-[10px] text-cafe-muted/50">Achievements</p>
+        <h2 class="font-display text-2xl font-bold">🏆 Achievements</h2>
       </div>
-      <p class="text-sm text-cafe-secondary">Suas medalhas e marcos de aprendizado <span class="text-[10px] text-cafe-muted/50">Your badges & milestones</span></p>
+      <p class="text-sm text-cafe-secondary">Your badges & milestones</p>
     </div>
     {#if loaded && !error}
       <span class="text-xs font-semibold px-3 py-1.5 rounded-full bg-ouro/15 text-ouro">
@@ -53,22 +52,22 @@
   {:else if error}
     <div class="bg-white border border-error/20 rounded-xl p-8 text-center">
       <div class="text-3xl mb-3">😕</div>
-      <p class="text-sm text-cafe-muted">Erro ao carregar conquistas.</p>
+      <p class="text-sm text-cafe-muted">Error loading achievements.</p>
       <button
         onclick={() => location.reload()}
         class="mt-4 px-5 py-2 bg-terracotta text-white text-sm font-semibold rounded-lg hover:bg-terracotta-dark transition-colors"
       >
-        Tentar novamente
+        Try again
       </button>
     </div>
 
   {:else if unlockedCount === 0}
     <div class="bg-white border border-border rounded-xl p-8 text-center mb-8">
       <div class="text-4xl mb-4">🎯</div>
-      <h3 class="font-display text-lg font-bold mb-2">Nenhuma conquista ainda!</h3>
-      <p class="text-sm text-cafe-muted">Complete sua primeira sessão para começar a desbloquear medalhas.</p>
+      <h3 class="font-display text-lg font-bold mb-2">No achievements yet!</h3>
+      <p class="text-sm text-cafe-muted">Complete your first session to start unlocking badges.</p>
       <a href="/session" class="inline-block mt-4 px-6 py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta-dark transition-colors">
-        Começar sessão
+        Start session
       </a>
     </div>
   {/if}
@@ -84,7 +83,7 @@
               class="bg-white border border-border rounded-xl p-4 text-center transition-all duration-150
                 {badge.unlockedAt ? 'hover:-translate-y-0.5 hover:shadow-md' : 'opacity-60'}"
               role="listitem"
-              aria-label="{badge.title}, {badge.tier}, {badge.unlockedAt ? 'desbloqueado' : 'bloqueado — ' + badge.hint}"
+              aria-label="{badge.title}, {badge.tier}, {badge.unlockedAt ? 'unlocked' : 'locked — ' + badge.hint}"
             >
               <div class="text-3xl {badge.unlockedAt ? '' : 'opacity-20'}">{badge.icon}</div>
               <p class="text-xs font-semibold mt-2 line-clamp-1">{badge.title}</p>

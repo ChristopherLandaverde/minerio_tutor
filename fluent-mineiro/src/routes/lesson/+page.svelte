@@ -58,11 +58,11 @@
   {#if sessionDone && sessionStats}
     <div class="text-center py-12">
       <div class="text-5xl mb-4">🎉</div>
-      <h2 class="font-display text-2xl font-bold mb-2">Sessão completa!</h2>
+      <h2 class="font-display text-2xl font-bold mb-2">Session complete!</h2>
       <div class="grid grid-cols-3 gap-4 max-w-sm mx-auto mb-6">
         <div class="bg-white border border-border rounded-xl p-3 text-center">
           <div class="font-display text-xl font-bold text-serra">{sessionStats.correct}/{sessionStats.total}</div>
-          <div class="text-xs text-cafe-muted">Corretas</div>
+          <div class="text-xs text-cafe-muted">Correct</div>
         </div>
         <div class="bg-white border border-border rounded-xl p-3 text-center">
           <div class="font-display text-xl font-bold text-ouro">+{sessionStats.xp}</div>
@@ -75,12 +75,12 @@
       </div>
       {#if levelChange}
         <div class="mb-6 px-4 py-3 bg-ouro/15 border border-ouro/30 rounded-xl text-center">
-          <span class="text-lg font-bold text-ouro">🎯 Nível atualizado para {levelChange}!</span>
-          <p class="text-xs text-cafe-secondary mt-1">Sua precisão mudou — o conteúdo vai se adaptar.</p>
+          <span class="text-lg font-bold text-ouro">🎯 Level updated to {levelChange}!</span>
+          <p class="text-xs text-cafe-secondary mt-1">Your accuracy changed — the content will adapt.</p>
         </div>
       {/if}
       <a href="/" class="inline-flex px-6 py-3 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors">
-        Voltar ao Dashboard
+        Back to Dashboard
       </a>
     </div>
   {:else if exercises.length > 0}
@@ -88,9 +88,9 @@
   {:else if loaded}
     <div class="bg-white border border-border rounded-xl p-8 text-center">
       <div class="text-3xl mb-3">📚</div>
-      <p class="text-sm text-cafe-muted">Nenhum exercício encontrado para este tipo/tópico.</p>
+      <p class="text-sm text-cafe-muted">No exercises found for this type/topic.</p>
       <a href="/" class="inline-block mt-4 px-6 py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta-dark transition-colors">
-        Voltar ao Dashboard
+        Back to Dashboard
       </a>
     </div>
   {:else}

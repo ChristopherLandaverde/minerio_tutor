@@ -148,9 +148,9 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
       }
 
       const data = await response.json();
-      feedback = data.content[0]?.text || 'Não foi possível avaliar. Tente novamente.';
+      feedback = data.content[0]?.text || 'Could not evaluate. Try again.';
     } catch (e: any) {
-      error = e.message || 'Erro ao avaliar o texto.';
+      error = e.message || 'Error evaluating the text.';
     }
     loading = false;
   }
@@ -158,21 +158,20 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
 
 <div class="max-w-3xl mx-auto p-6">
   {#if !apiKey}
-    <h2 class="font-display text-2xl font-bold mb-1">✍️ Escrita</h2>
-    <p class="text-[10px] text-cafe-muted/50 mb-2">Writing</p>
-    <p class="text-sm text-cafe-secondary mb-6">Pratique escrita em português com feedback de Claude. <span class="text-[10px] text-cafe-muted/50">Practice writing with AI feedback</span></p>
+    <h2 class="font-display text-2xl font-bold mb-1">✍️ Writing</h2>
+    <p class="text-sm text-cafe-secondary mb-6">Practice writing in Portuguese with feedback from Claude.</p>
     <div class="bg-white border border-border rounded-xl p-8 text-center">
       <div class="text-3xl mb-3">🔑</div>
-      <p class="text-cafe-muted text-sm mb-4">Configure sua chave API nas Configurações para usar o modo escrita.</p>
+      <p class="text-cafe-muted text-sm mb-4">Set up your API key in Settings to use writing mode.</p>
       <a href="/settings" class="inline-block px-6 py-2.5 bg-terracotta text-white font-semibold rounded-lg hover:bg-terracotta/90 transition-colors">
-        Ir para Configurações
+        Go to Settings
       </a>
     </div>
 
   {:else if !selectedPrompt}
     <!-- Prompt Selection -->
-    <h2 class="font-display text-2xl font-bold mb-2">✍️ Escrita</h2>
-    <p class="text-sm text-cafe-secondary mb-6">Escolha um tema para praticar escrita em português</p>
+    <h2 class="font-display text-2xl font-bold mb-2">✍️ Writing</h2>
+    <p class="text-sm text-cafe-secondary mb-6">Choose a topic to practice writing in Portuguese</p>
 
     <div class="space-y-3">
       {#each prompts as prompt}
@@ -186,7 +185,7 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
               <p class="text-xs text-cafe-muted mt-1 line-clamp-1">{prompt.description}</p>
             </div>
             <div class="flex items-center gap-2 shrink-0 ml-4">
-              <span class="text-xs text-cafe-muted">{prompt.minWords}+ palavras</span>
+              <span class="text-xs text-cafe-muted">{prompt.minWords}+ words</span>
               <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-pedra-subtle {prompt.level === 'A2' ? 'text-serra' : prompt.level === 'B1' ? 'text-terracotta' : 'text-info'}">{prompt.level}</span>
             </div>
           </div>
@@ -197,14 +196,14 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
   {:else}
     <!-- Writing Area -->
     <div class="flex items-center gap-3 mb-6">
-      <button onclick={backToPrompts} class="text-cafe-muted hover:text-cafe transition-colors" aria-label="Voltar">
+      <button onclick={backToPrompts} class="text-cafe-muted hover:text-cafe transition-colors" aria-label="Back">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
       </button>
       <div>
         <h2 class="font-display text-lg font-bold">{selectedPrompt.title}</h2>
-        <p class="text-xs text-cafe-muted">{selectedPrompt.level} · {selectedPrompt.minWords}+ palavras</p>
+        <p class="text-xs text-cafe-muted">{selectedPrompt.level} · {selectedPrompt.minWords}+ words</p>
       </div>
     </div>
 
@@ -217,13 +216,13 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
     {#if showHelper && selectedPrompt.kit}
       <div class="bg-white border border-border rounded-xl p-4 mb-4">
         <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-semibold text-cafe-muted uppercase tracking-wider">Precisa de ajuda?</span>
-          <button onclick={() => showHelper = false} class="text-xs text-cafe-muted hover:text-cafe">esconder</button>
+          <span class="text-xs font-semibold text-cafe-muted uppercase tracking-wider">Need help?</span>
+          <button onclick={() => showHelper = false} class="text-xs text-cafe-muted hover:text-cafe">hide</button>
         </div>
 
         <!-- Starter phrases — click to insert -->
         <div class="mb-3">
-          <p class="text-[10px] text-cafe-muted mb-1.5">Comece com:</p>
+          <p class="text-[10px] text-cafe-muted mb-1.5">Start with:</p>
           <div class="flex flex-wrap gap-1.5">
             {#each selectedPrompt.kit.starters as starter}
               <button
@@ -238,7 +237,7 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
 
         <!-- Vocabulary hints -->
         <div>
-          <p class="text-[10px] text-cafe-muted mb-1.5">Vocabulário útil:</p>
+          <p class="text-[10px] text-cafe-muted mb-1.5">Useful vocabulary:</p>
           <div class="flex flex-wrap gap-1.5">
             {#each selectedPrompt.kit.vocab as word}
               <span class="text-xs px-2 py-0.5 bg-pedra-subtle rounded-full text-cafe-secondary">{word}</span>
@@ -248,7 +247,7 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
       </div>
     {:else if !showHelper}
       <button onclick={() => showHelper = true} class="text-xs text-terracotta hover:underline mb-3 block">
-        Mostrar ajuda
+        Show help
       </button>
     {/if}
 
@@ -256,18 +255,18 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
     <div class="relative mb-4">
       <textarea
         bind:value={userText}
-        placeholder="Escreva seu texto em português aqui... (clique nas frases acima para começar!)"
+        placeholder="Write your text in Portuguese here... (click the phrases above to get started!)"
         rows={8}
         disabled={loading}
         class="w-full px-4 py-3 border-2 border-border rounded-xl text-sm bg-white focus:border-terracotta outline-none resize-none disabled:opacity-50 leading-relaxed"
       ></textarea>
       <div class="absolute bottom-3 right-3 text-xs font-semibold {wordCount >= selectedPrompt.minWords ? 'text-serra' : wordCount > 0 ? 'text-ouro' : 'text-cafe-muted'}">
         {#if wordCount >= selectedPrompt.minWords}
-          ✓ {wordCount} palavras
+          ✓ {wordCount} words
         {:else if wordCount > 0}
-          {wordCount}/{selectedPrompt.minWords} palavras
+          {wordCount}/{selectedPrompt.minWords} words
         {:else}
-          {selectedPrompt.minWords} palavras mínimo
+          {selectedPrompt.minWords} words minimum
         {/if}
       </div>
     </div>
@@ -279,9 +278,9 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
       class="w-full py-3 bg-terracotta text-white font-semibold rounded-xl hover:bg-terracotta-dark transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
     >
       {#if loading}
-        Avaliando...
+        Evaluating...
       {:else}
-        Enviar para avaliação
+        Submit for evaluation
       {/if}
     </button>
 
@@ -301,13 +300,13 @@ Keep feedback encouraging but honest. Be specific — quote their text when prai
             onclick={() => { userText = ''; feedback = null; }}
             class="flex-1 py-2.5 border border-border text-sm font-semibold rounded-lg hover:bg-pedra-subtle transition-colors"
           >
-            Tentar de novo
+            Try again
           </button>
           <button
             onclick={backToPrompts}
             class="flex-1 py-2.5 bg-serra text-white text-sm font-semibold rounded-lg hover:bg-serra-dark transition-colors"
           >
-            Outro tema
+            Another topic
           </button>
         </div>
       </div>

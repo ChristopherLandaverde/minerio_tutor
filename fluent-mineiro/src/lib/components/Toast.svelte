@@ -36,5 +36,5 @@
     <p class="text-xs font-semibold text-cafe">{title}</p>
     <p class="text-[10px] text-cafe-muted truncate">{detail}</p>
   </div>
-  <button onclick={onDismiss} class="shrink-0 text-cafe-muted hover:text-cafe text-xs p-1" aria-label="Fechar">✕</button>
+  <button onclick={onDismiss} class="shrink-0 text-cafe-muted hover:text-cafe text-xs p-1" aria-label="Close">✕</button>
 </div>
