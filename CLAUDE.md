@@ -13,13 +13,15 @@ See `LEARNING_SYSTEM.md` for the learning methodology, algorithms, and content d
 | `fluent-mineiro/src/lib/exercises.ts` | Exercise scoring + SRS update |
 | `fluent-mineiro/src/lib/adaptive.ts` | CEFR adaptive difficulty |
 | `fluent-mineiro/src/lib/sm2.ts` | SM-2 spaced repetition algorithm |
-| `fluent-mineiro/src/lib/session-planner.ts` | Smart daily session assembly |
+| `fluent-mineiro/src/lib/session-planner.ts` | Smart daily session assembly (legacy; kept for reference) |
+| `fluent-mineiro/src/lib/lesson.ts` | Lesson Arc assembly (Teach→Recognize→Produce→Capstone) + pluggable `chooseTheme` seam |
+| `fluent-mineiro/src/lib/emoji-map.ts` | Emoji lookup for concrete vocab (render-time, no schema change) |
 | `fluent-mineiro/src/lib/achievements.ts` | 16 achievement badges + check logic |
 | `fluent-mineiro/src/lib/challenges.ts` | Weekly challenge generation + tracking |
 | `fluent-mineiro/src/lib/claude.ts` | Claude API (conversation + coaching notes) |
 | `fluent-mineiro/src/lib/content.ts` | Exercise content loader (A2/B1/B2) |
 | `fluent-mineiro/src/lib/components/ExercisePlayer.svelte` | Shared exercise UI (all 6 types) |
-| `fluent-mineiro/src/routes/` | SvelteKit pages (dashboard, session, lesson, review, conversation, writing, reading, progress, achievements, settings) |
+| `fluent-mineiro/src/routes/` | SvelteKit pages (dashboard, session, lesson, review, conversation, writing, reading, progress, achievements, settings). `/session` plays a themed Lesson Arc (Teach→Recognize→Produce→Capstone) assembled by `lesson.ts`, with SRS reviews as a warm-up. |
 | `LEARNING_SYSTEM.md` | Complete methodology guide |
 
 ## SQLite Tables
