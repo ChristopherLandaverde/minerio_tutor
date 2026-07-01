@@ -1,0 +1,38 @@
+version: 2
+updates:
+  # Frontend / SvelteKit app
+  - package-ecosystem: npm
+    directory: /fluent-mineiro
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      # Bundle low-risk bumps into a single PR to avoid lockfile-conflict
+      # cascades and reduce review noise.
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Tauri / Rust backend
+  - package-ecosystem: cargo
+    directory: /fluent-mineiro/src-tauri
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
+
+  # Keep the GitHub Actions themselves current
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      minor-and-patch:
+        update-types:
+          - minor
+          - patch
