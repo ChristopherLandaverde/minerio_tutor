@@ -36,9 +36,23 @@ The app features a Mineiro-themed design: terracotta earth tones, serra green, o
 
 ### Prerequisites
 
+All platforms:
+
 - [Node.js](https://nodejs.org) 18+
 - [Rust](https://rustup.rs)
 - [Bun](https://bun.sh) (for build tooling)
+
+**Linux** additionally needs the WebKitGTK system libraries that Tauri builds
+against. On Debian/Ubuntu/Pop!_OS, a helper script installs them:
+
+```bash
+cd fluent-mineiro
+bash scripts/setup-linux.sh   # installs libwebkit2gtk-4.1-dev and friends
+```
+
+For other distros, see the [Tauri Linux prerequisites](https://tauri.app/start/prerequisites/#linux).
+macOS and Windows need no extra system packages beyond the Xcode Command Line
+Tools / WebView2 that are normally already present.
 
 ### Development
 
@@ -54,7 +68,18 @@ npm run tauri dev
 npm run tauri build
 ```
 
-Produces `Sabiá.app` and `.dmg` in `src-tauri/target/release/bundle/`.
+Tauri bundles for whichever OS you run the build on, writing to
+`src-tauri/target/release/bundle/`:
+
+| Build platform | Output |
+|----------------|--------|
+| macOS | `Sabiá.app`, `.dmg` |
+| Linux | `.deb`, `.AppImage`, `.rpm` |
+| Windows | `.msi`, `.exe` |
+
+Native desktop apps aren't cross-compiled — build each platform's package on
+that platform (or a matching CI runner). The shared SvelteKit/Rust source is
+identical across all of them.
 
 ### API Keys (optional)
 
