@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: Build & Test
+  frontend:
+    name: Frontend
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -39,3 +39,37 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  backend:
+    name: Backend
+    # macOS matches the deploy target (Mac + future iOS) and ships webkit,
+    # so no Linux system-dependency install is needed.
+    runs-on: macos-latest
+    defaults:
+      run:
+        working-directory: fluent-mineiro/src-tauri
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache Rust build
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: fluent-mineiro/src-tauri
+
+      - name: Format check
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        run: cargo clippy --all-targets -- -D warnings
+
+      - name: Build
+        run: cargo build --locked
+
+      - name: Test
+        run: cargo test --locked
