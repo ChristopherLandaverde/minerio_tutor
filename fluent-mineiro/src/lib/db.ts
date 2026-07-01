@@ -24,6 +24,11 @@ export async function setProfile(key: string, value: string): Promise<void> {
   );
 }
 
+export async function deleteProfile(key: string): Promise<void> {
+  const d = await getDb();
+  await d.execute('DELETE FROM profile WHERE key = $1', [key]);
+}
+
 // Attempts
 export async function recordAttempt(
   exerciseId: number,
