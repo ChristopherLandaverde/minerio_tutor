@@ -65,14 +65,20 @@ mod tests {
         key: (String, String),
     }
 
-    fn store() -> &'static Mutex<HashMap<(String, String), Vec<u8>>> {
-        static STORE: OnceLock<Mutex<HashMap<(String, String), Vec<u8>>>> = OnceLock::new();
+    // Keyed by (service, user) -> stored secret bytes.
+    type MockStore = Mutex<HashMap<(String, String), Vec<u8>>>;
+
+    fn store() -> &'static MockStore {
+        static STORE: OnceLock<MockStore> = OnceLock::new();
         STORE.get_or_init(|| Mutex::new(HashMap::new()))
     }
 
     impl CredentialApi for ProcessMockCredential {
         fn set_secret(&self, secret: &[u8]) -> keyring::Result<()> {
-            store().lock().unwrap().insert(self.key.clone(), secret.to_vec());
+            store()
+                .lock()
+                .unwrap()
+                .insert(self.key.clone(), secret.to_vec());
             Ok(())
         }
 
@@ -103,7 +109,12 @@ mod tests {
     struct ProcessMockBuilder;
 
     impl CredentialBuilderApi for ProcessMockBuilder {
-        fn build(&self, _target: Option<&str>, service: &str, user: &str) -> keyring::Result<Box<Credential>> {
+        fn build(
+            &self,
+            _target: Option<&str>,
+            service: &str,
+            user: &str,
+        ) -> keyring::Result<Box<Credential>> {
             Ok(Box::new(ProcessMockCredential {
                 key: (service.to_string(), user.to_string()),
             }))
@@ -132,7 +143,10 @@ mod tests {
     fn set_then_get_roundtrips() {
         init_mock();
         secret_set("t1_anthropic_api_key".into(), "sk-abc".into()).unwrap();
-        assert_eq!(secret_get("t1_anthropic_api_key".into()).unwrap(), Some("sk-abc".to_string()));
+        assert_eq!(
+            secret_get("t1_anthropic_api_key".into()).unwrap(),
+            Some("sk-abc".to_string())
+        );
     }
 
     #[test]
