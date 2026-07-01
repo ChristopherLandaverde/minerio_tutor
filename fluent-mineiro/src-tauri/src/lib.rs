@@ -1,3 +1,5 @@
+mod secrets;
+
 use tauri_plugin_sql::{Migration, MigrationKind};
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -126,6 +128,11 @@ pub fn run() {
                 .add_migrations("sqlite:user.db", migrations)
                 .build(),
         )
+        .invoke_handler(tauri::generate_handler![
+            secrets::secret_get,
+            secrets::secret_set,
+            secrets::secret_delete
+        ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
