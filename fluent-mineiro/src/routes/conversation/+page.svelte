@@ -85,6 +85,7 @@
   }
 
   let started = $state(false);
+  let capstoneScenario = $state<string | null>(null);
 
   onMount(async () => {
     try {
@@ -100,6 +101,8 @@
         sessionStorage.removeItem('capstone_seed');
         const seed = JSON.parse(raw) as { scenario: string; opener: string };
         messages = [{ role: 'assistant', content: seed.opener, time: now() }];
+        capstoneScenario = seed.scenario;
+        started = true;
       }
     } catch { /* ignore malformed seed */ }
   });
@@ -139,7 +142,7 @@
     error = null;
     try {
       const apiMessages = messages.map(m => ({ role: m.role, content: m.content }));
-      const reply = await sendMessage(apiMessages, apiKey);
+      const reply = await sendMessage(apiMessages, apiKey, capstoneScenario ?? undefined);
       messages = [...messages, { role: 'assistant', content: reply, time: now() }];
       await tick();
       scrollToBottom();

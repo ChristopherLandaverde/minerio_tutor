@@ -189,11 +189,11 @@
 
 {#if showCelebration && newAchievements[celebrationIndex]}
   {@const badge = newAchievements[celebrationIndex]}
-  <div class="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-24" role="dialog" aria-modal="true" tabindex="-1">
+  <div class="fixed inset-0 bg-black/40 z-50 flex items-start justify-center pt-24" role="dialog" aria-modal="true" aria-labelledby="celebration-title" tabindex="-1">
     <button class="absolute inset-0 w-full h-full cursor-default" onclick={dismissCelebration} aria-label="Fechar"></button>
     <div class="relative max-w-sm w-full mx-4 bg-white rounded-2xl p-8 text-center shadow-xl z-10">
       <div class="text-5xl mb-4">{badge.icon}</div>
-      <p class="font-display text-2xl font-bold text-ouro">Parabéns!</p>
+      <p id="celebration-title" class="font-display text-2xl font-bold text-ouro">Parabéns!</p>
       <p class="font-semibold text-base text-cafe mt-2">{badge.title}</p>
       <p class="text-sm text-cafe-secondary mt-3">{badge.description}</p>
       <button onclick={dismissCelebration} class="mt-6 px-8 py-2.5 bg-serra text-white font-semibold rounded-xl">Continuar</button>

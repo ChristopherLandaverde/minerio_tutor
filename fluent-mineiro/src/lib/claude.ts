@@ -52,8 +52,13 @@ export async function setApiKey(key: string): Promise<void> {
 
 export async function sendMessage(
   messages: ChatMessage[],
-  apiKey: string
+  apiKey: string,
+  scenario?: string
 ): Promise<string> {
+  const systemPrompt = SYSTEM_PROMPT + (scenario
+    ? `\n\nCENA ATUAL (mantenha o usuário nesta situação): ${scenario}`
+    : '');
+
   const response = await fetch(API_URL, {
     method: 'POST',
     headers: {
@@ -65,7 +70,7 @@ export async function sendMessage(
     body: JSON.stringify({
       model: MODEL,
       max_tokens: 300,
-      system: SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: messages.map(m => ({
         role: m.role,
         content: m.content,
