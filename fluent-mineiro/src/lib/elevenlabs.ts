@@ -4,7 +4,7 @@
  * STT: Transcribe recorded audio to text
  */
 
-import { fetch } from '@tauri-apps/plugin-http';
+import { httpFetch as fetch } from '$lib/http';
 import { getProfile, setProfile } from './db';
 
 const TTS_URL = 'https://api.elevenlabs.io/v1/text-to-speech';

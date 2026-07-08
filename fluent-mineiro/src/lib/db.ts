@@ -1,10 +1,25 @@
-import Database from '@tauri-apps/plugin-sql';
+// Cross-platform DB handle. Both the Tauri plugin-sql Database and the browser
+// sql.js adapter expose the same select/execute surface the helpers below use.
+interface Db {
+  select<T = any>(sql: string, params?: any[]): Promise<T>;
+  execute(sql: string, params?: any[]): Promise<{ rowsAffected: number; lastInsertId?: number }>;
+}
 
-let db: Database | null = null;
+function isTauri(): boolean {
+  return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
+}
 
-export async function getDb(): Promise<Database> {
+let db: Db | null = null;
+
+export async function getDb(): Promise<Db> {
   if (!db) {
-    db = await Database.load('sqlite:user.db');
+    if (isTauri()) {
+      const { default: Database } = await import('@tauri-apps/plugin-sql');
+      db = (await Database.load('sqlite:user.db')) as unknown as Db;
+    } else {
+      const { loadBrowserDb } = await import('./browser-db');
+      db = await loadBrowserDb();
+    }
   }
   return db;
 }

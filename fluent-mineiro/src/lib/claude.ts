@@ -4,7 +4,7 @@
  * API key stored in local SQLite profile table.
  */
 
-import { fetch } from '@tauri-apps/plugin-http';
+import { httpFetch as fetch } from '$lib/http';
 import { getProfile, setProfile } from './db';
 import { getRandomFallback } from './coaching-fallbacks';
 

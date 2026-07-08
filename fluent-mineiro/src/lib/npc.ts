@@ -4,7 +4,7 @@
  * Same API pattern as claude.ts.
  */
 
-import { fetch } from '@tauri-apps/plugin-http';
+import { httpFetch as fetch } from '$lib/http';
 import { getDb } from './db';
 import { getApiKey, type ChatMessage } from './claude';
 import type { NpcDef } from './cities';

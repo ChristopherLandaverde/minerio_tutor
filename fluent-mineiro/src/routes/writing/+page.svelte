@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { fetch } from '@tauri-apps/plugin-http';
+  import { httpFetch as fetch } from '$lib/http';
   import { getApiKey } from '$lib/claude';
 
   interface WritingPrompt {
