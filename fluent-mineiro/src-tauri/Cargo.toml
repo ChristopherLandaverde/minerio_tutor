@@ -24,4 +24,12 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 tauri-plugin-sql = { version = "2.3.2", features = ["sqlite"] }
 tauri-plugin-http = "2"
+keyring = { version = "3", default-features = false, features = ["sync-secret-service", "crypto-rust", "apple-native", "windows-native"] }
 
+[dev-dependencies]
+# NOTE: keyring 3.x has no "mock" feature — the `keyring::mock` module is
+# compiled in unconditionally (see keyring-rs src/lib.rs `pub mod mock;`).
+# Requesting a nonexistent "mock" feature here fails dependency resolution
+# ("keyring does not have that feature"). No extra features are needed to
+# use the mock backend in tests.
+keyring = { version = "3", default-features = false }

@@ -2,13 +2,22 @@
   import '../app.css';
   import { page } from '$app/state';
   import { onMount } from 'svelte';
+  import { migrateSecrets } from '$lib/secrets-migration';
 
   let { children } = $props();
   let mobileMenuOpen = $state(false);
   let splashVisible = $state(true);
   let splashFading = $state(false);
+  let migrationReady = $state(false);
 
   onMount(() => {
+    // One-time move of any plaintext API keys into the OS keychain.
+    // Gate child rendering on this settling (resolved or caught-failure) so
+    // page onMount's don't read keys before migration has copied them over.
+    migrateSecrets()
+      .catch((e) => console.error('secret migration failed', e))
+      .finally(() => { migrationReady = true; });
+
     // Apply saved theme on app load
     const saved = localStorage.getItem('dark_mode');
     if (saved === 'dark') document.documentElement.classList.add('dark');
@@ -115,6 +124,6 @@
 
   <!-- Main content -->
   <main class="flex-1 overflow-y-auto mt-14 md:mt-0">
-    {@render children()}
+    {#if migrationReady}{@render children()}{/if}
   </main>
 </div>

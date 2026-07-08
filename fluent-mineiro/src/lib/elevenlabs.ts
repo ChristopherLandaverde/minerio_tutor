@@ -6,6 +6,7 @@
 
 import { fetch } from '@tauri-apps/plugin-http';
 import { getProfile, setProfile } from './db';
+import { getSecret, setSecret, deleteSecret } from './secrets';
 
 const TTS_URL = 'https://api.elevenlabs.io/v1/text-to-speech';
 const VOICES_URL = 'https://api.elevenlabs.io/v1/voices';
@@ -57,14 +58,18 @@ export function getTtsCacheStats(): { entries: number; maxEntries: number } {
 
 export async function getElevenLabsKey(): Promise<string | null> {
   try {
-    return await getProfile('elevenlabs_key');
+    return await getSecret('elevenlabs_api_key');
   } catch {
     return null;
   }
 }
 
 export async function setElevenLabsKey(key: string): Promise<void> {
-  await setProfile('elevenlabs_key', key);
+  await setSecret('elevenlabs_api_key', key);
+}
+
+export async function clearElevenLabsKey(): Promise<void> {
+  await deleteSecret('elevenlabs_api_key');
 }
 
 /** Get available voices, filtered to Portuguese-compatible ones */
