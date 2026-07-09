@@ -59,13 +59,13 @@
 
 <div class="flex h-screen bg-pedra">
   <!-- Mobile header -->
-  <div class="md:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
+  <div class="app-mobile-header md:hidden fixed top-0 left-0 right-0 z-30 bg-white border-b border-border px-4 py-3 flex items-center justify-between">
     <h1 class="font-display text-lg font-bold text-terracotta">
       Sabiá <span class="text-serra">🐦</span>
     </h1>
     <button
       onclick={() => mobileMenuOpen = !mobileMenuOpen}
-      class="p-2 text-cafe-secondary hover:text-cafe transition-colors"
+      class="tap-target flex items-center justify-center p-2 text-cafe-secondary hover:text-cafe transition-colors"
       aria-label="Menu"
     >
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -88,18 +88,18 @@
   {/if}
 
   <!-- Sidebar -->
-  <nav class="fixed md:static z-40 h-full w-56 border-r border-border bg-white flex flex-col shrink-0 transition-transform duration-200 ease-out {mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}">
+  <nav class="app-sidebar fixed md:static z-40 h-full w-56 border-r border-border bg-white flex flex-col shrink-0 transition-transform duration-200 ease-out {mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}">
     <div class="p-4 border-b border-border hidden md:block">
       <h1 class="font-display text-xl font-bold text-terracotta">
         Sabiá <span class="text-serra">🐦</span>
       </h1>
     </div>
-    <div class="flex-1 py-2 mt-14 md:mt-0">
+    <div class="flex-1 py-2 mobile-top-offset md:mt-0">
       {#each navItems as item}
         <a
           href={item.href}
           onclick={() => mobileMenuOpen = false}
-          class="flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors {isActive(item.href)
+          class="tap-target flex items-center gap-3 px-4 py-2 text-sm font-medium transition-colors {isActive(item.href)
             ? 'text-terracotta bg-pedra-subtle border-r-2 border-terracotta'
             : 'text-cafe-secondary hover:bg-pedra-subtle hover:text-cafe'}"
         >
@@ -114,7 +114,7 @@
   </nav>
 
   <!-- Main content -->
-  <main class="flex-1 overflow-y-auto mt-14 md:mt-0">
+  <main class="app-main mobile-top-offset flex-1 overflow-y-auto md:mt-0">
     {@render children()}
   </main>
 </div>

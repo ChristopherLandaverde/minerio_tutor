@@ -152,6 +152,69 @@ html.dark .animate-pulse {
   background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239B8B7F' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
 }
 
+/* ========================================
+   PWA — Android/mobile platform rules
+   Safe-area insets, reduced motion, touch targets.
+   Requires viewport-fit=cover (set in app.html).
+   All env() insets resolve to 0 on desktop/Tauri.
+   ======================================== */
+
+:root {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --mobile-header-h: 3.5rem; /* matches the old mt-14 offset */
+}
+
+/* Fixed mobile top bar sits under the status bar — pad it clear.
+   Overrides Tailwind px-4/py-3 (unlayered rules beat utilities). */
+.app-mobile-header {
+  padding-top: calc(0.75rem + var(--safe-top));
+  padding-left: calc(1rem + var(--safe-left));
+  padding-right: calc(1rem + var(--safe-right));
+}
+
+/* Sidebar drawer clears the left inset (landscape / gesture nav) */
+.app-sidebar {
+  padding-left: var(--safe-left);
+}
+
+/* Main scroll region clears the Android gesture pill */
+.app-main {
+  padding-bottom: var(--safe-bottom);
+}
+
+/* Content pushed below the fixed header must also clear the status bar.
+   Mobile only — desktop has a static sidebar and no fixed header. */
+@media (max-width: 767px) {
+  .mobile-top-offset {
+    margin-top: calc(var(--mobile-header-h) + var(--safe-top));
+  }
+}
+
+/* Touch targets — Material Design minimum is 48dp. Only on touch
+   devices, so desktop pointer density is preserved. */
+@media (pointer: coarse) {
+  .tap-target {
+    min-height: 48px;
+    min-width: 48px;
+  }
+}
+
+/* Respect the OS "reduce motion" setting — neutralize animation and
+   transitions app-wide (splash hop, pulse dots, page transitions). */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 /* System preference fallback surfaces */
 @media (prefers-color-scheme: dark) {
   html:not(.light):not(.dark) input,
