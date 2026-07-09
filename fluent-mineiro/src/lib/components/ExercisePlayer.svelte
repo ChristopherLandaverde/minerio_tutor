@@ -1,6 +1,6 @@
 <script lang="ts">
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
-  import { getElevenLabsKey, textToSpeech, playAudio } from '$lib/elevenlabs';
+  import { getElevenLabsKey, textToSpeech, playAudio, unlockAudio } from '$lib/elevenlabs';
 
   export interface SessionStats {
     correct: number;
@@ -49,6 +49,9 @@
 
   async function speakText(text: string) {
     if (!elevenKey || speaking) return;
+    // Grab audio activation synchronously, while still inside the tap gesture —
+    // must happen before the awaited fetch below, or mobile blocks playback.
+    unlockAudio();
     speaking = true;
     try {
       const blob = await textToSpeech(text, elevenKey);

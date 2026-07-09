@@ -144,20 +144,58 @@ export async function textToSpeech(
   return blob;
 }
 
-/** Play audio blob through the browser */
+// A single persistent <audio> element, reused for every clip. Mobile browsers
+// and installed PWAs only grant autoplay to an element that was first started
+// inside a user gesture — and only to that same element. So we unlock this one
+// on the first tap and reuse it for all later playback (which happens after an
+// awaited network fetch, i.e. outside the gesture window).
+let sharedAudio: HTMLAudioElement | null = null;
+let audioUnlocked = false;
+
+// Tiny zero-length silent WAV — played inside the tap to grant activation.
+const SILENT_WAV =
+  'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+
+function getSharedAudio(): HTMLAudioElement {
+  if (!sharedAudio) sharedAudio = new Audio();
+  return sharedAudio;
+}
+
+/**
+ * Unlock mobile audio playback. MUST be called synchronously from a user
+ * gesture (e.g. a click handler) BEFORE any await. Without this, audio fetched
+ * from the network fails silently on mobile browsers and PWAs, because the
+ * tap's user-activation has expired by the time play() runs.
+ */
+export function unlockAudio(): void {
+  if (audioUnlocked || typeof window === 'undefined') return;
+  const audio = getSharedAudio();
+  audio.src = SILENT_WAV;
+  const p = audio.play();
+  if (p && typeof p.then === 'function') {
+    p.then(() => {
+      audio.pause();
+      audio.currentTime = 0;
+      audioUnlocked = true;
+    }).catch(() => {}); // not in a gesture — stays locked, retried on next tap
+  } else {
+    audioUnlocked = true;
+  }
+}
+
+/** Play an audio blob through the shared (gesture-unlocked) element. */
 export function playAudio(blob: Blob): Promise<void> {
   return new Promise((resolve, reject) => {
+    const audio = getSharedAudio();
     const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.onended = () => {
-      URL.revokeObjectURL(url);
-      resolve();
-    };
-    audio.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Audio playback failed'));
-    };
-    audio.play();
+    const cleanup = () => URL.revokeObjectURL(url);
+    audio.onended = () => { cleanup(); resolve(); };
+    audio.onerror = () => { cleanup(); reject(new Error('Audio playback failed')); };
+    audio.src = url;
+    const p = audio.play();
+    if (p && typeof p.then === 'function') {
+      p.catch((err) => { cleanup(); reject(err); });
+    }
   });
 }
 
