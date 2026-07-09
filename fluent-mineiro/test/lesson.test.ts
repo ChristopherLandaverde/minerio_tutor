@@ -53,7 +53,7 @@ describe('assembleLesson', () => {
     // recognize types
     for (const e of lesson.recognize) expect(['multiple_choice', 'true_false']).toContain(e.type);
     // produce types
-    for (const e of lesson.produce) expect(['cloze', 'reorder', 'error_correction']).toContain(e.type);
+    for (const e of lesson.produce) expect(['cloze', 'reorder', 'error_correction', 'picture']).toContain(e.type);
     // difficulty ascending within each stage
     const asc = (a: number[]) => a.every((v, i) => i === 0 || v >= a[i - 1]);
     expect(asc(lesson.recognize.map(e => e.difficulty))).toBe(true);

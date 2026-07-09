@@ -127,8 +127,11 @@ export function assembleLesson(theme: string, level: string, reason: string, dai
     .slice(0, PICTURE_CAP)
     .map(e => ({ ...e, type: 'picture' }));
 
+  // Reserve slots for pictures, fill the rest with other produce, then order the
+  // whole phase by difficulty so it still escalates cleanly.
   const otherProduce = inTheme.filter(e => PRODUCE_TYPES.includes(e.type)).sort(byDiff);
-  const produce = [...pictures, ...otherProduce].slice(0, produceCap);
+  const other = otherProduce.slice(0, Math.max(0, produceCap - pictures.length));
+  const produce = [...pictures, ...other].sort(byDiff).slice(0, produceCap);
 
   return { theme, reason, teach, recognize, produce, capstone: capstoneFor(theme) };
 }
