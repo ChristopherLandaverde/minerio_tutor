@@ -13,6 +13,7 @@
   import { checkAchievements, type AchievementStatus } from '$lib/achievements';
   import { updateChallengeProgress } from '$lib/challenges';
   import { checkSlangTriggers } from '$lib/journal';
+  import { unlockAudio } from '$lib/elevenlabs';
 
   type Phase = 'loading' | 'warmup' | 'teach' | 'practice' | 'capstone' | 'done' | 'empty' | 'error';
 
@@ -52,11 +53,14 @@
     }
   });
 
-  function skipWarmup() { phase = 'teach'; }
-  function onWarmupEnd() { phase = 'teach'; }
+  // These are user taps entering the teach phase — unlock audio here so the
+  // teach card can auto-play its pronunciation on mobile/PWA (see TeachCard).
+  function skipWarmup() { unlockAudio(); phase = 'teach'; }
+  function onWarmupEnd() { unlockAudio(); phase = 'teach'; }
 
   function nextTeach() {
     if (!lesson) return;
+    unlockAudio(); // tap that advances to the next card also primes its auto-play
     if (teachIndex < lesson.teach.length - 1) teachIndex++;
     else phase = 'practice';
   }
