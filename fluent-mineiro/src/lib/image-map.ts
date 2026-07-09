@@ -20,7 +20,9 @@ function normalize(s: string): string {
 // Normalized answer keys that have a bundled illustration.
 // Keep in sync with the files in static/img/vocab/.
 const AVAILABLE_IMAGES = new Set<string>([
-  // 'cafe', 'pao de queijo', 'casa', ...  ← add keys as images land
+  // Batch 1 — food, nature, house, animals (flat SVG, brand palette).
+  'cafe', 'pao', 'queijo', 'ovo', 'banana', 'laranja', 'agua',
+  'sol', 'flor', 'casa', 'gato', 'cachorro',
 ]);
 
 const IMAGE_DIR = '/img/vocab';
