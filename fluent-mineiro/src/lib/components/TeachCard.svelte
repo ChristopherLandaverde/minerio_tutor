@@ -4,7 +4,9 @@
 </script>
 
 <div class="bg-white border border-border rounded-2xl p-8 text-center">
-  {#if item.emoji}
+  {#if item.image}
+    <img src={item.image} alt={item.answer} class="w-24 h-24 mx-auto mb-4 object-contain" />
+  {:else if item.emoji}
     <div class="text-6xl mb-4">{item.emoji}</div>
   {/if}
   {#if item.isPattern}

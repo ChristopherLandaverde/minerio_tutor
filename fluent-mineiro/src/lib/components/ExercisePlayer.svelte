@@ -1,6 +1,8 @@
 <script lang="ts">
   import { scoreExercise, processAnswer, type Exercise } from '$lib/exercises';
   import { getElevenLabsKey, textToSpeech, playAudio, unlockAudio } from '$lib/elevenlabs';
+  import { lookupImage } from '$lib/image-map';
+  import { lookupEmoji } from '$lib/emoji-map';
 
   export interface SessionStats {
     correct: number;
@@ -44,7 +46,7 @@
   });
 
   function getTextToSpeak(exercise: Exercise): string {
-    return exercise.type === 'vocab' ? exercise.answer : exercise.prompt;
+    return exercise.type === 'vocab' || exercise.type === 'picture' ? exercise.answer : exercise.prompt;
   }
 
   async function speakText(text: string) {
@@ -93,8 +95,8 @@
     submitting = true;
     const responseTime = Date.now() - startTime;
     const ans = answer || userAnswer;
-    // Vocab now uses typed answers — score as text comparison (like cloze)
-    const scoreType = current.type === 'vocab' ? 'cloze' : current.type;
+    // Vocab and picture use typed answers — score as text comparison (like cloze)
+    const scoreType = current.type === 'vocab' || current.type === 'picture' ? 'cloze' : current.type;
     const result = scoreExercise(scoreType, ans, current.answer, undefined, current.tags);
     lastResult = result;
     showFeedback = true;
@@ -174,7 +176,7 @@
     <div class="p-8 text-center">
       <div class="flex items-center justify-center gap-2 mb-4">
         <span class="text-xs uppercase tracking-wider text-cafe-muted font-semibold">
-          {current.type === 'vocab' ? 'Vocabulary' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correction' : current.type === 'true_false' ? 'True or False' : current.type === 'reorder' ? 'Reorder' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
+          {current.type === 'vocab' ? 'Vocabulary' : current.type === 'picture' ? 'Picture' : current.type === 'cloze' ? 'Cloze' : current.type === 'error_correction' ? 'Correction' : current.type === 'true_false' ? 'True or False' : current.type === 'reorder' ? 'Reorder' : 'Quiz'} · {topicLabels[current.topic] || current.topic}
         </span>
         {#if voiceAvailable && !listeningMode}
           <button
@@ -209,6 +211,37 @@
           placeholder="Write what you heard..."
           class="w-64 px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
         />
+
+      {:else if current.type === 'picture'}
+        {@const imgSrc = lookupImage(current.answer)}
+        {@const emo = lookupEmoji(current.answer)}
+        <div class="mb-4">
+          {#if imgSrc}
+            <img src={imgSrc} alt="" class="w-28 h-28 mx-auto object-contain" />
+          {:else if emo}
+            <div class="text-7xl leading-none" role="img" aria-label="picture clue">{emo}</div>
+          {/if}
+        </div>
+        <p class="text-xs text-cafe-muted mb-4">What's this in Portuguese?</p>
+        {#if !showFeedback}
+          <input
+            bind:value={userAnswer}
+            placeholder="Type the word..."
+            class="w-64 px-4 py-3 border-2 border-border rounded-xl text-center font-body text-base bg-pedra focus:border-terracotta outline-none"
+          />
+          {#if !showAnswer}
+            <button
+              onclick={() => showAnswer = true}
+              class="block mx-auto mt-3 text-xs text-cafe-muted hover:text-terracotta transition-colors"
+            >
+              I don't know — show answer
+            </button>
+          {:else}
+            <div class="mt-3 px-3 py-2 bg-ouro/10 rounded-lg text-sm">
+              <span class="text-cafe-muted">Hint:</span> <span class="text-serra font-mono font-medium">{current.answer}</span>
+            </div>
+          {/if}
+        {/if}
 
       {:else if current.type === 'vocab'}
         <p class="font-display text-xl font-semibold mb-2">{current.prompt}</p>
@@ -308,7 +341,7 @@
     </div>
 
     <!-- Submit button for text input types -->
-    {#if !showFeedback && (current.type === 'vocab' || current.type === 'cloze' || current.type === 'error_correction' || current.type === 'reorder')}
+    {#if !showFeedback && (current.type === 'vocab' || current.type === 'picture' || current.type === 'cloze' || current.type === 'error_correction' || current.type === 'reorder')}
       <div class="p-4 border-t border-border flex justify-center">
         <button
           onclick={() => submitAnswer()}

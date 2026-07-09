@@ -6,6 +6,7 @@
  */
 import { SEED_EXERCISES } from './content';
 import { lookupEmoji } from './emoji-map';
+import { lookupImage } from './image-map';
 import { getProfile } from './db';
 import { getAvailableLevels, nearestAvailableLevel } from './adaptive';
 import type { Exercise } from './exercises';
@@ -15,6 +16,7 @@ export interface TeachItem {
   meaning: string;
   mineiroNote: string | null;
   emoji: string | null;
+  image: string | null;
   isPattern: boolean;
 }
 export interface CapstonePrompt { scenario: string; opener: string }
@@ -98,12 +100,13 @@ export function assembleLesson(theme: string, level: string, reason: string, dai
       meaning: e.prompt,
       mineiroNote: e.mineiro_note,
       emoji: lookupEmoji(e.answer),
+      image: lookupImage(e.answer),
       isPattern: false,
     }));
   } else {
     const first = inTheme[0];
     teach = first
-      ? [{ answer: '', meaning: first.explanation || `Padrão: ${label(theme)}`, mineiroNote: first.mineiro_note, emoji: null, isPattern: true }]
+      ? [{ answer: '', meaning: first.explanation || `Padrão: ${label(theme)}`, mineiroNote: first.mineiro_note, emoji: null, image: null, isPattern: true }]
       : [];
   }
 
@@ -113,7 +116,19 @@ export function assembleLesson(theme: string, level: string, reason: string, dai
   const produceCap = Math.max(1, target - recognizeCap);
 
   const recognize = inTheme.filter(e => RECOGNIZE_TYPES.includes(e.type)).sort(byDiff).slice(0, recognizeCap);
-  const produce = inTheme.filter(e => PRODUCE_TYPES.includes(e.type)).sort(byDiff).slice(0, produceCap);
+
+  // Picture → type the word (dual-coding, production). Reuse concrete vocab that
+  // has a picture — a bundled image or, until images land, its emoji fallback.
+  // Render-time lookup decides which visual shows. Capped so it complements the
+  // produce phase rather than flooding it.
+  const PICTURE_CAP = 2;
+  const pictures: Exercise[] = vocab
+    .filter(e => lookupImage(e.answer) || lookupEmoji(e.answer))
+    .slice(0, PICTURE_CAP)
+    .map(e => ({ ...e, type: 'picture' }));
+
+  const otherProduce = inTheme.filter(e => PRODUCE_TYPES.includes(e.type)).sort(byDiff);
+  const produce = [...pictures, ...otherProduce].slice(0, produceCap);
 
   return { theme, reason, teach, recognize, produce, capstone: capstoneFor(theme) };
 }
