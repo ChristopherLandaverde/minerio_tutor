@@ -87,4 +87,43 @@ describe('assembleLesson', () => {
     expect(lesson.recognize.length).toBe(4);
     expect(lesson.produce.length).toBe(6);
   });
+
+  it('rotates recognize away from already-attempted exercises when the pool is large enough', () => {
+    // false_cognates @ A2 has 15 recognize items — comfortably more than 2x
+    // the recognizeCap (4), so a full rotation is achievable with zero overlap.
+    const first = assembleLesson('false_cognates', 'A2', 'r', 10);
+    const seenIds = new Set(first.recognize.map(e => e.id));
+    const second = assembleLesson('false_cognates', 'A2', 'r', 10, seenIds);
+    const overlap = second.recognize.filter(e => seenIds.has(e.id));
+    expect(overlap.length).toBe(0);
+  });
+
+  it('rotates produce away from already-attempted exercises when the pool is large enough', () => {
+    // verbs_present @ A2 has 82 produce items — ample headroom for a full rotation.
+    const first = assembleLesson('verbs_present', 'A2', 'r', 10);
+    const seenIds = new Set(first.produce.map(e => e.id));
+    const second = assembleLesson('verbs_present', 'A2', 'r', 10, seenIds);
+    const overlap = second.produce.filter(e => seenIds.has(e.id));
+    expect(overlap.length).toBe(0);
+  });
+
+  it('still fills caps by falling back to seen exercises once the unseen pool runs dry', () => {
+    // 'travel' @ A2 has only 1 recognize + 2 produce item — mark them all seen
+    // and confirm the lesson still fills rather than coming back empty.
+    const first = assembleLesson('travel', 'A2', 'r', 10);
+    const seenIds = new Set([...first.recognize, ...first.produce].map(e => e.id));
+
+    const second = assembleLesson('travel', 'A2', 'r', 10, seenIds);
+    expect(second.recognize.length).toBe(first.recognize.length);
+    expect(second.produce.length).toBe(first.produce.length);
+  });
+
+  it('recognize stays difficulty-ascending even when unseen/seen exercises are interleaved', () => {
+    const inTheme = assembleLesson('verbs_present', 'A2', 'r', 10);
+    // Mark every other recognize exercise "seen" to force interleaving.
+    const seenIds = new Set(inTheme.recognize.filter((_, i) => i % 2 === 0).map(e => e.id));
+    const lesson = assembleLesson('verbs_present', 'A2', 'r', 10, seenIds);
+    const diffs = lesson.recognize.map(e => e.difficulty);
+    expect(diffs.every((v, i) => i === 0 || v >= diffs[i - 1])).toBe(true);
+  });
 });

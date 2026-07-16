@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { goto } from '$app/navigation';
   import ExercisePlayer, { type SessionStats } from '$lib/components/ExercisePlayer.svelte';
   import TeachCard from '$lib/components/TeachCard.svelte';
   import StageProgress from '$lib/components/StageProgress.svelte';
@@ -9,13 +8,12 @@
   import { applyAdaptation } from '$lib/adaptive';
   import { planLesson, type Lesson } from '$lib/lesson';
   import { SEED_EXERCISES } from '$lib/content';
-  import { getApiKey } from '$lib/claude';
   import { checkAchievements, type AchievementStatus } from '$lib/achievements';
   import { updateChallengeProgress } from '$lib/challenges';
   import { checkSlangTriggers } from '$lib/journal';
   import { unlockAudio } from '$lib/elevenlabs';
 
-  type Phase = 'loading' | 'warmup' | 'teach' | 'practice' | 'capstone' | 'done' | 'empty' | 'error';
+  type Phase = 'loading' | 'warmup' | 'teach' | 'practice' | 'done' | 'empty' | 'error';
 
   let phase = $state<Phase>('loading');
   let lesson = $state<Lesson | null>(null);
@@ -25,7 +23,6 @@
   let sessionStats = $state<SessionStats | null>(null);
   let sessionStreak = $state(0);
   let levelChange = $state<string | null>(null);
-  let hasKey = $state(false);
   let errorMsg = $state('');
 
   let newAchievements = $state<AchievementStatus[]>([]);
@@ -38,7 +35,6 @@
     try {
       const db = await getDb();
       lesson = await planLesson(db);
-      try { hasKey = !!(await getApiKey()); } catch { hasKey = false; }
       if (!lesson) { phase = 'empty'; return; }
       sessionId = await startSession();
       // Optional SRS warm-up: due reviews (cap 10), any topic.
@@ -77,16 +73,6 @@
       await updateChallengeProgress(stats.total);
       await checkSlangTriggers();
     } catch {}
-    phase = 'capstone';
-  }
-
-  function startCapstone() {
-    if (!lesson) return;
-    sessionStorage.setItem('capstone_seed', JSON.stringify(lesson.capstone));
-    goto('/conversation');
-  }
-
-  function finishLesson() {
     if (newAchievements.length > 0) { showCelebration = true; celebrationIndex = 0; }
     phase = 'done';
   }
@@ -160,21 +146,6 @@
         <button onclick={() => onPracticeEnd({ correct: 0, total: 0, xp: 0 })} class="w-full py-3 bg-terracotta text-white font-semibold rounded-xl">Continue →</button>
       </div>
     {/if}
-
-  {:else if phase === 'capstone' && lesson}
-    <StageProgress current="capstone" />
-    <div class="bg-white border border-border rounded-2xl p-8 text-center">
-      <div class="text-4xl mb-3">💬</div>
-      <h3 class="font-display text-xl font-bold mb-2">Time to chat!</h3>
-      <p class="text-sm text-cafe-secondary mb-6">{lesson.capstone.scenario}</p>
-      {#if hasKey}
-        <button onclick={startCapstone} class="w-full py-3 bg-serra text-white font-semibold rounded-xl">Start conversation →</button>
-      {:else}
-        <p class="text-xs text-cafe-muted mb-4">Set up your Claude API key in settings to unlock the conversation.</p>
-        <a href="/settings" class="inline-block px-5 py-2.5 border border-border font-semibold rounded-lg text-sm">Go to Settings</a>
-      {/if}
-      <button onclick={finishLesson} class="mt-3 w-full py-2 text-sm text-cafe-muted underline">Finish lesson</button>
-    </div>
 
   {:else if phase === 'done' && sessionStats}
     <div class="text-center py-12">

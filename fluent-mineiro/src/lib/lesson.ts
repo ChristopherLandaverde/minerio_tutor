@@ -29,8 +29,8 @@ export interface Lesson {
   capstone: CapstonePrompt;
 }
 
-const RECOGNIZE_TYPES = ['multiple_choice', 'true_false'];
-const PRODUCE_TYPES = ['cloze', 'reorder', 'error_correction'];
+export const RECOGNIZE_TYPES = ['multiple_choice', 'true_false'];
+export const PRODUCE_TYPES = ['cloze', 'reorder', 'error_correction'];
 const CEFR_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1'];
 const TEACH_MIN = 3, TEACH_MAX = 6;
 
@@ -88,7 +88,22 @@ export function chooseTheme(input: ThemeInput): { theme: string; reason: string 
 
 // --- assembly -------------------------------------------------------------
 
-export function assembleLesson(theme: string, level: string, reason: string, dailyGoal: number): Lesson {
+// Put not-yet-attempted exercises first so repeated sessions on the same
+// theme rotate through the pool instead of replaying the same slice.
+// Falls back to already-seen ones only once the unseen pool runs out.
+function preferUnseen(pool: Exercise[], seenIds: Set<number>): Exercise[] {
+  const unseen = pool.filter(e => !seenIds.has(e.id));
+  const seen = pool.filter(e => seenIds.has(e.id));
+  return [...unseen, ...seen];
+}
+
+export function assembleLesson(
+  theme: string,
+  level: string,
+  reason: string,
+  dailyGoal: number,
+  seenIds: Set<number> = new Set()
+): Lesson {
   const inTheme = SEED_EXERCISES.filter(e => e.topic === theme && e.cefr_level === level);
 
   // Teach: vocab items (concrete nouns) with emoji; else a single pattern card.
@@ -115,21 +130,30 @@ export function assembleLesson(theme: string, level: string, reason: string, dai
   const recognizeCap = Math.max(1, Math.round(target * 0.4));
   const produceCap = Math.max(1, target - recognizeCap);
 
-  const recognize = inTheme.filter(e => RECOGNIZE_TYPES.includes(e.type)).sort(byDiff).slice(0, recognizeCap);
+  const recognizePool = preferUnseen(
+    inTheme.filter(e => RECOGNIZE_TYPES.includes(e.type)).sort(byDiff),
+    seenIds
+  );
+  const recognize = recognizePool.slice(0, recognizeCap).sort(byDiff);
 
   // Picture → type the word (dual-coding, production). Reuse concrete vocab that
   // has a picture — a bundled image or, until images land, its emoji fallback.
   // Render-time lookup decides which visual shows. Capped so it complements the
-  // produce phase rather than flooding it.
+  // produce phase rather than flooding it. Draw from the full topic vocab pool
+  // (not just the teach-capped slice) so pictures rotate independently.
   const PICTURE_CAP = 2;
-  const pictures: Exercise[] = vocab
-    .filter(e => lookupImage(e.answer) || lookupEmoji(e.answer))
-    .slice(0, PICTURE_CAP)
-    .map(e => ({ ...e, type: 'picture' }));
+  const picturePool = preferUnseen(
+    inTheme.filter(e => e.type === 'vocab' && (lookupImage(e.answer) || lookupEmoji(e.answer))),
+    seenIds
+  );
+  const pictures: Exercise[] = picturePool.slice(0, PICTURE_CAP).map(e => ({ ...e, type: 'picture' }));
 
   // Reserve slots for pictures, fill the rest with other produce, then order the
   // whole phase by difficulty so it still escalates cleanly.
-  const otherProduce = inTheme.filter(e => PRODUCE_TYPES.includes(e.type)).sort(byDiff);
+  const otherProduce = preferUnseen(
+    inTheme.filter(e => PRODUCE_TYPES.includes(e.type)).sort(byDiff),
+    seenIds
+  );
   const other = otherProduce.slice(0, Math.max(0, produceCap - pictures.length));
   const produce = [...pictures, ...other].sort(byDiff).slice(0, produceCap);
 
@@ -171,18 +195,20 @@ export async function planLesson(db: any): Promise<Lesson | null> {
     for (const [tp, a] of agg) accuracyByTopic[tp] = { accuracy: a.c / a.t, attempts: a.t };
   } catch { /* no attempts yet */ }
 
-  // Unseen count per eligible topic at this level.
+  // Unseen count per eligible topic at this level, and the raw seen-id set so
+  // assembleLesson can rotate exercises instead of replaying the same slice.
   const unseenCountByTopic: Record<string, number> = {};
+  let seenIds = new Set<number>();
   try {
     const seenRows: { exercise_id: number }[] = await db.select('SELECT DISTINCT exercise_id FROM attempts');
-    const seen = new Set(seenRows.map(r => r.exercise_id));
+    seenIds = new Set(seenRows.map(r => r.exercise_id));
     for (const e of SEED_EXERCISES) {
       if (e.cefr_level !== level || !eligibleThemes.includes(e.topic)) continue;
-      if (!seen.has(e.id)) unseenCountByTopic[e.topic] = (unseenCountByTopic[e.topic] ?? 0) + 1;
+      if (!seenIds.has(e.id)) unseenCountByTopic[e.topic] = (unseenCountByTopic[e.topic] ?? 0) + 1;
     }
   } catch { /* no attempts yet */ }
 
   const { theme, reason } = chooseTheme({ eligibleThemes, accuracyByTopic, unseenCountByTopic });
   if (!theme) return null;
-  return assembleLesson(theme, level, reason, dailyGoal);
+  return assembleLesson(theme, level, reason, dailyGoal, seenIds);
 }

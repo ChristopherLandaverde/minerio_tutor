@@ -1,11 +1,10 @@
 <script lang="ts">
-  let { current }: { current: 'teach' | 'practice' | 'capstone' } = $props();
+  let { current }: { current: 'teach' | 'practice' } = $props();
   const stages: { key: string; label: string }[] = [
     { key: 'teach', label: 'Learn' },
     { key: 'practice', label: 'Practice' },
-    { key: 'capstone', label: 'Chat' },
   ];
-  const order = ['teach', 'practice', 'capstone'];
+  const order = ['teach', 'practice'];
   function state(key: string): 'done' | 'active' | 'todo' {
     const ci = order.indexOf(current), ki = order.indexOf(key);
     return ki < ci ? 'done' : ki === ci ? 'active' : 'todo';
