@@ -14,7 +14,6 @@
   import { awardCityStamp, getJournalStats, checkSlangTriggers, type ToastData } from '$lib/journal';
   import { getAllHeartLevels, type HeartState } from '$lib/npc';
   import Toast from '$lib/components/Toast.svelte';
-  import { getCurrentSeason, type Season } from '$lib/seasons';
 
   let streak = $state(0);
   let totalXp = $state(0);
@@ -46,7 +45,6 @@
   let journalTotal = $state(0);
   let npcHearts = $state<Map<string, HeartState>>(new Map());
   let toasts = $state<ToastData[]>([]);
-  const season = getCurrentSeason();
   let cityVisits = $state<Map<string, number>>(new Map());
 
   function getTimeOfDay(): 'morning' | 'afternoon' | 'night' {
@@ -88,15 +86,6 @@
     house: { label: 'House & Home', icon: '🏠' },
     time_numbers: { label: 'Time & Numbers', icon: '🕐' },
   };
-
-  // CEFR progress
-  const cefrLevels = ['A1', 'A2', 'B1', 'B2', 'C1'];
-  const cefrOrder = $derived(cefrLevels.map(level => ({
-    level,
-    isCurrent: level === currentLevel,
-    isPast: cefrLevels.indexOf(level) < cefrLevels.indexOf(currentLevel),
-    isFuture: cefrLevels.indexOf(level) > cefrLevels.indexOf(currentLevel),
-  })));
 
   onMount(async () => {
     try {
@@ -223,17 +212,10 @@
 </script>
 
 <div class="max-w-3xl mx-auto p-4 md:p-6">
-  <!-- Header -->
-  <div class="flex items-center justify-between mb-5">
-    <div>
-      <h2 class="font-display text-2xl font-bold">{new Date().getHours() < 12 ? 'Good morning' : new Date().getHours() < 18 ? 'Good afternoon' : 'Good evening'}, Krissss!</h2>
-    </div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1.5 text-ouro font-bold text-sm">
-        🔥 {streak}
-      </div>
-      <span class="text-xs font-semibold px-2 py-1 rounded-full bg-terracotta/10 text-terracotta">{currentLevel}</span>
-    </div>
+  <!-- Minimal header: just the two chips the layout doesn't already show -->
+  <div class="flex items-center justify-end gap-2 mb-3">
+    <span class="inline-flex items-center gap-1 font-mono text-xs font-semibold text-terracotta bg-pedra-subtle border border-border rounded-lg px-2.5 py-1 tabular-nums">🔥 {streak}</span>
+    <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-serra text-white">{currentLevel}</span>
   </div>
 
   {#if !loaded}
@@ -243,164 +225,67 @@
       {/each}
     </div>
   {:else}
-    <!-- Seasonal banner -->
-    {#if season}
-      <div class="flex items-center gap-2 px-3 py-2 mb-3 rounded-xl border {season.color}">
-        <span class="text-lg">{season.icon}</span>
-        <span class="text-xs font-medium">{season.banner}</span>
-      </div>
-    {/if}
-
-    <!-- Session action bar -->
-    <div class="bg-white border border-border rounded-2xl p-4 mb-4 flex items-center gap-4">
-      {#if noteLoading}
-        <div class="flex-1 h-4 bg-pedra-subtle rounded animate-pulse"></div>
-      {:else if coachingNote}
-        <p class="flex-1 text-sm text-cafe-secondary italic font-display">{coachingNote}</p>
-      {:else}
-        <p class="flex-1 text-sm text-cafe-secondary">
-          {#if sessionPlan && sessionPlan.exercises.length > 0}
-            {sessionPlan.exercises.length} exercises ready for today
-          {:else}
-            Explore the map and practice!
-          {/if}
-        </p>
-      {/if}
-      <a
-        href="/session"
-        class="shrink-0 px-5 py-2 bg-terracotta text-white text-sm font-semibold rounded-xl hover:bg-terracotta-dark transition-colors"
-      >
-        Start
-      </a>
-    </div>
-
-    <!-- Map -->
-    <div class="relative mb-4">
+    <!-- Hero: the map IS the screen, Start is fused into it -->
+    <div class="relative mb-4 rounded-2xl border border-border bg-gradient-to-b from-white to-pedra-subtle p-3 md:p-4">
       <MinasMap {cityStates} onCityClick={handleCityClick} timeOfDay={getTimeOfDay()} />
 
-      <!-- "Sabiá recomenda" compact pill -->
-      {#if sabiaRecommendations().length > 0}
-        <div class="absolute bottom-2 left-2 flex items-center gap-1.5 bg-white/90 backdrop-blur-sm border border-border rounded-full pl-2.5 pr-1 py-1 shadow-sm text-[10px]">
-          <span>🐦</span>
-          <a href="/lesson?type={sabiaRecommendations()[0].type}&topic={sabiaRecommendations()[0].topic}" class="text-cafe hover:text-terracotta font-medium transition-colors">
-            {sabiaRecommendations()[0].topicLabel}
-          </a>
-          {#if sabiaRecommendations().length > 1}
-            <span class="text-cafe-muted">·</span>
-            <a href="/lesson?type={sabiaRecommendations()[1].type}&topic={sabiaRecommendations()[1].topic}" class="text-cafe hover:text-terracotta font-medium transition-colors">
-              {sabiaRecommendations()[1].topicLabel}
-            </a>
+      <!-- Start card: docked to the hero, the one obvious next action -->
+      <div class="mt-3 md:mt-3 bg-white border-[1.5px] border-terracotta rounded-2xl p-4 shadow-lg shadow-terracotta/10 flex flex-wrap items-center gap-3">
+        <div class="flex-1 min-w-[180px]">
+          {#if noteLoading}
+            <div class="h-4 bg-pedra-subtle rounded animate-pulse w-2/3"></div>
+          {:else if coachingNote}
+            <p class="text-sm italic font-display text-cafe">{coachingNote}</p>
+          {:else if sessionPlan && sessionPlan.exercises.length > 0}
+            <p class="text-sm text-cafe">{sessionPlan.exercises.length} exercises ready for today</p>
+          {:else}
+            <p class="text-sm text-cafe">Explore the map and practice!</p>
+          {/if}
+          {#if sabiaRecommendations().length > 0}
+            <p class="text-xs text-cafe-muted mt-1">
+              🐦 Sabiá recommends
+              {#each sabiaRecommendations().slice(0, 2) as rec, i}
+                <a href="/lesson?type={rec.type}&topic={rec.topic}" class="text-cafe-secondary hover:text-terracotta font-medium transition-colors">{rec.topicLabel}</a>{i === 0 && sabiaRecommendations().length > 1 ? ' · ' : ''}
+              {/each}
+            </p>
           {/if}
         </div>
-      {/if}
-    </div>
-
-    <!-- Stats + Progress row -->
-    <div class="grid grid-cols-5 gap-2 mb-4">
-      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
-        <div class="font-display text-lg font-bold text-terracotta">{streak}</div>
-        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Streak</div>
-      </div>
-      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
-        <div class="font-display text-lg font-bold text-serra">{accuracy}%</div>
-        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Correct</div>
-      </div>
-      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
-        <div class="font-display text-lg font-bold text-ouro">{dueReviews}</div>
-        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Reviews</div>
-      </div>
-      <div class="bg-white border border-border rounded-xl p-2.5 text-center">
-        <div class="font-display text-lg font-bold text-cafe">{totalXp}</div>
-        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">XP</div>
-      </div>
-      <a href="/achievements" class="bg-white border border-border rounded-xl p-2.5 text-center hover:border-terracotta transition-colors">
-        <div class="font-display text-lg font-bold text-terracotta-light">{journalStamps}</div>
-        <div class="text-[9px] text-cafe-muted uppercase tracking-wider">Stamps</div>
-      </a>
-    </div>
-
-    <!-- Daily goal + CEFR -->
-    <div class="grid grid-cols-2 gap-3 mb-4">
-      <!-- Daily goal -->
-      <div class="bg-white border border-border rounded-xl p-3">
-        <div class="flex items-center justify-between mb-1.5">
-          <span class="text-[11px] font-semibold">{goalMet ? '🎯 Goal!' : '📋 Daily Goal'}</span>
-          <span class="text-[10px] text-cafe-muted">{todayTotal}/{dailyGoal}</span>
-        </div>
-        <div class="h-2 bg-pedra-subtle rounded-full overflow-hidden">
-          <div class="h-full rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></div>
-        </div>
-      </div>
-
-      <!-- CEFR progress -->
-      <div class="bg-white border border-border rounded-xl p-3">
-        <span class="text-[11px] font-semibold mb-1.5 block">CEFR Progress</span>
-        <div class="flex items-center justify-between">
-          {#each cefrOrder as node, i}
-            <div class="flex items-center">
-              <div class="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-bold
-                {node.isPast ? 'bg-serra text-white' : node.isCurrent ? 'bg-terracotta text-white ring-1 ring-terracotta/30 ring-offset-1' : 'bg-pedra-subtle text-cafe-muted'}">
-                {node.level.replace('A', '').replace('B', '').replace('C', '')}
-              </div>
-              {#if i < cefrOrder.length - 1}
-                <div class="w-3 h-0.5 {node.isPast ? 'bg-serra' : 'bg-pedra-subtle'}"></div>
-              {/if}
-            </div>
-          {/each}
-        </div>
-      </div>
-    </div>
-
-    <!-- Quick actions row -->
-    <div class="flex gap-2 mb-4">
-      {#if dueReviews > 0}
-        <a href="/review" class="flex-1 flex items-center gap-2 p-3 bg-white border border-ouro/30 rounded-xl hover:border-ouro hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
-          <span class="text-lg">🔄</span>
-          <div>
-            <div class="text-xs font-semibold">{dueReviews} reviews</div>
-            <div class="text-[10px] text-cafe-muted">pending</div>
-          </div>
+        <a href="/session" class="shrink-0 px-6 py-2.5 bg-terracotta text-white text-sm font-semibold rounded-xl hover:bg-terracotta-dark transition-colors">
+          Start →
         </a>
-      {/if}
-      {#if hasVoice}
-        <a href="/lesson?type=vocab&mode=listening" class="flex-1 flex items-center gap-2 p-3 bg-white border border-serra/20 rounded-xl hover:border-serra hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
-          <span class="text-lg">🎧</span>
-          <div>
-            <div class="text-xs font-semibold">Listening</div>
-            <div class="text-[10px] text-cafe-muted">Listen & write</div>
-          </div>
-        </a>
-      {/if}
-      <a href="/conversation" class="flex-1 flex items-center gap-2 p-3 bg-white border border-border rounded-xl hover:border-terracotta hover:-translate-y-0.5 hover:shadow-md transition-all duration-150">
-        <span class="text-lg">💬</span>
-        <div>
-          <div class="text-xs font-semibold">Chat</div>
-          <div class="text-[10px] text-cafe-muted">Free chat</div>
-        </div>
-      </a>
+      </div>
     </div>
 
-    <!-- Weekly challenges -->
-    {#if challenges.length > 0}
-      <div class="flex gap-2 overflow-x-auto pb-1">
-        {#each challenges as challenge}
-          <div class="min-w-[160px] flex-1 bg-white border border-border rounded-xl p-2.5">
-            <p class="text-[11px] text-cafe font-medium line-clamp-1">{challenge.label}</p>
-            <div class="mt-1.5 h-1 bg-pedra-subtle rounded-full overflow-hidden">
-              <div class="h-full bg-ouro rounded-full transition-all" style="width: {Math.min(100, (challenge.currentValue / challenge.targetValue) * 100)}%"></div>
-            </div>
-            <div class="flex items-center justify-between mt-0.5">
-              <span class="text-[9px] text-cafe-muted">{challenge.currentValue}/{challenge.targetValue}</span>
-              {#if challenge.completed}
-                <span class="text-[9px] font-semibold text-serra">✓</span>
-              {:else}
-                <span class="text-[9px] text-ouro">+{challenge.xpReward} XP</span>
-              {/if}
-            </div>
-          </div>
-        {/each}
+    <!-- Today: everything else, quiet and collapsed, not competing with the hero -->
+    <div class="flex flex-wrap items-center gap-x-5 gap-y-2 bg-pedra-subtle border border-border rounded-xl px-4 py-2.5">
+      <span class="text-[10px] uppercase tracking-wider font-bold text-cafe-muted shrink-0">Today</span>
+
+      <div class="flex items-center gap-4 font-mono text-xs text-cafe-secondary tabular-nums">
+        <span>🔥 <b class="text-cafe font-semibold">{streak}</b> streak</span>
+        <span><b class="text-cafe font-semibold">{accuracy}%</b> correct</span>
+        <span><b class="text-cafe font-semibold">{totalXp}</b> XP</span>
+        <span><b class="text-cafe font-semibold">{journalStamps}</b> stamps</span>
       </div>
-    {/if}
+
+      <div class="flex items-center gap-2 text-xs text-cafe-muted">
+        <span>Goal {todayTotal}/{dailyGoal}</span>
+        <span class="w-16 h-1.5 rounded-full bg-border overflow-hidden inline-block">
+          <span class="h-full block rounded-full transition-all duration-500 {goalMet ? 'bg-serra' : 'bg-terracotta'}" style="width: {goalProgress}%"></span>
+        </span>
+      </div>
+
+      <div class="flex items-center gap-2 ml-auto">
+        {#if dueReviews > 0}
+          <a href="/review" class="text-xs text-serra bg-white border border-serra/30 rounded-full px-3 py-1 hover:border-serra transition-colors whitespace-nowrap">{dueReviews} reviews</a>
+        {/if}
+        {#if hasVoice}
+          <a href="/lesson?type=vocab&mode=listening" class="text-xs text-cafe-secondary bg-white border border-border rounded-full px-3 py-1 hover:border-terracotta transition-colors whitespace-nowrap">🎧 Listening</a>
+        {/if}
+        {#if challenges.length > 0}
+          <span class="text-xs text-cafe-secondary bg-white border border-border rounded-full px-3 py-1 whitespace-nowrap">{challenges.length} challenges</span>
+        {/if}
+      </div>
+    </div>
   {/if}
 </div>
 
