@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { chooseTheme, assembleLesson } from '../src/lib/lesson';
+import { chooseTheme, assembleLesson, RECOGNIZE_TYPES } from '../src/lib/lesson';
+import { SEED_EXERCISES } from '../src/lib/content';
 
 describe('chooseTheme (default weakest-topic seam)', () => {
   const base = {
@@ -107,15 +108,36 @@ describe('assembleLesson', () => {
     expect(overlap.length).toBe(0);
   });
 
-  it('still fills caps by falling back to seen exercises once the unseen pool runs dry', () => {
-    // 'travel' @ A2 has only 1 recognize + 2 produce item — mark them all seen
-    // and confirm the lesson still fills rather than coming back empty.
+  it('backfills produce when recognize runs dry, instead of repeating', () => {
+    // verbs_present @ A2 has only 7 recognize items against a cap of 4
+    // (dailyGoal 10) — mark all 7 seen. Recognize should shrink toward 0
+    // rather than repeat, and produce (82 items, ample) absorbs the slack
+    // so the session doesn't get smaller. This is the actual fix for the
+    // "same lesson every time" repeat a thin recognize pool used to cause.
+    const first = assembleLesson('verbs_present', 'A2', 'r', 10);
+    const allRecognize = SEED_EXERCISES.filter(
+      e => e.topic === 'verbs_present' && e.cefr_level === 'A2' && RECOGNIZE_TYPES.includes(e.type)
+    );
+    const seenIds = new Set(allRecognize.map(e => e.id));
+
+    const second = assembleLesson('verbs_present', 'A2', 'r', 10, seenIds);
+    expect(second.recognize.length).toBe(0);
+    expect(second.recognize.filter(e => seenIds.has(e.id))).toEqual([]);
+    // Total session size is preserved — produce made up the difference.
+    expect(second.recognize.length + second.produce.length).toBe(first.recognize.length + first.produce.length);
+  });
+
+  it('degrades gracefully (no crash, no duplicate ids) when both pools are thin', () => {
+    // 'travel' @ A2 has only 1 recognize + 2 produce item total — a genuine
+    // content shortage neither pool can backfill for the other. The lesson
+    // should still return without error or duplicate exercises, even though
+    // it can't hit the full target size.
     const first = assembleLesson('travel', 'A2', 'r', 10);
     const seenIds = new Set([...first.recognize, ...first.produce].map(e => e.id));
 
     const second = assembleLesson('travel', 'A2', 'r', 10, seenIds);
-    expect(second.recognize.length).toBe(first.recognize.length);
-    expect(second.produce.length).toBe(first.produce.length);
+    const allIds = [...second.recognize, ...second.produce].map(e => e.id);
+    expect(new Set(allIds).size).toBe(allIds.length);
   });
 
   it('recognize stays difficulty-ascending even when unseen/seen exercises are interleaved', () => {

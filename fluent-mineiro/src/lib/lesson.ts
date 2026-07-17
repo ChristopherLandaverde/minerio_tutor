@@ -130,11 +130,19 @@ export function assembleLesson(
   const recognizeCap = Math.max(1, Math.round(target * 0.4));
   const produceCap = Math.max(1, target - recognizeCap);
 
+  // If the recognize pool doesn't have enough *unseen* items to fill its cap
+  // (a thin pool, e.g. 7 items against a cap of 6 — repeats within 2 sessions
+  // no matter how the slice is chosen), don't pad with repeats. Shrink
+  // recognize to what's actually fresh and hand the difference to produce,
+  // which has much deeper pools almost everywhere in the content bank — see
+  // content-audit.ts. Session length stays the same; only the mix shifts.
   const recognizePool = preferUnseen(
     inTheme.filter(e => RECOGNIZE_TYPES.includes(e.type)).sort(byDiff),
     seenIds
   );
-  const recognize = recognizePool.slice(0, recognizeCap).sort(byDiff);
+  const unseenRecognizeCount = recognizePool.filter(e => !seenIds.has(e.id)).length;
+  const recognizeShortfall = Math.max(0, recognizeCap - Math.min(recognizeCap, unseenRecognizeCount));
+  const recognize = recognizePool.slice(0, recognizeCap - recognizeShortfall).sort(byDiff);
 
   // Picture → type the word (dual-coding, production). Reuse concrete vocab that
   // has a picture — a bundled image or, until images land, its emoji fallback.
@@ -148,14 +156,16 @@ export function assembleLesson(
   );
   const pictures: Exercise[] = picturePool.slice(0, PICTURE_CAP).map(e => ({ ...e, type: 'picture' }));
 
-  // Reserve slots for pictures, fill the rest with other produce, then order the
-  // whole phase by difficulty so it still escalates cleanly.
+  // Reserve slots for pictures, fill the rest with other produce (absorbing
+  // recognize's shortfall, if any), then order the whole phase by difficulty
+  // so it still escalates cleanly.
+  const boostedProduceCap = produceCap + recognizeShortfall;
   const otherProduce = preferUnseen(
     inTheme.filter(e => PRODUCE_TYPES.includes(e.type)).sort(byDiff),
     seenIds
   );
-  const other = otherProduce.slice(0, Math.max(0, produceCap - pictures.length));
-  const produce = [...pictures, ...other].sort(byDiff).slice(0, produceCap);
+  const other = otherProduce.slice(0, Math.max(0, boostedProduceCap - pictures.length));
+  const produce = [...pictures, ...other].sort(byDiff).slice(0, boostedProduceCap);
 
   return { theme, reason, teach, recognize, produce, capstone: capstoneFor(theme) };
 }

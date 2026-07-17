@@ -3,7 +3,7 @@
 exports[`content pool coverage (regression guard) > A2 pool gaps match the known baseline 1`] = `
 [
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 2,
@@ -24,7 +24,7 @@ exports[`content pool coverage (regression guard) > A2 pool gaps match the known
     "topic": "cultural",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 2,
@@ -45,14 +45,14 @@ exports[`content pool coverage (regression guard) > A2 pool gaps match the known
     "topic": "dialogue",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 10,
     "topic": "error_correction",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 2,
@@ -87,7 +87,7 @@ exports[`content pool coverage (regression guard) > A2 pool gaps match the known
     "topic": "prepositions",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 8,
@@ -101,7 +101,7 @@ exports[`content pool coverage (regression guard) > A2 pool gaps match the known
     "topic": "ser_estar",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 2,
@@ -115,7 +115,7 @@ exports[`content pool coverage (regression guard) > A2 pool gaps match the known
     "topic": "shopping",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "A2",
     "poolSize": 2,
@@ -176,7 +176,7 @@ exports[`content pool coverage (regression guard) > B1 pool gaps match the known
     "topic": "dialogue",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "B1",
     "poolSize": 3,
@@ -190,7 +190,7 @@ exports[`content pool coverage (regression guard) > B1 pool gaps match the known
     "topic": "false_cognates",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "B1",
     "poolSize": 13,
@@ -204,14 +204,14 @@ exports[`content pool coverage (regression guard) > B1 pool gaps match the known
     "topic": "prepositions",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "B1",
     "poolSize": 4,
     "topic": "reorder",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "B1",
     "poolSize": 2,
@@ -246,6 +246,13 @@ exports[`content pool coverage (regression guard) > B1 pool gaps match the known
     "topic": "verbs_past",
   },
   {
+    "cap": 15,
+    "kind": "produce",
+    "level": "B1",
+    "poolSize": 29,
+    "topic": "verbs_present",
+  },
+  {
     "cap": 6,
     "kind": "recognize",
     "level": "B1",
@@ -270,6 +277,13 @@ exports[`content pool coverage (regression guard) > B2 pool gaps match the known
     "level": "B2",
     "poolSize": 5,
     "topic": "cultural",
+  },
+  {
+    "cap": 15,
+    "kind": "produce",
+    "level": "B2",
+    "poolSize": 25,
+    "topic": "verbs_present",
   },
   {
     "cap": 6,
@@ -298,7 +312,7 @@ exports[`content pool coverage (regression guard) > C1 pool gaps match the known
     "topic": "cultural",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "C1",
     "poolSize": 5,
@@ -312,7 +326,7 @@ exports[`content pool coverage (regression guard) > C1 pool gaps match the known
     "topic": "false_cognates",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "C1",
     "poolSize": 3,
@@ -326,14 +340,14 @@ exports[`content pool coverage (regression guard) > C1 pool gaps match the known
     "topic": "prepositions",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "C1",
     "poolSize": 4,
     "topic": "verbs_past",
   },
   {
-    "cap": 9,
+    "cap": 15,
     "kind": "produce",
     "level": "C1",
     "poolSize": 10,
