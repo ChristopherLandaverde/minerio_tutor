@@ -2,7 +2,9 @@
 
 A desktop app for learning Brazilian Portuguese with a Minas Gerais dialect focus. Built with Tauri + SvelteKit. Powered by Claude AI.
 
-**1,063 exercises** across A2 to C1. RPG-style road trip through 8 Mineiro cities. 11 NPCs to befriend. Spaced repetition. Adaptive difficulty. All offline-first with AI conversation when you want it.
+**1,312 exercises** across A2 to C1. RPG-style road trip through 8 Mineiro cities. 11 NPCs to befriend. Spaced repetition. Adaptive difficulty. All offline-first with AI conversation when you want it.
+
+See [FEATURES.md](FEATURES.md) for a screenshot-by-screenshot walkthrough of every screen's current UX.
 
 ---
 
@@ -93,12 +95,12 @@ Without API keys, all offline features work: exercises, SRS, map progression, ac
 
 | Level | Exercises | Topics |
 |-------|-----------|--------|
-| A2 | 678 | greetings, daily routine, food, family, transport, shopping |
-| B1 | 227 | emotions, dialogue, nature, work, education, clothing |
-| B2 | 85 | idioms, cultural knowledge, advanced verbs, ser/estar |
-| C1 | 73 | subjunctive, personal infinitive, formal register, Mineiro deep cuts |
+| A2 | 817 | greetings, daily routine, food, family, transport, shopping, body health, travel |
+| B1 | 282 | emotions, dialogue, nature, work, education, clothing, prepositions, ser/estar |
+| B2 | 93 | idioms, cultural knowledge, advanced verbs, ser/estar |
+| C1 | 120 | subjunctive, personal infinitive, formal register, Mineiro deep cuts |
 
-**Total: 1,063 exercises** + 8 reading passages + 10 writing prompts.
+**Total: 1,312 exercises** + 8 reading passages + 10 writing prompts.
 
 ## Mineiro Dialect
 
